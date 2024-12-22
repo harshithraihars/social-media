@@ -350,11 +350,11 @@ import { Post } from "@/models/post.model"
 import { IUser, User } from "@/models/user.model";
 import { currentUser, } from "@clerk/nextjs/server";
 import { v2 as cloudinary } from "cloudinary";
-import { connectDB } from "./db";
 import { revalidatePath } from "next/cache";
 import { Comment } from "@/models/comment.model";
 import { UserType } from "@/models/UserInfo";
 import { useUser } from "@clerk/nextjs";
+import connectDB from "./db";
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
   api_key: process.env.API_KEY,
