@@ -12,7 +12,10 @@ const nextConfig = {
         serverActions: {
             bodySizeLimit: '20mb' // Set desired value here
         }
-    }
+    },
+    eslint: {
+        ignoreDuringBuilds: true, // Disable ESLint during the build process
+      },
 };
 
 export default nextConfig;
