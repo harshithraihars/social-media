@@ -12,8 +12,8 @@ const MobileNavbar = () => {
         const handleClick=async (navItem:NAVITEMS)=>{
             if(navItem.text==="Home"){
                 if(isSearching){
-                    dispatch(setSearching(false))
                     const posts=await getAllPost()
+                    dispatch(setSearching(false))
                     dispatch(setPosts(posts))
                 }
             }
@@ -24,11 +24,17 @@ const MobileNavbar = () => {
         {
             navItems.map((navItem, index)=>{
                 return (
-                    <div key={index} className='flex flex-col items-center cursor-pointer text-[#666666] hover:text-black' onClick={()=>handleClick(navItem)}>
+                    <Link href={navItem.src} key={index} onClick={() => handleClick(navItem)}>
+                      <div
+                        
+                        className="flex flex-col items-center cursor-pointer text-[#666666] hover:text-black"
+                        
+                      >
                         <span>{navItem.icon}</span>
-                        <Link className='text-xs' href={navItem.src}>{navItem.text}</Link>
-                    </div>
-                )
+                        <p className="text-xs">{navItem.text}</p>
+                      </div>
+                    </Link>
+                  );
             })
         }
     </div>

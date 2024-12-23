@@ -23,7 +23,6 @@
 
 //     const image = selectedFile;
 
-
 //     const userDatabase: IUser = {
 //         firstName: user.firstName || "Patel",
 //         lastName: user.lastName || "Mern Stack",
@@ -121,13 +120,13 @@
 //       let users;
 //       if (username === " ") {
 //         users = await User.find(
-          
+
 //           {userId: { $ne:user?.id },}
 //         ).select("firstName lastName userId profilePhoto _id");
 //       }
 //       else{
 //         const regex = new RegExp(`^${username}`, "i"); // `i` makes it case-insensitive
-  
+
 //         // Query the database
 //         users = await User.find({
 //           $expr: {
@@ -150,20 +149,19 @@
 //         _id: user._id.toString(),
 //         bio:user.bio
 //       }));
-  
+
 //       return mappedUsers;
 //     } catch (error) {
 //       console.log(error);
 //       return [];
 //     }
 //   };
-  
-  
+
 //   export async function handleUSerConnections(user: any) {
 //     try {
 //       await connectDB();
 //       const userPresent = await User.findOne({ userId: user.id }).lean()
-  
+
 //       if (!userPresent) {
 //         const firstName = user.firstName;
 //         const lastName = user.lastName;
@@ -182,8 +180,7 @@
 //       console.log(error);
 //     }
 //   }
-  
-  
+
 //   export async function handleFollowing(userId: string) {
 //     try {
 //       const user = await currentUser();
@@ -206,39 +203,38 @@
 //       console.log(error);
 //     }
 //   }
-  
-  
+
 //   export async function SendConnectionRequest(userId: string) {
 //     try {
 //       // Connect to the database
 //       await connectDB();
-  
+
 //       // Get the current authenticated user
 //       const currentuser = await currentUser();
 //       if (!currentuser) throw new Error("User not authenticated");
-  
+
 //       // Fetch the current user and the requested user
 //       const [user, requestedUser] = await Promise.all([
 //         User.findOne({ userId: currentuser.id }),
 //         User.findOne({ userId }),
 //       ]);
-  
+
 //       if (!user) throw new Error("Current user does not exist");
 //       if (!requestedUser) throw new Error("Requested user does not exist");
-  
+
 //       // Check if the request already exists in the `sentRequest` array
 //       const alreadySent = user.sentReqest?.some((req) => req.receiverId === userId);
 //       const alreadyReceived = requestedUser.requests?.some((req) => req.receiverId === currentuser.id);
-  
+
 //       // Define actions for the current user and the requested user
 //       const userAction = alreadySent
 //         ? { $pull: { sentReqest: { receiverId: userId } } }
 //         : { $addToSet: { sentReqest: { receiverId: userId, sentAt: new Date() } } };
-  
+
 //       const requestedUserAction = alreadyReceived
 //         ? { $pull: { requests: { receiverId: currentuser.id } } }
 //         : { $addToSet: { requests: { receiverId: currentuser.id, sentAt: new Date() } } };
-  
+
 //       // Update both users in parallel
 //       await Promise.all([
 //         user.updateOne(userAction),
@@ -249,33 +245,31 @@
 //       throw error; // Re-throw the error for the caller to handle
 //     }
 //   }
-  
-  
-  
+
 //   export async function getCurrentUser(userId: string) {
 //     try {
 //       await connectDB();
-  
+
 //       const user = await User.findOne({ userId: userId }).lean(); // Returns a plain object
 //       if (!user) {
 //         throw new Error("User does not exist");
 //       }
 //       console.log(user);
-      
+
 //       return user; // Plain object
 //     } catch (error) {
 //       console.log(error);
 //       throw error; // Re-throw error for the caller to handle
 //     }
 //   }
-  
+
 //   export async function getAllRequests() {
 //     try {
 //       const currentuser = await currentUser();
 //       await connectDB();
-  
+
 //       if (!currentuser) throw new Error("User not authenticated");
-  
+
 //       // Find the user based on the userId and populate the requestsDetails virtual field
 //       const user = await User.findOne({ userId: currentuser.id })
 //         .populate({
@@ -284,7 +278,7 @@
 //           // select: "firstName lastName userId profilePhoto bio", // Fields to select from the referenced User
 //         })
 //         .lean(); // Use lean to get a plain JavaScript object for faster queries
-  
+
 //       if (!user) {
 //         throw new Error("User does not exist");
 //       }
@@ -298,36 +292,35 @@
 //         };
 //       });
 //       return requestsWithDetails; // Return the populated requests
-  
+
 //     } catch (error) {
 //       console.log(error);
 //       throw error; // Re-throw error for the caller to handle
 //     }
 //   }
-  
-  
+
 //   export async function RequestHandler(check: boolean, userId: string) {
 //     try {
 //       const currentuser = await currentUser();
 //       await connectDB();
-  
+
 //       if (!currentuser) throw new Error("User not authenticated");
-  
+
 //       // Find the current user and the requested user
 //       const user = await User.findOne({ userId: currentuser.id });
 //       const requestedUser = await User.findOne({ userId });
-  
+
 //       if (!user || !requestedUser) {
 //         throw new Error("User does not exist");
 //       }
-  
+
 //       if (check) {
 //         // Accept the request
 //         await user.updateOne({
 //           $pull: { requests: { receiverId: userId } }, // Remove from requests array
 //           $addToSet: { connections: userId }, // Add to connections
 //         });
-  
+
 //         await requestedUser.updateOne({
 //           $pull: { sentReqest: { receiverId: currentuser.id } }, // Remove from sentReqest array
 //           $addToSet: { connections: currentuser.id }, // Add to connections
@@ -344,11 +337,11 @@
 //       throw error; // Re-throw error for the caller to handle
 //     }
 //   }
-  "use server";
+"use server";
 // import {v2 as cloudinary} from "next-cloudinary"
-import { Post } from "@/models/post.model"
+import { Post } from "@/models/post.model";
 import { IUser, User } from "@/models/user.model";
-import { currentUser, } from "@clerk/nextjs/server";
+import { currentUser } from "@clerk/nextjs/server";
 import { v2 as cloudinary } from "cloudinary";
 import { revalidatePath } from "next/cache";
 import { Comment } from "@/models/comment.model";
@@ -366,7 +359,7 @@ export const createPostAction = async (
   selectedFile: string
 ) => {
   await connectDB();
-  const user= await currentUser();
+  const user = await currentUser();
   if (!user) {
     throw new Error("user not Authenticated");
   }
@@ -420,17 +413,23 @@ export const getAllPost = async (username = " ") => {
         .sort({ createdAt: -1 })
         .populate({ path: "comments", options: { sort: { createdAt: -1 } } });
     } else {
-      console.log(username);
-
+      const cuser = await currentUser();
       const regex = new RegExp(`^${username}`, "i");
       posts = await Post.find()
         .where({
-          $expr: {
-            $regexMatch: {
-              input: { $concat: ["$user.firstName", " ", "$user.lastName"] },
-              regex,
+          $and: [
+            {
+              $expr: {
+                $regexMatch: {
+                  input: {
+                    $concat: ["$user.firstName", " ", "$user.lastName"],
+                  },
+                  regex,
+                },
+              },
             },
-          },
+            { "user.userId": { $ne: cuser?.id } },
+          ],
         })
         .sort({ createdAt: -1 })
         .populate({ path: "comments", options: { sort: { createdAt: -1 } } });
@@ -489,22 +488,20 @@ export const createCommentAction = async (
     await post.save();
     revalidatePath("/");
   } catch (error) {
-    throw new Error("Error ocuured"+error);
+    throw new Error("Error ocuured" + error);
   }
 };
 
 export const getAllUsers = async (username = " ") => {
   try {
     await connectDB();
-    const user=await currentUser()
-    let users:UserType[];
+    const user = await currentUser();
+    let users: UserType[];
     if (username === " ") {
-      users = await User.find(
-        
-        {userId: { $ne:user?.id },}
-      ).select("firstName lastName userId profilePhoto _id");
-    }
-    else{
+      users = await User.find({ userId: { $ne: user?.id } }).select(
+        "firstName lastName userId profilePhoto _id"
+      );
+    } else {
       const regex = new RegExp(`^${username}`, "i"); // `i` makes it case-insensitive
 
       // Query the database
@@ -515,7 +512,7 @@ export const getAllUsers = async (username = " ") => {
             regex: regex,
           },
         },
-        userId: { $ne:user?.id },
+        userId: { $ne: user?.id },
       }).select("firstName lastName userId profilePhoto _id bio");
     }
     if (!users || users.length === 0) {
@@ -529,7 +526,7 @@ export const getAllUsers = async (username = " ") => {
       _id: user._id.toString(), // Ensure _id is included and converted to string
       bio: user.bio,
     }));
-    
+
     return mappedUsers;
   } catch (error) {
     console.log(error);
@@ -537,11 +534,10 @@ export const getAllUsers = async (username = " ") => {
   }
 };
 
-
 export async function handleUSerConnections(user: any) {
   try {
     await connectDB();
-    const userPresent = await User.findOne({ userId: user.id }).lean()
+    const userPresent = await User.findOne({ userId: user.id }).lean();
 
     if (!userPresent) {
       const firstName = user.firstName;
@@ -561,7 +557,6 @@ export async function handleUSerConnections(user: any) {
     console.log(error);
   }
 }
-
 
 export async function handleFollowing(userId: string) {
   try {
@@ -586,7 +581,6 @@ export async function handleFollowing(userId: string) {
   }
 }
 
-
 export async function SendConnectionRequest(userId: string) {
   try {
     // Connect to the database
@@ -606,17 +600,27 @@ export async function SendConnectionRequest(userId: string) {
     if (!requestedUser) throw new Error("Requested user does not exist");
 
     // Check if the request already exists in the `sentRequest` array
-    const alreadySent = user.sentReqest?.some((req) => req.receiverId === userId);
-    const alreadyReceived = requestedUser.requests?.some((req) => req.receiverId === currentuser.id);
+    const alreadySent = user.sentReqest?.some(
+      (req) => req.receiverId === userId
+    );
+    const alreadyReceived = requestedUser.requests?.some(
+      (req) => req.receiverId === currentuser.id
+    );
 
     // Define actions for the current user and the requested user
     const userAction = alreadySent
       ? { $pull: { sentReqest: { receiverId: userId } } }
-      : { $addToSet: { sentReqest: { receiverId: userId, sentAt: new Date() } } };
+      : {
+          $addToSet: { sentReqest: { receiverId: userId, sentAt: new Date() } },
+        };
 
     const requestedUserAction = alreadyReceived
       ? { $pull: { requests: { receiverId: currentuser.id } } }
-      : { $addToSet: { requests: { receiverId: currentuser.id, sentAt: new Date() } } };
+      : {
+          $addToSet: {
+            requests: { receiverId: currentuser.id, sentAt: new Date() },
+          },
+        };
 
     // Update both users in parallel
     await Promise.all([
@@ -629,18 +633,16 @@ export async function SendConnectionRequest(userId: string) {
   }
 }
 
-
-
 export async function getCurrentUser() {
   try {
     await connectDB();
-    const Cuser=await currentUser()
+    const Cuser = await currentUser();
 
-    const user = await User.findOne({ userId: Cuser?.id }) // Returns a plain object
+    const user = await User.findOne({ userId: Cuser?.id }); // Returns a plain object
     if (!user) {
       throw new Error("User does not exist");
     }
-    
+
     return JSON.parse(JSON.stringify(user)); // Plain object
   } catch (error) {
     console.log(error);
@@ -659,7 +661,7 @@ export async function getAllRequests() {
     const user = await User.findOne({ userId: currentuser.id })
       .populate({
         path: "requestsDetails",
-         // Virtual field to populate
+        // Virtual field to populate
         // select: "firstName lastName userId profilePhoto bio", // Fields to select from the referenced User
       })
       .lean(); // Use lean to get a plain JavaScript object for faster queries
@@ -677,13 +679,11 @@ export async function getAllRequests() {
       };
     });
     return requestsWithDetails; // Return the populated requests
-
   } catch (error) {
     console.log(error);
     throw error; // Re-throw error for the caller to handle
   }
 }
-
 
 export async function RequestHandler(check: boolean, userId: string) {
   try {

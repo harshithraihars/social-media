@@ -53,13 +53,13 @@ const SearchInput = () => {
   }, []);
   const handleKey = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
+      ref.current?.click()
       const searchedUsers=await getAllUsers(input) 
       const posts=await getAllPost(input)
       dispatch(setPosts(posts))
       setIsFocused(false)
       dispatch(setSearchUsers(searchedUsers))
       dispatch(setSearching(true)) 
-      ref.current?.click()
     }
   };
   return (
