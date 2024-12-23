@@ -67,7 +67,7 @@ const SearchInput = () => {
     <Input 
       type="text" 
       placeholder="Search" 
-      className="bg-[#EDF3F8] w-[300px] rounded-lg border-none outline-none"
+      className="bg-[#EDF3F8] w-[280px] rounded-lg border-none outline-none"
       onFocus={handleFocus}
       onBlur={handleBlur}
       value={input}
