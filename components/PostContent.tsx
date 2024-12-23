@@ -22,7 +22,7 @@
 // }
 
 // export default PostContent
-import { IPostDocument } from '@/model/post.model'
+import { IPostDocument } from '@/models/post.model'
 import Image from 'next/image'
 import React from 'react'
 
