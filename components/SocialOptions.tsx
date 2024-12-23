@@ -5,8 +5,9 @@ import { IPostDocument } from '@/models/post.model';
 import { useUser } from '@clerk/nextjs';
 import CommentInput from './CommentInput';
 import Comments from './Comments';
+import { IComment } from '@/models/comment.model';
 
-const SocialOptions = ({ post }: { post: IPostDocument }) => {
+const SocialOptions = ({ post}: { post: IPostDocument}) => {
     const { user } = useUser();
     const [liked, setLiked] = useState(false);
     const [likes, setLikes] = useState(post.likes);
@@ -81,7 +82,7 @@ const SocialOptions = ({ post }: { post: IPostDocument }) => {
                 commentOpen && (
                     <div className='p-4'>
                         <CommentInput postId = {post._id}/>
-                        <Comments post = {post}/>
+                        <Comments post={post}/>
                     </div>
                 )
             }

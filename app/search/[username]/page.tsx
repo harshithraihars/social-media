@@ -12,7 +12,7 @@ const page = async () => {
   const userInfo=await handleUSerConnections(user)  
   return (
     <div className="pt-36">
-      <div className="max-w-6xl mx-auto flex justify-center gap-8">
+      <div className="max-w-6xl  flex justify-center gap-8 w-full">
         <Sidebar user={user}/>
         <Feed user={user} userInfo={userInfo}/>
         <News/>

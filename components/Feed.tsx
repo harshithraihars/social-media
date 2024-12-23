@@ -41,14 +41,12 @@ const Feed = async ({user,userInfo}:{user:User,userInfo:any}) => {
       userInfoClient=JSON.parse(JSON.stringify(userInfo))
     }
   return (
-    <div className="w-full max-w-screen-lg mx-auto">
-  <div className="flex-1">
-    <SearchResult />
-    <PostInput user={userData} />
-    <PostHandler posts={parsedPosts} userInfo={userInfoClient} />
-  </div>
-</div>
-
+    <div className='flex-1 overflow-hidden'>
+      <SearchResult/>
+      <PostInput user={userData}/>
+      <PostHandler posts={parsedPosts} userInfo={userInfoClient}/>
+      {/* <Posts posts={posts} userInfo={userInfo}/> */}
+    </div>
   )
 }
 

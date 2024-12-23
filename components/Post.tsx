@@ -119,9 +119,12 @@ import PostContent from "./PostContent";
 import { formatDistanceToNowStrict } from "date-fns";
 import { IPostDocument } from "@/models/post.model";
 import { deletePostAction, handleFollowing } from "@/lib/serveractions";
-import { useAppSelector } from "@/lib/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import ProfilePhoto from "./shared/ProfilePhoto";
 import SocialOptions from "./SocialOptions";
+import { toast } from "sonner";
+import { ObjectId } from "mongoose";
+import { setPosts } from "@/lib/feature/todos/todoSlice";
 const Post = ({
   post,
   userInfo,
@@ -148,6 +151,10 @@ const Post = ({
   const timeago = formatDistanceToNowStrict(new Date(post.createdAt), {
     addSuffix: true,
   });
+
+
+  
+  // handle follow request
   const handleFolow = async (userId: string) => {
     if (isFollowing.includes(userId)) {
       const newFollowing = isFollowing.filter((id) => id !== userId);
@@ -157,7 +164,18 @@ const Post = ({
     }
     await handleFollowing(userId);
   };
+
+  // chhecking user is searching or not
   const issearching=useAppSelector((state)=>state.counter.isSearching)
+
+// delete a
+  const posts=useAppSelector((state)=>state.counter.posts)
+  const dispatch=useAppDispatch()
+  const handleDelete=async (id:string)=>{
+    await deletePostAction(id);
+    dispatch((setPosts((posts.filter((post)=>post._id!==id)))))
+  }
+
   return (
     <div className="bg-white my-2 mx-2 md:mx-0 rounded-lg border border-gray-300 w-full">
       {issearching && index===0?(
@@ -208,15 +226,21 @@ const Post = ({
         <div>
           {loggedInUser && (
             <Button
-              onClick={() => {
-                const res = deletePostAction(post._id);
-              }}
-              size={"icon"}
-              className="rounded-full"
-              variant={"outline"}
-            >
-              <Trash2 />
-            </Button>
+            onClick={() => {
+              const promise = handleDelete(post._id);
+              toast.promise(promise, {
+                loading: 'Deleting post...',
+                success: 'Post deleted',
+                error: 'Failed to delete post',
+              });
+            }}
+            size={"icon"}
+            className="rounded-full"
+            variant={"outline"}
+          >
+            <Trash2 />
+          </Button>
+          
           )}
         </div>
       </div>

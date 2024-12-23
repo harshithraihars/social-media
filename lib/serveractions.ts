@@ -348,6 +348,7 @@ import { Comment } from "@/models/comment.model";
 import { UserType } from "@/models/UserInfo";
 import { useUser } from "@clerk/nextjs";
 import connectDB from "./db";
+import { POST } from "@/app/api/posts/[postId]/dislike/route";
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
   api_key: process.env.API_KEY,
@@ -377,10 +378,10 @@ export const createPostAction = async (
   try {
     // post with image
     // without image
-
+    let res;
     if (image) {
       uploadResponse = await cloudinary.uploader.upload(image);
-      await Post.create({
+      res=await Post.create({
         description: inputText,
         user: userDatabase,
         // image Url from cloudinary
@@ -388,13 +389,14 @@ export const createPostAction = async (
         imageUrl: uploadResponse?.secure_url,
       });
     } else {
-      await Post.create({
+       res=await Post.create({
         description: inputText,
         user: userDatabase,
       });
     }
     // when you upload the path it should be visible in the ral time so you are playing with the cache
-    revalidatePath("/");
+    return JSON.parse(JSON.stringify(res))
+    revalidatePath("/")
   } catch (error) {
     // console.log(error.message);
     console.log(error);

@@ -9,17 +9,20 @@ import {
 import ProfilePhoto from "./shared/ProfilePhoto"
 import { Textarea } from "./ui/textarea"
 import { Images } from "lucide-react"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { readFileAsDataUrl } from "@/lib/utils"
 import Image from "next/image"
 import { createPostAction } from "@/lib/serveractions"
 import { toast } from "sonner"
+import { useAppDispatch, useAppSelector } from "@/lib/hooks"
+import { setPosts } from "@/lib/feature/todos/todoSlice"
 
 export function PostDialog({ setOpen, open, src }: { setOpen: any, open: boolean, src: string }) {
+    const posts=useAppSelector((state)=>state.counter.posts)
     const inputRef = useRef<HTMLInputElement>(null);
     const [selectedFile, setSelectedFile] = useState<string>("");
     const [inputText, setInputText] = useState<string>("");
-
+    const dispatch=useAppDispatch();
     const changeHandler = (e: any) => {
         setInputText(e.target.value);
     }
@@ -34,13 +37,20 @@ export function PostDialog({ setOpen, open, src }: { setOpen: any, open: boolean
     const postActionHandler = async (formData: FormData) => {
         const inputText = formData.get('inputText') as string;
         try {
-            await createPostAction(inputText, selectedFile);
+            const res=await createPostAction(inputText, selectedFile);
+            console.log(posts);
+            
+            dispatch(setPosts([res,...posts]))
         } catch (error) {
             console.log('error occurred', error);
         }
         setInputText("");
         setOpen(false);
     }
+    useEffect(()=>{
+        console.log(posts);
+        
+    },[posts])
 
     return (
         <Dialog open={open}>
