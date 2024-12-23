@@ -159,7 +159,7 @@ const Post = ({
   };
   const issearching=useAppSelector((state)=>state.counter.isSearching)
   return (
-    <div className="bg-white my-2 mx-2 md:mx-0 rounded-lg border border-gray-300">
+    <div className="bg-white my-2 mx-2 md:mx-0 rounded-lg border border-gray-300 w-full">
       {issearching && index===0?(
         <div className="px-4 py-3">
           <p className="font-normal text-2xl">Posts</p>
