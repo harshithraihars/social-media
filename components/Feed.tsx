@@ -41,7 +41,7 @@ const Feed = async ({user,userInfo}:{user:User,userInfo:any}) => {
       userInfoClient=JSON.parse(JSON.stringify(userInfo))
     }
   return (
-    <div className='flex-1 overflow-hidden'>
+    <div className='flex-1'>
       <SearchResult/>
       <PostInput user={userData}/>
       <PostHandler posts={parsedPosts} userInfo={userInfoClient}/>

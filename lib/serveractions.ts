@@ -338,6 +338,8 @@
 //     }
 //   }
 "use server";
+
+// export const revalidate=true
 // import {v2 as cloudinary} from "next-cloudinary"
 import { Post } from "@/models/post.model";
 import { IUser, User } from "@/models/user.model";
@@ -489,6 +491,7 @@ export const createCommentAction = async (
     post.comments?.push(comment._id);
     await post.save();
     revalidatePath("/");
+    return JSON.parse(JSON.stringify(comment))
   } catch (error) {
     throw new Error("Error ocuured" + error);
   }

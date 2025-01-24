@@ -57,14 +57,16 @@ import { IUser } from '@/models/user.model'
 import ProfilePhoto from './shared/ProfilePhoto'
 
 const Sidebar =  ({ user }: { user: any }) => {
-    const [currentuser,setCurrentuser]=useState<IUser>();
-    useEffect(()=>{
-        const getUSer=async ()=>{
-            const user=await getCurrentUser();
-            setCurrentuser(user);
+    const [postCount,setPostCount]=useState<number>(0)
+    const currentuser=useUser().user
+    const posts=useAppSelector((state)=>state.counter.posts)
+    useEffect(() => {
+        if (user && posts) {
+          // Count the number of posts for the current user
+          const userPosts = posts.filter((post) => post.user.userId === currentuser?.id); // Adjust based on your post structure
+          setPostCount(userPosts.length);
         }
-        getUSer()
-    },[])
+      }, [currentuser, posts]);
     return (
         <div className='hidden md:block w-[20%] h-fit border bordergray-300 bg-white rounded-lg'>
             <div className='flex relative flex-col items-center'>
@@ -98,7 +100,7 @@ const Sidebar =  ({ user }: { user: any }) => {
                 </div>
                 <div className='w-full flex justify-between items-center px-3 py-2 hover:bg-gray-200 cursor-pointer'>
                     <p>Posts</p>
-                    <p className='text-blue-500 font-bold'>{}</p>
+                    <p className='text-blue-500 font-bold'>{postCount}</p>
                 </div>
             </div>
         </div>

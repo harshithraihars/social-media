@@ -68,6 +68,8 @@ interface CounterState {
   posts:IPostDocument[],
   searchResult:UserResult[]
   user:IUserDocument|null
+  isLoading:boolean
+  input:string
 }
 export interface UserResult {
   firstName: string;
@@ -82,7 +84,9 @@ const initialState: CounterState = {
   isSearching:false,
   posts:[],
   searchResult:[],
-  user:null
+  user:null,
+  isLoading:false,
+  input:""
 }
 
 // Creating the slice
@@ -102,12 +106,18 @@ const counterSlice = createSlice({
     },
     setUser:(state, action: PayloadAction<any>) => {
       state.user=action.payload
+    },
+    setisLoading:(state, action: PayloadAction<any>) => {
+      state.isLoading=action.payload
+    },
+    setisInput:(state, action: PayloadAction<any>) => {
+      state.input=action.payload
     }
   }
 })
 
 // Export the actions
-export const {setSearching,setPosts,setSearchUsers,setUser } = counterSlice.actions
+export const {setSearching,setPosts,setSearchUsers,setUser,setisLoading,setisInput } = counterSlice.actions
 
 // Export the reducer
 export default counterSlice.reducer // This is where we export the counterReducer

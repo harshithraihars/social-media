@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button } from './ui/button'
 import { MessageCircleMore, Repeat, Send, ThumbsUp } from 'lucide-react'
 import { IPostDocument } from '@/models/post.model';
@@ -12,6 +12,10 @@ const SocialOptions = ({ post}: { post: IPostDocument}) => {
     const [liked, setLiked] = useState(false);
     const [likes, setLikes] = useState(post.likes);
     const [commentOpen, setCommentOpen] = useState(false);
+    useEffect(()=>{
+        likes?.includes(user?.id!)?setLiked(true):""
+ 
+    },[user])
 
     const likeOrDislikeHandler = async () => {
         if (!user) throw new Error(' User not athenticated');
@@ -20,7 +24,8 @@ const SocialOptions = ({ post}: { post: IPostDocument}) => {
         const dislike = likes?.filter((userId) => userId !== user.id);
         const like = [...(likes ?? []), user.id];
         const newLike = liked ? dislike : like;
-
+        console.log(newLike);
+        
         setLiked(!liked);
         setLikes(newLike);
 
@@ -61,7 +66,7 @@ const SocialOptions = ({ post}: { post: IPostDocument}) => {
                     variant={'ghost'}
                     className='flex items-center gap-1 rounded-lg text-gray-600 hover:text-black'>
                     <ThumbsUp
-                        className={`${liked && 'fill-[#378FE9]'}`}
+                        className={`${(liked) && 'fill-[#378FE9]'}`}
                     />
                     <p className={`${liked && 'text-[#378FE9]'}`}>Like</p>
                 </Button>
@@ -81,8 +86,8 @@ const SocialOptions = ({ post}: { post: IPostDocument}) => {
             {
                 commentOpen && (
                     <div className='p-4'>
-                        <CommentInput postId = {post._id}/>
-                        <Comments post={post}/>
+                        <CommentInput postId = {post._id} />
+                        <Comments post={post} />
                     </div>
                 )
             }

@@ -72,7 +72,12 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useAppDispatch } from "@/lib/hooks";
-import { setPosts, setSearching } from "@/lib/feature/todos/todoSlice";
+import {
+  setisInput,
+  setisLoading,
+  setPosts,
+  setSearching,
+} from "@/lib/feature/todos/todoSlice";
 import { getAllPost } from "@/lib/serveractions";
 export type NAVITEMS = {
   src: string;
@@ -115,12 +120,20 @@ export const navItems: NAVITEMS[] = [
 const NavItem = () => {
   const dispatch = useAppDispatch();
   const handleClick = async (item: NAVITEMS) => {
+    dispatch(setisInput(""))
+    dispatch(setSearching(false))
+    // Start loading immediately after clicking
+    dispatch(setisLoading(true));
     if (item.text === "Home") {
       dispatch(setSearching(false));
+
+      // Fetch posts and update the state
       const posts = await getAllPost();
-      console.log(posts);
       dispatch(setPosts(posts));
     }
+
+    // Stop loading after the posts are fetched
+    dispatch(setisLoading(false));
   };
   return (
     <div className="flex gap-8">
@@ -128,7 +141,9 @@ const NavItem = () => {
         return (
           <div key={index} onClick={() => handleClick(navItem)}>
             <Link href={navItem.src}>
-              <div className="flex flex-col items-center cursor-pointer text-[#666666] hover:text-black">
+              <div
+                className="flex flex-col items-center cursor-pointer text-[#666666] hover:text-black"
+              >
                 <span>{navItem.icon}</span>
                 <p className="text-xs">{navItem.text}</p>
               </div>

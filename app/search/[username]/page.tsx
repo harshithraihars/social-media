@@ -4,6 +4,7 @@ import { currentUser } from "@clerk/nextjs/server";
 import Sidebar from '@/components/Sidebar';
 import Feed from '@/components/Feed';
 import News from '@/components/News';
+import Loader from '@/components/Loader';
 
 
 const page = async () => {
@@ -13,6 +14,7 @@ const page = async () => {
   return (
     <div className="pt-36">
       <div className="max-w-6xl  flex justify-center gap-8 w-full">
+        <Loader/>
         <Sidebar user={user}/>
         <Feed user={user} userInfo={userInfo}/>
         <News/>

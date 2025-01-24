@@ -16,8 +16,10 @@ import { createPostAction } from "@/lib/serveractions"
 import { toast } from "sonner"
 import { useAppDispatch, useAppSelector } from "@/lib/hooks"
 import { setPosts } from "@/lib/feature/todos/todoSlice"
+import { useUser } from "@clerk/nextjs"
 
 export function PostDialog({ setOpen, open, src }: { setOpen: any, open: boolean, src: string }) {
+    const {user}=useUser()
     const posts=useAppSelector((state)=>state.counter.posts)
     const inputRef = useRef<HTMLInputElement>(null);
     const [selectedFile, setSelectedFile] = useState<string>("");
@@ -38,7 +40,6 @@ export function PostDialog({ setOpen, open, src }: { setOpen: any, open: boolean
         const inputText = formData.get('inputText') as string;
         try {
             const res=await createPostAction(inputText, selectedFile);
-            console.log(posts);
             
             dispatch(setPosts([res,...posts]))
         } catch (error) {
@@ -59,7 +60,7 @@ export function PostDialog({ setOpen, open, src }: { setOpen: any, open: boolean
                     <DialogTitle className="flex gap-2">
                         <ProfilePhoto src={src} />
                         <div>
-                            <h1>Patel Mern Stack</h1>
+                            <h1>{user?.firstName+" "+user?.lastName}</h1>
                             <p className="text-xs">Post to anyone</p>
                         </div>
                     </DialogTitle>

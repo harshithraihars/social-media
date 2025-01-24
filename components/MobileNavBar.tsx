@@ -4,20 +4,27 @@ import NavItems, { NAVITEMS, navItems } from "./NavItems"
 import Link from 'next/link'
 import { useAppDispatch, useAppSelector } from '@/lib/hooks'
 import { getAllPost } from '@/lib/serveractions'
-import { setPosts, setSearching } from '@/lib/feature/todos/todoSlice'
+import { setisInput, setisLoading, setPosts, setSearching } from '@/lib/feature/todos/todoSlice'
 
 const MobileNavbar = () => {
-    const isSearching=useAppSelector((state)=>state.counter.isSearching)
-        const dispatch=useAppDispatch()
-        const handleClick=async (navItem:NAVITEMS)=>{
-            if(navItem.text==="Home"){
-                if(isSearching){
-                    const posts=await getAllPost()
-                    dispatch(setSearching(false))
-                    dispatch(setPosts(posts))
-                }
-            }
+    const dispatch=useAppDispatch()
+    const handleClick = async (item: NAVITEMS) => {
+        dispatch(setisInput(""))
+        dispatch(setSearching(false))
+        // Start loading immediately after clicking
+        // dispatch(setisLoading(true));
+        if (item.text === "Home") {
+          dispatch(setSearching(false));
+    
+          // Fetch posts and update the state
+          const posts = await getAllPost();
+          dispatch(setPosts(posts));
+        dispatch(setisLoading(false));
         }
+    
+        // Stop loading after the posts are fetched
+        dispatch(setisLoading(false));
+      };
   return (
 <div className='md:hidden flex items-center justify-between fixed w-[100%] bottom-0 bg-white z-10 shadow-[0_-4px_6px_rgba(0,0,0,0.1)] py-2 px-2'>
 

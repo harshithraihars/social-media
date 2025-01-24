@@ -7,10 +7,7 @@ const SideBar2 = () => {
   const [isOpen, setIsOpen] = useState(false);
   const user=useAppSelector((state)=>state.counter.user)
   const toggleMenu = () => setIsOpen((prev) => !prev);
-  useEffect(()=>{
-    console.log(user);
-    
-  },[user])
+
   // Menu items data
   const menuItems = [
     { icon: <UserPlus size={16} />, label: 'Connections' },

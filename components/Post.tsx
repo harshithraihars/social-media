@@ -111,7 +111,7 @@
 
 "use client";
 import { useUser } from "@clerk/nextjs";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Check, Plus, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -145,6 +145,7 @@ const Post = ({
       );
     }
   }, [userInfo]);
+
   const { user } = useUser();
   const fullName = post?.user?.firstName + " " + post?.user?.lastName;
   const loggedInUser = user?.id === post?.user?.userId;
@@ -177,7 +178,7 @@ const Post = ({
   }
 
   return (
-    <div className="bg-white my-2 mx-2 md:mx-0 rounded-lg border border-gray-300 w-full">
+    <div className="bg-white my-2 mx-2 md:mx-0 rounded-lg border border-gray-300">
       {issearching && index===0?(
         <div className="px-4 py-3">
           <p className="font-normal text-2xl">Posts</p>
@@ -194,9 +195,13 @@ const Post = ({
           <div>
             <h1 className="text-sm font-bold">
               {fullName}{" "}
-              <Badge variant={"secondary"} className="ml-2">
+              {
+                post.user.userId===user?.id?(
+                  <Badge variant={"secondary"} className="ml-2">
                 You
               </Badge>
+                ):""
+              }
             </h1>
             <p className="text-xs text-gray-500">
               @{user ? user?.username : "username"}
