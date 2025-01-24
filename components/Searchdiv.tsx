@@ -6,6 +6,7 @@ import { getAllUsers } from "@/lib/serveractions";
 import { UserType } from "@/models/UserInfo";
 import { stat } from "fs";
 import { Clock } from "lucide-react";
+import { ObjectId } from "mongoose";
 import React, { RefObject, useEffect, useState } from "react";
 
 const Searchdiv = ({
@@ -14,7 +15,7 @@ const Searchdiv = ({
   setIsFocused,
 }: {
   dropdownRef: RefObject<HTMLDivElement>;
-  reference: RefObject<HTMLDivElement>;
+  reference: RefObject<HTMLButtonElement>;
   setIsFocused: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const [suggestions, setSuggestions] = useState<UserType[]>([]); // Suggestions are now User[]
@@ -43,9 +44,18 @@ const Searchdiv = ({
   }, [input, users]);
   const dispatch = useAppDispatch();
 
+
+   interface UserInterface {
+    firstName: string;
+    lastName: string;
+    userId: string;
+    profilePhoto: string;
+    _id:string;
+    bio?: string;
+  }
   // yet tpo complete when i clci on the option not properly navigating to the page
-  const handleClick = async (user) => {
-    console.log("clicked");
+  const handleClick = async (user:UserInterface) => {
+    console.log(user);
     setIsFocused(false);
     dispatch(setisLoading(true));
     dispatch(setisInput(user.firstName + " " + user.lastName));
