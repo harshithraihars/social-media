@@ -26,7 +26,7 @@ const newsItems: NAVITEMS[] = [
 
 const News = () => {
   return (
-    <div className='hidden md:block w-[25%] bg-white h-fit rounded-lg border border-gray-300'>
+    <div className='hidden md:block w-[25%] bg-white h-fit rounded-lg border border-gray-300 z-0'>
       <div className='flex items-center justify-between p-3'>
         <h1 className='font-medium'>LinkedIn News</h1>
         <Info size={18} />

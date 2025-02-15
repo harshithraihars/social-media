@@ -1,68 +1,5 @@
-// import { Bell, BriefcaseBusiness, Home, MessageCircleMore, Users } from 'lucide-react'
-// import Link from 'next/link';
-// import React from 'react';
-// // method-1 to create type
-// // type NAVITEMS = {
-// //     src:string,
-// //     icon:JSX.Element,
-// //     text:string
-// // }
-
-// // m-2 to create type
-// interface NAVITEMS {
-//     src:string,
-//     icon:JSX.Element,
-//     text:string
-// }
-
-// const navItems:NAVITEMS[] = [
-//     {
-//         src: "/home",
-//         icon: <Home />,
-//         text: "Home",
-//     },
-//     {
-//         src: "/networks",
-//         icon: <Users />,
-//         text: "My Network",
-//     },
-//     {
-//         src: "/job",
-//         icon: <BriefcaseBusiness />,
-//         text: "Jobs",
-//     },
-//     {
-//         src: "/message",
-//         icon: <MessageCircleMore />,
-//         text: "Messaging",
-//     },
-//     {
-//         src: "/notification",
-//         icon: <Bell />,
-//         text: "Notification",
-//     },
-// ]
-
-// const NavItems = () => {
-//   return (
-//     <div className='flex gap-8'>
-//         {
-//             navItems.map((navItem, index)=>{
-//                 return (
-//                     <div key={index} className='flex flex-col items-center cursor-pointer text-[#666666] hover:text-black'>
-//                         <span>{navItem.icon}</span>
-//                         <Link className='text-xs' href={navItem.src}>{navItem.text}</Link>
-//                     </div>
-//                 )
-//             })
-//         }
-//     </div>
-//   )
-// }
-
-// export default NavItems
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Home,
   Users,
@@ -71,25 +8,22 @@ import {
   Bell,
 } from "lucide-react";
 import Link from "next/link";
-import { useAppDispatch } from "@/lib/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import {
   setisInput,
   setisLoading,
   setPosts,
+  setRequest,
   setSearching,
 } from "@/lib/feature/todos/todoSlice";
-import { getAllPost } from "@/lib/serveractions";
+import { getAllPost, getAllRequests } from "@/lib/serveractions";
+import NotificationPopup from "./Notification";
 export type NAVITEMS = {
   src: string;
   icon: JSX.Element;
   text: string;
 };
-// another way of specifying the type
-// interface NAVITEMS{
-//     src:String,
-//     icon:JSX.Element,
-//     text:String
-// }
+
 export const navItems: NAVITEMS[] = [
   {
     src: "/",
@@ -104,50 +38,82 @@ export const navItems: NAVITEMS[] = [
   {
     src: "/job",
     icon: <BriefcaseBusiness />,
-    text: "jobs",
+    text: "Jobs",
   },
   {
     src: "/message",
     icon: <MessageCircleMore />,
-    text: "messaging",
+    text: "Messaging",
   },
   {
-    src: "/notofication",
+    src: "#",
     icon: <Bell />,
-    text: "notification",
+    text: "Notification",
   },
 ];
+
+// export default NavItem;
 const NavItem = () => {
+  const [notifications, setNotifications] = useState(0);
+  const [popup, setPopup] = useState(false);
+  const [isActive, setIsActive] = useState("Home");
   const dispatch = useAppDispatch();
+  const ConnectionRequests = useAppSelector(
+    (state) => state.counter.ConnectionRequest.length
+  );
   const handleClick = async (item: NAVITEMS) => {
-    dispatch(setisInput(""))
-    dispatch(setSearching(false))
-    // Start loading immediately after clicking
+    setIsActive(item.text);
+    dispatch(setisInput(""));
+    dispatch(setSearching(false));
     dispatch(setisLoading(true));
     if (item.text === "Home") {
       dispatch(setSearching(false));
 
-      // Fetch posts and update the state
       const posts = await getAllPost();
       dispatch(setPosts(posts));
     }
+    if (item.text == "Notification") {
+      setNotifications(0)
+      setPopup(!popup);
+    }
 
-    // Stop loading after the posts are fetched
     dispatch(setisLoading(false));
   };
+
+  useEffect(() => {
+    setNotifications(ConnectionRequests);
+  }, [ConnectionRequests]);
   return (
-    <div className="flex gap-8">
+    <div className="flex gap-8 relative">
       {navItems.map((navItem, index) => {
         return (
-          <div key={index} onClick={() => handleClick(navItem)}>
+          <div
+            key={index}
+            className="relative"
+            onClick={() => handleClick(navItem)}
+          >
             <Link href={navItem.src}>
               <div
-                className="flex flex-col items-center cursor-pointer text-[#666666] hover:text-black"
+                className={`flex flex-col items-center cursor-pointer text-[#666666] hover:text-black ${
+                  navItem.text == isActive ? "text-black" : ""
+                }`}
               >
-                <span>{navItem.icon}</span>
+                <span className="relative">
+                  {navItem.icon}
+                  {navItem.text === "Notification" && notifications > 0 && (
+                    <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs rounded-full px-1">
+                      {notifications}
+                    </span>
+                  )}
+                </span>
                 <p className="text-xs">{navItem.text}</p>
               </div>
             </Link>
+            {navItem.text === "Notification" && popup && (
+              <div className="absolute top-10 left-0" onClick={(e) => e.stopPropagation()}>
+                <NotificationPopup />
+              </div>
+            )}
           </div>
         );
       })}

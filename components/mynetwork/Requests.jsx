@@ -3,21 +3,21 @@ import { getAllRequests } from "@/lib/serveractions";
 import React, { useEffect, useState } from "react";
 import Request from "./Request";
 import { ArrowRight } from "lucide-react";
+import { useAppSelector } from "@/lib/hooks";
 // If you prefer to keep things a bit cleaner:
 
 const Requests = () => {
-  const [requests, setRequest] = useState([]);
+  const ConnectionRequests=useAppSelector((state)=>state.counter.ConnectionRequest)
+  const [requests, setRequests] = useState(ConnectionRequests);
   const requestsController=(userId)=>{
     const newRequest=requests.filter((req)=>req.userId!==userId)
-    setRequest(newRequest)
+    setRequests(newRequest)
   }
-  useEffect(() => {
-    async function getRequests() {
-      const requests = await getAllRequests();      
-      setRequest(requests);
-    }
-    getRequests();
-  }, []);
+  
+  const Connectionrequests=useAppSelector((state)=>state.counter.ConnectionRequest)
+  useEffect(()=>{
+    setRequests(Connectionrequests)
+  },[Connectionrequests])
   return (
     <div className="w-full bg-white rounded-xl flex-1">
       {requests.length === 0 ? (
