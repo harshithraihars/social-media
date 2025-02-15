@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useAppSelector } from "@/lib/hooks";
-import { ConnectionRequest } from "@/lib/feature/todos/todoSlice";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { ConnectionRequest, setRequest } from "@/lib/feature/todos/todoSlice";
 import { RequestHandler } from "@/lib/serveractions";
 import { formatDistanceToNowStrict } from "date-fns";
 // Dummy data for connection requests
@@ -13,11 +13,13 @@ const MobileNotificationPopup: React.FC<MobileNotificationPopupProps> = ({
   isOpen,
   onClose,
 }) => {
+  const dispatch = useAppDispatch();
   const handleConnection = async (check: boolean, userId: string) => {
     const newConnections = connectionRequests.filter(
       (connection) => connection.userId !== userId
     );
     setConnectionRequests(newConnections);
+    dispatch(setRequest(newConnections));
     await RequestHandler(check, userId);
   };
 
@@ -25,7 +27,7 @@ const MobileNotificationPopup: React.FC<MobileNotificationPopupProps> = ({
   const [connectionRequests, setConnectionRequests] =
     useState<ConnectionRequest[]>(requests);
   useEffect(() => {
-    setConnectionRequests(requests);
+    if (connectionRequests.length == 0) setConnectionRequests(requests);
   }, [requests]);
   return (
     <AnimatePresence>

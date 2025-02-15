@@ -1,25 +1,26 @@
 import type React from "react"
 import Image from "next/image"
 import { useEffect, useState } from "react"
-import { ConnectionRequest } from "@/lib/feature/todos/todoSlice"
-import { useAppSelector } from "@/lib/hooks"
+import { ConnectionRequest, setRequest } from "@/lib/feature/todos/todoSlice"
+import { useAppDispatch, useAppSelector } from "@/lib/hooks"
 import { formatDistanceToNowStrict } from "date-fns"
 import { RequestHandler } from "@/lib/serveractions"
 
 const NotificationPopup = () => {
-
+  const dispatch=useAppDispatch()
   const handleConnection=async (check:boolean,userId:string)=>{
     const newConnections = connectionRequests.filter(
       (connection) => connection.userId !== userId
     );
     setConnectionRequests(newConnections);
+    dispatch(setRequest(newConnections));
     await RequestHandler(check,userId)
   }
 
   const requests = useAppSelector((state) => state.counter.ConnectionRequest);  
   const [connectionRequests, setConnectionRequests] = useState<ConnectionRequest[]>(requests);
   useEffect(() => {
-      setConnectionRequests(requests);
+      if(connectionRequests.length==0) setConnectionRequests(requests);
   }, [requests]);
   return (
     <div className="fixed top-16 right-4 w-96 bg-white rounded-lg shadow-lg border border-gray-200 max-h-[calc(100vh-5rem)] overflow-y-auto z-30">

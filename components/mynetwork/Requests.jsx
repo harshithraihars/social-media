@@ -3,15 +3,18 @@ import { getAllRequests } from "@/lib/serveractions";
 import React, { useEffect, useState } from "react";
 import Request from "./Request";
 import { ArrowRight } from "lucide-react";
-import { useAppSelector } from "@/lib/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 // If you prefer to keep things a bit cleaner:
 
 const Requests = () => {
+    const dispatch=useAppDispatch()
+
   const ConnectionRequests=useAppSelector((state)=>state.counter.ConnectionRequest)
   const [requests, setRequests] = useState(ConnectionRequests);
   const requestsController=(userId)=>{
     const newRequest=requests.filter((req)=>req.userId!==userId)
     setRequests(newRequest)
+    dispatch(setRequests(newRequest))
   }
   
   const Connectionrequests=useAppSelector((state)=>state.counter.ConnectionRequest)

@@ -349,7 +349,7 @@ export async function getAllRequests() {
         profilePhoto: receiverDetails.profilePhoto,
         userId: receiverDetails.userId,
         bio: receiverDetails.bio,
-        sentAt: request.sentAt,
+        sentAt: request.sentAt.toISOString(),
       };
     }).filter(Boolean); // Remove null values
 
