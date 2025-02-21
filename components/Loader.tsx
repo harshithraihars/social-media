@@ -11,6 +11,7 @@ const Loader = () => {
   if (!isLoading) return null;
 
   return (
+    
     <div className="min-h-screen bg-gray-100 flex flex-col">
       {/* Top Navigation Bar Skeleton */}
       <div className="h-14 bg-white border-b border-gray-300 flex items-center px-4">

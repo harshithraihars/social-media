@@ -1,10 +1,10 @@
 import React from "react";
 import { Loader2 } from "lucide-react";
-// import { useAppSelector } from "@/lib/hooks";
+import { useAppSelector } from "@/lib/hooks";
 import { Loader as LoadIcon } from "lucide-react";
 
 const Loader = () => {
-//   const isLoading = useAppSelector((state) => state.counter.isLoading);
+  // const isLoading = useAppSelector((state) => state.counter.isLoading);
 
 
 return (

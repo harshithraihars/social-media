@@ -58,7 +58,7 @@ const SearchInput = () => {
     if (e.key === "Enter") {
       setIsFocused(false);
       ref.current?.click();
-      // dispatch(setisLoading(true));
+      dispatch(setisLoading(true));
       const searchedUsers = await getAllUsers(input);
       const posts = await getAllPost(input);
       dispatch(setSearching(true));

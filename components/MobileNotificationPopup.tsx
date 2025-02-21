@@ -36,7 +36,7 @@ const MobileNotificationPopup: React.FC<MobileNotificationPopupProps> = ({
           initial={{ y: "100%" }}
           animate={{ y: 0 }}
           exit={{ y: "100%" }}
-          transition={{ type: "spring", damping: 25, stiffness: 500 }}
+          transition={{ type: "spring", damping: 25, stiffness: 300 }}
           className="fixed inset-x-0 bottom-0  rounded-t-2xl  max-h-[80vh] overflow-y-auto bg-opacity-40 backdrop-blur-sm bg-gray-300 z-50 shadow-md"
         >
           <div className="sticky top-0 bg-white p-4 border-b rounded-lg shadow-black bg-opacity-40 backdrop-blur-sm border-t-2 border-gray-400 rounded-t-lg">

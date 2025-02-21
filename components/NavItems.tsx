@@ -41,9 +41,9 @@ export const navItems: NAVITEMS[] = [
     text: "Jobs",
   },
   {
-    src: "/message",
+    src: "/Mentorship",
     icon: <MessageCircleMore />,
-    text: "Messaging",
+    text: "Mentorship",
   },
   {
     src: "#",
@@ -65,7 +65,7 @@ const NavItem = () => {
     setIsActive(item.text);
     dispatch(setisInput(""));
     dispatch(setSearching(false));
-    dispatch(setisLoading(true));
+    // dispatch(setisLoading(true));
     if (item.text === "Home") {
       dispatch(setSearching(false));
 
