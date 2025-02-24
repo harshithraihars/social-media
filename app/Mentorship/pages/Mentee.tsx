@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import {
   Star,
   Search,
@@ -80,7 +80,7 @@ const RatingStars = ({ rating }: RatingStarsProps) => (
     <span className="ml-2 text-sm text-gray-600">{rating}</span>
   </div>
 );
-const MentorCard = ({ mentor }: MentorCardProps) => (
+const MentorCard = React.memo(({ mentor }: MentorCardProps) => (
   <div className="group md:bg-white bg-gray-100 rounded-xl p-5 shadow-md hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 relative overflow-hidden w-full sm:w-60 md:w-72 lg:w-80 xl:w-88 h-auto">
     {/* Background decoration */}
     <div className="absolute -right-12 -top-12 w-16 h-16 bg-blue-50 rounded-full group-hover:scale-150 transition-transform duration-500" />
@@ -93,6 +93,7 @@ const MentorCard = ({ mentor }: MentorCardProps) => (
           <img
             src={mentor.image}
             alt={mentor.name}
+            loading="lazy"
             className="w-12 h-12 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 rounded-full object-cover ring-2 ring-blue-100 group-hover:ring-blue-300 transition-all duration-300 transform group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-blue-500 rounded-full opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
@@ -138,10 +139,45 @@ const MentorCard = ({ mentor }: MentorCardProps) => (
       </button>
     </div>
   </div>
-);
+));
+
 const Mentee = () => {
-    const [searchCompany, setSearchCompany] = useState("");
-      const [searchRole, setSearchRole] = useState("");
+  const [searchCompany, setSearchCompany] = useState("");
+  const [searchRole, setSearchRole] = useState("");
+
+  const handleCompanyChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchCompany(e.target.value);
+    },
+    []
+  );
+
+  const handleRoleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchRole(e.target.value);
+    },
+    []
+  );
+
+  // Filter mentors based on search inputs
+  const filteredMentors = useMemo(() => {
+    return mentors.filter((mentor) => {
+      return (
+        (!searchCompany ||
+          mentor.company.toLowerCase().includes(searchCompany.toLowerCase())) &&
+        (!searchRole ||
+          mentor.role.toLowerCase().includes(searchRole.toLowerCase()))
+      );
+    });
+  }, [searchCompany, searchRole]);
+
+  // You can adjust these slices or filter further as needed.
+  const topMentors = useMemo(() => filteredMentors, [filteredMentors]);
+  const recommendedMentors = useMemo(
+    () => filteredMentors.slice(0, 2),
+    [filteredMentors]
+  );
+
   return (
     <div>
       <div className="bg-gradient-to-r from-blue-600 to-blue-400 text-white mx-2 md:mx-12 rounded-xl h-[160px] sm:h-[300px] lg:h-80 mt-5 md:mt-10">
@@ -163,6 +199,7 @@ const Mentee = () => {
               <img
                 src="./mentor.png"
                 alt="Mentor"
+                loading="lazy"
                 className="h-20 w-20 sm:h-60 sm:w-60 object-cover"
               />
             </div>
@@ -179,11 +216,8 @@ const Mentee = () => {
                 type="text"
                 placeholder="Search by company..."
                 value={searchCompany}
-                onChange={(e) => setSearchCompany(e.target.value)}
-                className="w-full pl-12 pr-4 py-2 bg-gray-50 border-2 border-gray-200 rounded-lg
-          transition-all duration-200 ease-in-out
-          placeholder:text-gray-400 text-gray-700
-          focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:bg-white"
+                onChange={handleCompanyChange}
+                className="w-full pl-12 pr-4 py-2 bg-gray-50 border-2 border-gray-200 rounded-lg transition-all duration-200 ease-in-out placeholder:text-gray-400 text-gray-700 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:bg-white"
               />
               <div className="absolute inset-0 border border-gray-200 rounded-lg pointer-events-none transition-opacity duration-200 opacity-0 group-hover:opacity-100" />
             </div>
@@ -197,34 +231,21 @@ const Mentee = () => {
                 type="text"
                 placeholder="Search by role..."
                 value={searchRole}
-                onChange={(e) => setSearchRole(e.target.value)}
-                className="w-full pl-12 pr-4 py-2 bg-gray-50 border-2 border-gray-200 rounded-lg
-          transition-all duration-200 ease-in-out
-          placeholder:text-gray-400 text-gray-700
-          focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:bg-white"
+                onChange={handleRoleChange}
+                className="w-full pl-12 pr-4 py-2 bg-gray-50 border-2 border-gray-200 rounded-lg transition-all duration-200 ease-in-out placeholder:text-gray-400 text-gray-700 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:bg-white"
               />
               <div className="absolute inset-0 border border-gray-200 rounded-lg pointer-events-none transition-opacity duration-200 opacity-0 group-hover:opacity-100" />
             </div>
           </div>
 
           {/* Search Button */}
-          <button
-            className="flex items-center justify-center gap-2 px-6 py-2 sm:py-3
-      bg-gradient-to-r from-blue-500 to-blue-600
-      hover:from-blue-600 hover:to-blue-700
-      text-white font-medium rounded-lg
-      transition-all duration-200 ease-in-out
-      shadow-md hover:shadow-lg
-      transform hover:-translate-y-0.5
-      focus:outline-none focus:ring-2 focus:ring-blue-300
-      w-full sm:w-auto"
-          >
+          <button className="flex items-center justify-center gap-2 px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium rounded-lg transition-all duration-200 ease-in-out shadow-md hover:shadow-lg transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-blue-300 w-full sm:w-auto">
             <Search className="w-5 h-5" />
             <span>Search</span>
           </button>
         </div>
 
-        {/* Optional Search Tags/Filters could go here */}
+        {/* Optional Search Tags/Filters */}
         <div className="mt-4 flex flex-wrap gap-2">
           {searchCompany && (
             <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm">
@@ -255,7 +276,7 @@ const Mentee = () => {
         <section className="mb-12">
           <h2 className="text-2xl font-bold mb-6">Top Mentors</h2>
           <div className="flex flex-wrap gap-6 justify-start">
-            {mentors.map((mentor) => (
+            {topMentors.map((mentor) => (
               <MentorCard key={mentor.name} mentor={mentor} />
             ))}
           </div>
@@ -264,7 +285,7 @@ const Mentee = () => {
         <section className="mb-10">
           <h2 className="text-2xl font-bold mb-6">Recommended for You</h2>
           <div className="flex flex-wrap gap-6 justify-start">
-            {mentors.slice(0, 2).map((mentor) => (
+            {recommendedMentors.map((mentor) => (
               <MentorCard key={`rec-${mentor.id}`} mentor={mentor} />
             ))}
           </div>
