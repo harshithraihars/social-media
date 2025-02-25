@@ -1,17 +1,15 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Mentee from "./pages/Mentee";
 import MentorShipActivationCard from "./pages/MentorShipActivationCard";
 import { motion, AnimatePresence } from "framer-motion";
-import { cn } from "@/lib/utils";
-interface RoleToggleProps {
-  onRoleChange?: (role: "mentee" | "mentor") => void;
-  defaultRole?: "mentee" | "mentor";
-  className?: string;
-}
 
 const MentorshipPage = () => {
   const [isMentorView, setIsMentorView] = useState(false);
+  useEffect(()=>{
+    console.log(isMentorView);
+    
+  },[isMentorView])
   return (
     <div className="min-h-screen md:bg-[#fbf9f5] shadow-2xl mt-20">
       {/* Header Section */}
@@ -85,30 +83,30 @@ const MentorshipPage = () => {
       </header>
 
       <AnimatePresence mode="popLayout">
-  {isMentorView ? (
-    <motion.div
-      key="mentor"
-      initial={{ opacity: 0, x: 50 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -50 }}
-      transition={{ duration: 0.3, ease: "easeOut" }}
-      layout
-    >
-      <MentorShipActivationCard />
-    </motion.div>
-  ) : (
-    <motion.div
-      key="mentee"
-      initial={{ opacity: 0, x: -50 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: 50 }}
-      transition={{ duration: 0.3, ease: "easeOut" }}
-      layout
-    >
-      <Mentee />
-    </motion.div>
-  )}
-</AnimatePresence>
+        {isMentorView ? (
+          <motion.div
+            key="mentor"
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -50 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            layout
+          >
+            <MentorShipActivationCard />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="mentee"
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 50 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            layout
+          >
+            <Mentee />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
