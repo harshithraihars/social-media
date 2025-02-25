@@ -123,7 +123,6 @@ import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import ProfilePhoto from "./shared/ProfilePhoto";
 import SocialOptions from "./SocialOptions";
 import { toast } from "sonner";
-import { ObjectId } from "mongoose";
 import { setPosts } from "@/lib/feature/todos/todoSlice";
 const Post = ({
   post,

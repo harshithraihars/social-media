@@ -59,6 +59,7 @@ export interface IPost{
     comments?:IComment[]
 }
 export interface IPostDocument extends IPost, Document{
+    _id: string,
     createdAt:Date,
     updatedAt:Date
 }
