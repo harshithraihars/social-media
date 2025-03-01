@@ -81,7 +81,7 @@ const RatingStars = ({ rating }: RatingStarsProps) => (
   </div>
 );
 const MentorCard = React.memo(({ mentor }: MentorCardProps) => (
-  <div className="group md:bg-white bg-gray-100 rounded-xl p-5 shadow-md hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 relative overflow-hidden w-full sm:w-60 md:w-72 lg:w-80 xl:w-88 h-auto">
+  <div className="group bg-gradient-to-br from-[#ebf2ff] via-[#e0ecff] to-[#d4e4ff] rounded-xl p-5 shadow-md hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 relative overflow-hidden w-full sm:w-60 md:w-72 lg:w-80 xl:w-88 h-auto">
     {/* Background decoration */}
     <div className="absolute -right-12 -top-12 w-16 h-16 bg-blue-50 rounded-full group-hover:scale-150 transition-transform duration-500" />
     <div className="absolute -left-12 -bottom-12 w-16 h-16 bg-blue-50 rounded-full group-hover:scale-150 transition-transform duration-500" />

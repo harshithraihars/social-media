@@ -64,15 +64,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { userId } = auth(); // Check if user is logged in
-
-  // Get current path from headers
-  const pathname = new URL(headers().get("referer") || "http://localhost").pathname;
-
-  // Redirect if user is not logged in and NOT on the sign-in page
-  if (!userId && pathname !== "/sign-in") {
-    redirect("/sign-in");
-  }
 
   return (
     <ClerkProvider signInUrl="/sign-in">

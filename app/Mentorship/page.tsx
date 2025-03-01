@@ -11,7 +11,9 @@ const MentorshipPage = () => {
     
   },[isMentorView])
   return (
-    <div className="min-h-screen md:bg-[#fbf9f5] shadow-2xl mt-20">
+    <div className={`min-h-screen shadow-2xl mt-20 transition-all duration-500 ${
+      !isMentorView ? "bg-gradient-to-br from-[#eef5ff] via-[#dbeafe] to-[#bfdbfe]" : "md:bg-[#fbf9f5]"
+    }`}>
       {/* Header Section */}
       <header className="shadow-sm rounded-t-[10px] relative">
         <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
