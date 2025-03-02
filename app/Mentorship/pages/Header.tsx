@@ -4,9 +4,10 @@ import { Bell, Search, Settings, User, Menu } from 'lucide-react';
 type HeaderProps = {
   toggleSidebar?: () => void;
   sidebarOpen?: boolean;
+  setSettingsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const Header = ({ toggleSidebar, sidebarOpen }: HeaderProps) => {
+const Header = ({ toggleSidebar, sidebarOpen,setSettingsOpen }: HeaderProps) => {
   // Use local state if no external state is provided
   const [localSidebarOpen, setLocalSidebarOpen] = useState(false);
   
@@ -62,13 +63,9 @@ const Header = ({ toggleSidebar, sidebarOpen }: HeaderProps) => {
           <button className="text-gray-500 hover:text-gray-700 p-1 sm:p-2">
             <Bell className="h-5 w-5" />
           </button>
-          <button className="text-gray-500 hover:text-gray-700 p-1 sm:p-2">
+          <button className="text-gray-500 hover:text-gray-700 p-1 sm:p-2 block md:hidden"onClick={()=>setSettingsOpen(true)}>
             <Settings className="h-5 w-5" />
           </button>
-          <button className="text-gray-500 hover:text-gray-700 p-1 sm:p-2 lg:hidden">
-  <User className="h-5 w-5" />
-</button>
-
         </div>
       </div>
     </header>

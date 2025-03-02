@@ -14,8 +14,8 @@ const EventCard = ({
   isFirst,
 }: EventCardProps) => (
   <div className="flex flex-row border rounded-md overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-150 bg-white group">
-      {/* Date Column */}
-      <div className="w-24 bg-gray-50 flex flex-col items-center justify-center py-4 border-r group-hover:bg-orange-50 transition-colors duration-150">
+      {/* Date Column - Just added more width */}
+      <div className="w-28 sm:w-24 bg-gray-50 flex flex-col items-center justify-center py-4 border-r group-hover:bg-orange-50 transition-colors duration-150">
         <div className={`text-sm font-medium ${isFirst ? "text-orange-500" : "text-black"}`}>
           {day}
         </div>
@@ -24,7 +24,7 @@ const EventCard = ({
         </div>
       </div>
       
-      {/* Event Details */}
+      {/* Event Details - Unchanged */}
       <div className="flex-1 p-4">
         <div className="flex flex-row items-center mb-2 gap-10">
           <div className="flex flex-col gap-4 order-1">
@@ -73,12 +73,12 @@ const EventCard = ({
         </div>
       </div>
       
-      {/* Actions */}
-      <div className="w-12 border-l justify-center p-0 flex-col items-center flex">
-        <button className="w-7 h-7 rounded-full bg-gray-100 hover:bg-blue-100 hover:text-blue-600 flex items-center justify-center mb-1 transition-colors duration-150">
+      {/* Actions - Added more width */}
+      <div className="w-16 sm:w-12 border-l justify-center p-0 flex-col items-center flex">
+        <button className="w-8 h-8 sm:w-7 sm:h-7 rounded-full bg-gray-100 hover:bg-blue-100 hover:text-blue-600 flex items-center justify-center mb-2 transition-colors duration-150">
           <Video className="h-3 w-3" />
         </button>
-        <button className="w-7 h-7 rounded-full bg-gray-100 hover:bg-blue-100 hover:text-blue-600 flex items-center justify-center transition-colors duration-150">
+        <button className="w-8 h-8 sm:w-7 sm:h-7 rounded-full bg-gray-100 hover:bg-blue-100 hover:text-blue-600 flex items-center justify-center transition-colors duration-150">
           <Calendar className="h-3 w-3" />
         </button>
       </div>

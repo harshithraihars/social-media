@@ -1,18 +1,21 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { TabType } from "./Booking";
 import Sidebar from "./SideBar";
 import Header from "./Header";
 import TabSelector from "./TabSelector";
 import EventCard from "./EventCard";
 import { motion } from "framer-motion";
-import { Menu } from "lucide-react";
+import MentorshipSettings from "./MentorShipSetting";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
 
 const BookingsPage = () => {
   const [activeTab, setActiveTab] = useState<TabType>("Upcoming");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const settingRef = useRef<HTMLDivElement | null>(null); // Correct typing
   const tabs: TabType[] = [
     "Upcoming",
     "Pending",
@@ -21,20 +24,39 @@ const BookingsPage = () => {
     "Cancelled",
   ];
 
+  // This useEffect will now run whenever settingsOpen changes to true
+  useEffect(() => {
+    if (settingsOpen && settingRef.current) {
+      settingRef.current.scrollTop = 0; // Scroll to top when settings are opened
+    }
+  }, [settingsOpen]);
+
+  useGSAP(() => {
+    if (settingsOpen) {
+      gsap.to(settingRef.current, {
+        transform: "translateY(0)",
+      });
+    } else {
+      gsap.to(settingRef.current, {
+        transform: "translateY(100%)",
+      });
+    }
+  }, [settingsOpen]);
+
   return (
     <div className="flex min-h-screen bg-gray-50 relative">
       {/* Mobile Sidebar Overlay */}
       {isSidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 z-20 sm:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar Wrapper */}
-      <div 
+      <div
         className={`fixed top-0 left-0 h-full z-30 transform transition-transform duration-300 ease-in-out sm:relative sm:translate-x-0 sm:w-16 md:w-72 flex-shrink-0 bg-white/80 backdrop-blur-lg shadow-md dark:bg-gray-800 dark:border-gray-700 rounded-r-2xl ${
-          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         } sm:block`}
       >
         <Sidebar />
@@ -43,7 +65,10 @@ const BookingsPage = () => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col w-full">
         {/* Header */}
-        <Header toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
+        <Header
+          toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+          setSettingsOpen={setSettingsOpen}
+        />
 
         <div className="flex-1 overflow-y-auto p-4 sm:p-8">
           <motion.div
@@ -157,14 +182,18 @@ const BookingsPage = () => {
                 time="09:00 - 09:30"
                 title="30min call meeting Alicia, Peer <> Naomi"
                 location="Hubsy Républi..."
-                avatars={[
-                  "/api/placeholder/40/40",
-                  "/api/placeholder/40/40",
-                ]}
+                avatars={["/api/placeholder/40/40", "/api/placeholder/40/40"]}
                 colors={["bg-indigo-500", "bg-purple-500", "bg-pink-500"]}
               />
             </motion.div>
           </div>
+        </div>
+        <div
+          className="fixed top-4 z-10 w-full h-full bg-white pt-12 px-3 
+           translate-y-full overflow-y-auto pb-20"
+          ref={settingRef}
+        >
+          <MentorshipSettings setMentorSettingOpen={setSettingsOpen} />
         </div>
       </div>
     </div>
