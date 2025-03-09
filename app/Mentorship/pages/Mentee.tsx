@@ -1,14 +1,16 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import {
-  Star,
   Search,
   Users,
   Briefcase,
   ChevronRight,
-  Clock,
-  DollarSign,
 } from "lucide-react";
-type mentortype = {
+import { Button } from "@/components/ui/button";
+import MentorProfile from "./MentorProfile";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { MentorCard } from "./MentorCard"
+export type mentortype = {
   id: number;
   name: string;
   role: string;
@@ -18,12 +20,7 @@ type mentortype = {
   image: string;
   hourlyRate: number;
   availability: string;
-};
-type MentorCardProps = {
-  mentor: mentortype;
-};
-type RatingStarsProps = {
-  rating: number;
+  expertise: string[];
 };
 const mentors: mentortype[] = [
   {
@@ -37,6 +34,7 @@ const mentors: mentortype[] = [
     image: "./google.jpg",
     hourlyRate: 120,
     availability: "2 slots/week",
+    expertise: ["python", "java", "aws"],
   },
   {
     id: 2,
@@ -49,6 +47,7 @@ const mentors: mentortype[] = [
     image: "./img2.jpg",
     hourlyRate: 150,
     availability: "3 slots/week",
+    expertise: ["React Native", "Cloud", "aws"],
   },
   {
     id: 3,
@@ -61,90 +60,42 @@ const mentors: mentortype[] = [
     image: "./img3.jpg",
     hourlyRate: 100,
     availability: "4 slots/week",
+    expertise: ["SpringBoot", "System Design", "Linux"],
+  },
+  {
+    id: 4,
+    name: "David Kim",
+    role: "Frontend Developer",
+    company: "Netflix",
+    about:
+      "Frontend specialist with expertise in React and modern UI frameworks. Passionate about mentoring junior developers.",
+    rating: 4.6,
+    image: "./img4.jpg",
+    hourlyRate: 90,
+    availability: "5 slots/week",
+    expertise: ["React", "JavaScript", "CSS"],
+  },
+  {
+    id: 5,
+    name: "Emily Johnson",
+    role: "Data Scientist",
+    company: "Amazon",
+    about:
+      "Experienced data scientist helping others break into the field and develop specialized skills in ML and AI.",
+    rating: 4.9,
+    image: "./img5.jpg",
+    hourlyRate: 130,
+    availability: "2 slots/week",
+    expertise: ["Python", "Machine Learning", "Data Analysis"],
   },
 ];
-
-const RatingStars = ({ rating }: RatingStarsProps) => (
-  <div className="flex items-center">
-    {[...Array(5)].map((_, i) => (
-      <Star
-        key={i}
-        size={16}
-        className={`${
-          i < Math.floor(rating)
-            ? "text-yellow-400 fill-yellow-400"
-            : "text-gray-300"
-        }`}
-      />
-    ))}
-    <span className="ml-2 text-sm text-gray-600">{rating}</span>
-  </div>
-);
-const MentorCard = React.memo(({ mentor }: MentorCardProps) => (
-  <div className="group bg-gradient-to-br from-[#ebf2ff] via-[#e0ecff] to-[#d4e4ff] rounded-xl p-5 shadow-md hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 relative overflow-hidden w-full sm:w-60 md:w-72 lg:w-80 xl:w-88 h-auto">
-    {/* Background decoration */}
-    <div className="absolute -right-12 -top-12 w-16 h-16 bg-blue-50 rounded-full group-hover:scale-150 transition-transform duration-500" />
-    <div className="absolute -left-12 -bottom-12 w-16 h-16 bg-blue-50 rounded-full group-hover:scale-150 transition-transform duration-500" />
-
-    <div className="relative flex flex-col">
-      {/* Profile section with hover effect */}
-      <div className="flex items-center space-x-3 mb-3">
-        <div className="relative">
-          <img
-            src={mentor.image}
-            alt={mentor.name}
-            loading="lazy"
-            className="w-12 h-12 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 rounded-full object-cover ring-2 ring-blue-100 group-hover:ring-blue-300 transition-all duration-300 transform group-hover:scale-105"
-          />
-          <div className="absolute inset-0 bg-blue-500 rounded-full opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
-        </div>
-        <div>
-          <h3 className="font-semibold text-base md:text-lg text-gray-800 group-hover:text-blue-600 transition-colors duration-300">
-            {mentor.name}
-          </h3>
-          <p className="text-gray-600 text-xs md:text-sm">{mentor.role}</p>
-          <p className="text-gray-500 text-xs md:text-sm">{mentor.company}</p>
-        </div>
-      </div>
-
-      {/* Rating stars with animation */}
-      <div className="flex items-center space-x-1 mb-2">
-        <RatingStars rating={mentor.rating} />
-        <span className="text-xs md:text-sm text-gray-600 ml-1">
-          {mentor.rating.toFixed(1)}
-        </span>
-      </div>
-
-      {/* About section */}
-      <p className="text-xs md:text-sm text-gray-700 line-clamp-2 md:line-clamp-3 mb-3 group-hover:text-gray-900 transition-colors duration-300">
-        {mentor.about}
-      </p>
-
-      {/* Info badges */}
-      <div className="space-y-2 mb-3">
-        <div className="flex items-center text-gray-600 bg-gray-50 p-2 rounded-lg group-hover:bg-blue-50 transition-colors duration-300">
-          <DollarSign className="w-4 h-4 mr-2 text-blue-500" />
-          <span className="text-xs md:text-sm">${mentor.hourlyRate}/hour</span>
-        </div>
-        <div className="flex items-center text-gray-600 bg-gray-50 p-2 rounded-lg group-hover:bg-blue-50 transition-colors duration-300">
-          <Clock className="w-4 h-4 mr-2 text-blue-500" />
-          <span className="text-xs md:text-sm">{mentor.availability}</span>
-        </div>
-      </div>
-
-      {/* Action button with hover effect */}
-      <button className="w-full px-3 py-2 bg-blue-600 text-white rounded-lg transform transition-all duration-300 hover:bg-blue-700 hover:scale-105 active:scale-95 flex items-center justify-center space-x-2 group">
-        <span className="text-xs md:text-sm">Schedule Session</span>
-        <ChevronRight className="w-3 h-3 md:w-4 md:h-4 group-hover:translate-x-1 transition-transform duration-300" />
-      </button>
-    </div>
-  </div>
-));
 
 const Mentee = () => {
   const [searchCompany, setSearchCompany] = useState("");
   const [searchRole, setSearchRole] = useState("");
-
+  const [selectedMentorId, setSelectedMentorId] = useState<number | null>(null);
+  const mentorprofileRef = useRef(null);
+  
   const handleCompanyChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setSearchCompany(e.target.value);
@@ -171,15 +122,39 @@ const Mentee = () => {
     });
   }, [searchCompany, searchRole]);
 
-  // You can adjust these slices or filter further as needed.
   const topMentors = useMemo(() => filteredMentors, [filteredMentors]);
   const recommendedMentors = useMemo(
     () => filteredMentors.slice(0, 2),
     [filteredMentors]
   );
 
+  const selectedMentor = useMemo(() => {
+    return mentors.find((mentor) => mentor.id === selectedMentorId) || null;
+  }, [selectedMentorId]);
+
+  const handleCardClick = (mentorId: number) => {
+    setSelectedMentorId(mentorId);
+  };
+
+  const handleCloseProfile = () => {
+    setSelectedMentorId(null);
+  };
+
+  useGSAP(() => {
+    if (selectedMentorId) {
+      gsap.to(mentorprofileRef.current, {
+        transform: "translateY(0)",
+      });
+    } else {
+      gsap.to(mentorprofileRef.current, {
+        transform: "translateY(100%)",
+      });
+    }
+  }, [selectedMentorId]);
+  
   return (
     <div>
+      {/* Hero Section */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-400 text-white mx-2 md:mx-12 rounded-xl h-[160px] sm:h-[300px] lg:h-80 mt-5 md:mt-10">
         <div className="max-w-7xl mx-auto px-4 py-4 md:py-8 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
@@ -206,90 +181,171 @@ const Mentee = () => {
           </div>
         </div>
       </div>
-      <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
-        <div className="flex flex-wrap gap-4 sm:flex-nowrap">
-          {/* Company Search Input */}
-          <div className="flex-1 min-w-[calc(50%-0.5rem)] sm:min-w-0 group">
-            <div className="relative">
-              <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 transition-colors duration-200 group-focus-within:text-blue-500" />
-              <input
-                type="text"
-                placeholder="Search by company..."
-                value={searchCompany}
-                onChange={handleCompanyChange}
-                className="w-full pl-12 pr-4 py-2 bg-gray-50 border-2 border-gray-200 rounded-lg transition-all duration-200 ease-in-out placeholder:text-gray-400 text-gray-700 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:bg-white"
-              />
-              <div className="absolute inset-0 border border-gray-200 rounded-lg pointer-events-none transition-opacity duration-200 opacity-0 group-hover:opacity-100" />
+
+      {/* Search Section */}
+      <div>
+        <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+          <div className="flex flex-wrap gap-4 sm:flex-nowrap">
+            {/* Company Search Input */}
+            <div className="flex-1 min-w-[calc(50%-0.5rem)] sm:min-w-0 group">
+              <div className="relative">
+                <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 transition-colors duration-200 group-focus-within:text-blue-500" />
+                <input
+                  type="text"
+                  placeholder="Search by company..."
+                  value={searchCompany}
+                  onChange={handleCompanyChange}
+                  className="w-full pl-12 pr-4 py-2 bg-gray-50 border-2 border-gray-200 rounded-lg transition-all duration-200 ease-in-out placeholder:text-gray-400 text-gray-700 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:bg-white"
+                />
+                <div className="absolute inset-0 border border-gray-200 rounded-lg pointer-events-none transition-opacity duration-200 opacity-0 group-hover:opacity-100" />
+              </div>
             </div>
+
+            {/* Role Search Input */}
+            <div className="flex-1 min-w-[calc(50%-0.5rem)] sm:min-w-0 group">
+              <div className="relative">
+                <Users className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 transition-colors duration-200 group-focus-within:text-blue-500" />
+                <input
+                  type="text"
+                  placeholder="Search by role..."
+                  value={searchRole}
+                  onChange={handleRoleChange}
+                  className="w-full pl-12 pr-4 py-2 bg-gray-50 border-2 border-gray-200 rounded-lg transition-all duration-200 ease-in-out placeholder:text-gray-400 text-gray-700 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:bg-white"
+                />
+                <div className="absolute inset-0 border border-gray-200 rounded-lg pointer-events-none transition-opacity duration-200 opacity-0 group-hover:opacity-100" />
+              </div>
+            </div>
+
+            {/* Search Button */}
+            <button className="flex items-center justify-center gap-2 px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium rounded-lg transition-all duration-200 ease-in-out shadow-md hover:shadow-lg transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-blue-300 w-full sm:w-auto">
+              <Search className="w-5 h-5" />
+              <span>Search</span>
+            </button>
           </div>
 
-          {/* Role Search Input */}
-          <div className="flex-1 min-w-[calc(50%-0.5rem)] sm:min-w-0 group">
-            <div className="relative">
-              <Users className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 transition-colors duration-200 group-focus-within:text-blue-500" />
-              <input
-                type="text"
-                placeholder="Search by role..."
-                value={searchRole}
-                onChange={handleRoleChange}
-                className="w-full pl-12 pr-4 py-2 bg-gray-50 border-2 border-gray-200 rounded-lg transition-all duration-200 ease-in-out placeholder:text-gray-400 text-gray-700 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:bg-white"
-              />
-              <div className="absolute inset-0 border border-gray-200 rounded-lg pointer-events-none transition-opacity duration-200 opacity-0 group-hover:opacity-100" />
-            </div>
+          {/* Optional Search Tags/Filters */}
+          <div className="mt-4 flex flex-wrap gap-2">
+            {searchCompany && (
+              <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm">
+                Company: {searchCompany}
+                <button
+                  onClick={() => setSearchCompany("")}
+                  className="hover:text-blue-900"
+                >
+                  ×
+                </button>
+              </span>
+            )}
+            {searchRole && (
+              <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm">
+                Role: {searchRole}
+                <button
+                  onClick={() => setSearchRole("")}
+                  className="hover:text-blue-900"
+                >
+                  ×
+                </button>
+              </span>
+            )}
           </div>
-
-          {/* Search Button */}
-          <button className="flex items-center justify-center gap-2 px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium rounded-lg transition-all duration-200 ease-in-out shadow-md hover:shadow-lg transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-blue-300 w-full sm:w-auto">
-            <Search className="w-5 h-5" />
-            <span>Search</span>
-          </button>
         </div>
 
-        {/* Optional Search Tags/Filters */}
-        <div className="mt-4 flex flex-wrap gap-2">
-          {searchCompany && (
-            <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm">
-              Company: {searchCompany}
-              <button
-                onClick={() => setSearchCompany("")}
-                className="hover:text-blue-900"
+        {/* Mentor Listings with Animation */}
+        <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+          {/* Dynamic layout that changes when a mentor is selected */}
+          <div
+            className={`transition-all duration-700 ease-in-out ${
+              selectedMentorId
+                ? "grid grid-cols-1 lg:grid-cols-7 gap-6 max-h-[1000px]"
+                : ""
+            }`}
+          >
+            {/* Left side: Mentor cards that stack vertically when one is selected */}
+            <div
+              className={`transition-all duration-700 ease-in-out ${
+                selectedMentorId
+                  ? "lg:col-span-3 max-h-[1000px] overflow-y-auto pr-2"
+                  : ""
+              }`}
+            >
+              <section
+                className={`transition-all duration-500 ${
+                  selectedMentorId ? "mb-6" : "mb-12"
+                }`}
               >
-                ×
-              </button>
-            </span>
-          )}
-          {searchRole && (
-            <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm">
-              Role: {searchRole}
-              <button
-                onClick={() => setSearchRole("")}
-                className="hover:text-blue-900"
-              >
-                ×
-              </button>
-            </span>
-          )}
+                <h2
+                  className={`text-2xl font-bold mb-6 sticky top-0 z-10 py-2 ${
+                    selectedMentorId
+                      ? "bg-gradient-to-r from-purple-300/85 to-indigo-200/75 backdrop-blur-md border border-white/20 shadow-md rounded-lg px-4"
+                      : ""
+                  }`}
+                >
+                  Top Mentors
+                </h2>
+                <div
+                  className={`transition-all duration-700 ease-in-out ${
+                    selectedMentorId
+                      ? "flex flex-col space-y-4"
+                      : "flex flex-wrap gap-6 justify-start"
+                  }`}
+                >
+                  {topMentors.map((mentor) => (
+                    <div
+                      key={mentor.id}
+                      className={`transition-all duration-700 transform ${
+                        selectedMentorId && selectedMentorId !== mentor.id
+                          ? "opacity-90"
+                          : ""
+                      }`}
+                    >
+                      <MentorCard
+                        mentor={mentor}
+                        isSelected={selectedMentorId === mentor.id}
+                        onClick={() => handleCardClick(mentor.id)}
+                        isCollapsed={selectedMentorId !== null}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+              {!selectedMentorId && (
+                <section className="mb-10">
+                  <h2 className="text-2xl font-bold mb-6">
+                    Recommended for You
+                  </h2>
+                  <div className="flex flex-wrap gap-6 justify-start">
+                    {recommendedMentors.map((mentor) => (
+                      <MentorCard
+                        key={`rec-${mentor.id}`}
+                        mentor={mentor}
+                        isSelected={false}
+                        onClick={() => handleCardClick(mentor.id)}
+                        isCollapsed={false}
+                      />
+                    ))}
+                  </div>
+                </section>
+              )}
+            </div>
+
+            {/* Right side: Mentor profile that appears when a card is selected */}
+            {selectedMentorId && (
+              <div className="transition-all duration-700 ease-in-out transform translate-x-0 opacity-100 animate-slideIn lg:col-span-4 max-h-[1000px] overflow-y-auto">
+                <MentorProfile
+                  setMentorProfile={handleCloseProfile}
+                  selectedMentor={selectedMentor}
+                />
+              </div>
+            )}
+          </div>
         </div>
       </div>
-      {/* Mentor Listings */}
-      <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        <section className="mb-12">
-          <h2 className="text-2xl font-bold mb-6">Top Mentors</h2>
-          <div className="flex flex-wrap gap-6 justify-start">
-            {topMentors.map((mentor) => (
-              <MentorCard key={mentor.name} mentor={mentor} />
-            ))}
-          </div>
-        </section>
-
-        <section className="mb-10">
-          <h2 className="text-2xl font-bold mb-6">Recommended for You</h2>
-          <div className="flex flex-wrap gap-6 justify-start">
-            {recommendedMentors.map((mentor) => (
-              <MentorCard key={`rec-${mentor.id}`} mentor={mentor} />
-            ))}
-          </div>
-        </section>
+      <div ref={mentorprofileRef}
+      className="fixed top-4 z-10 w-full h-full bg-white pt-12 px-3 
+           translate-y-full overflow-y-auto pb-20 md:hidden">
+            <MentorProfile setMentorProfile={handleCloseProfile}
+                  selectedMentor={selectedMentor}/>
       </div>
     </div>
   );

@@ -33,11 +33,11 @@ export default function MentorshipSettings({setMentorSettingOpen}:MentorshipSett
   const timeSlots = ["9:00 AM", "11:00 AM", "1:00 PM", "3:00 PM", "5:00 PM", "7:00 PM"]
 
   // Initial availability state (example data)
-  const [availability, setAvailability] = useState({
+  const [availability, setAvailability] = useState<Record<string, string[]>>({
     Mon: ["9:00 AM", "11:00 AM"],
     Wed: ["1:00 PM", "3:00 PM"],
     Fri: ["5:00 PM"],
-  })
+  });
 
   // Earnings data
   const earningsData = {

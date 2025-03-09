@@ -53,9 +53,9 @@ const BookingsPage = () => {
         />
       )}
 
-      {/* Sidebar Wrapper */}
+      {/* Sidebar Wrapper - Updated with sticky positioning */}
       <div
-        className={`fixed top-0 left-0 h-full z-30 transform transition-transform duration-300 ease-in-out sm:relative sm:translate-x-0 sm:w-16 md:w-72 flex-shrink-0 bg-white/80 backdrop-blur-lg shadow-md dark:bg-gray-800 dark:border-gray-700 rounded-r-2xl ${
+        className={`fixed top-0 left-0 h-full z-30 transform transition-transform duration-300 ease-in-out sm:sticky sm:top-0 sm:h-screen sm:translate-x-0 sm:w-16 md:w-72 flex-shrink-0 bg-white/80 backdrop-blur-lg shadow-md dark:bg-gray-800 dark:border-gray-700 rounded-r-2xl ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         } sm:block`}
       >

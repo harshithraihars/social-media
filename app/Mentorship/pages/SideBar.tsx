@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import {
   Calendar,
@@ -17,33 +17,47 @@ import gsap from "gsap";
 import MentorshipSettings from "./MentorShipSetting";
 
 export default function Sidebar() {
-  const settingPageRef = useRef(null);
+  const settingPageRef = useRef<HTMLDivElement | null>(null);
   const [mentorSettingOpen, setMentorSettingOpen] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  useGSAP(() => {
-    if (mentorSettingOpen) {
-      gsap.to(settingPageRef.current, {
-        y: "0%",
-        opacity: 1,
-        duration: 0.5,
-        ease: "power3.out",
-        display: "block", // Ensure it becomes visible
-      });
-    } else {
-      gsap.to(settingPageRef.current, {
-        y: "100%",
-        opacity: 0,
-        duration: 0.4,
-        ease: "power3.in",
-        onComplete: () => {
-          settingPageRef.current.style.display = "none"; // Fully hide after animation
-        },
-      });
-    }
-  }, [mentorSettingOpen]);
+
+   useEffect(() => {
+      if (mentorSettingOpen && settingPageRef.current) {
+        settingPageRef.current.scrollTop = 0; // Scroll to top when settings are opened
+      }
+    }, [mentorSettingOpen]);
+    useGSAP(() => {
+      if (mentorSettingOpen) {
+        if (settingPageRef.current) {
+          settingPageRef.current.style.display = "block"; // Show before animating
+        }
+        gsap.to(settingPageRef.current, {
+          y: "0%",
+          opacity: 1,
+          duration: 0.5,
+          ease: "power3.out",
+          onComplete: () => {
+            if (settingPageRef.current) {
+              settingPageRef.current.scrollTop = 0; // Scroll after animation completes
+            }
+          },
+        });
+      } else {
+        gsap.to(settingPageRef.current, {
+          y: "100%",
+          opacity: 0,
+          duration: 0.4,
+          ease: "power3.in",
+          onComplete: () => {
+            if (settingPageRef.current) {
+              settingPageRef.current.style.display = "none"; // Hide after animation
+            }
+          },
+        });
+      }
+    }, [mentorSettingOpen]);
   return (
-    <div className="flex h-screen w-full flex-col bg-white shadow-lg transition-all duration-300 ease-in-out hover:shadow-xl sm:w-16 md:w-72 sticky top-3">
+    <div className="flex h-full w-full flex-col bg-white shadow-lg transition-all duration-300 ease-in-out hover:shadow-xl sm:w-16 md:w-72">
       {/* Logo Section */}
       <div className="border-b transition-colors duration-200 bg-white">
         <div className="px-2 py-2 flex items-center justify-between">
@@ -162,33 +176,6 @@ export default function Sidebar() {
             />
           </nav>
         </div>
-
-        {/* Profile Section (Now Always Visible) */}
-        {/* <div className="border-t p-4">
-          <div
-            className="flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-all duration-200 hover:bg-indigo-50 hover:shadow-md justify-center sm:justify-start"
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-          >
-            <div className="flex h-10 w-10 min-w-10 items-center justify-center rounded-full bg-indigo-100 font-medium text-indigo-600 transition-all duration-200 hover:scale-110 hover:bg-indigo-200 hover:shadow-md">
-              JD
-            </div>
-            <div className="hidden md:block flex-1">
-              <div className="text-sm font-medium transition-all duration-200 group-hover:text-indigo-700">
-                John Doe
-              </div>
-              <div className="text-xs text-gray-500 transition-all duration-200 group-hover:text-indigo-500">
-                Premium Plan
-              </div>
-            </div>
-            <ChevronDown
-              className={cn(
-                "hidden h-4 w-4 text-gray-400 transition-transform duration-200 md:block",
-                isHovered ? "rotate-180 text-indigo-500" : ""
-              )}
-            />
-          </div> */}
-        {/* </div> */}
       </div>
       <div
         className="fixed bottom-0 z-10 w-full h-full bg-white pt-12 px-3 

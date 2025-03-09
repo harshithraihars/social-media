@@ -7,8 +7,6 @@ import BookingsPage from "./BookingPage";
 
 const MentorshipCard = () => {
   const [isVisible, setIsVisible] = useState(true);
-  const [isEnabled, setIsEnabled] = useState(false);
-
   if (!isVisible) return null;
 
   return (
