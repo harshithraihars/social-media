@@ -47,14 +47,14 @@ export const RatingStars = ({ rating }: { rating: number }) => {
 
 // Mentor Card Component
 export const MentorCard = React.memo(
-  ({ mentor, isSelected, onClick, isCollapsed }: MentorCardProps) => (
+  ({ mentor, isSelected, onClick, isCollapsed}: MentorCardProps) => (
     <Card
       className={`group relative overflow-hidden border-0 bg-gradient-to-br from-violet-50 via-indigo-50 to-blue-50 hover:from-violet-100 hover:via-indigo-50 hover:to-blue-100 transition-all duration-500 transform ${
         isSelected ? "ring-2 ring-indigo-400" : "hover:-translate-y-2"
       } hover:shadow-xl shadow-lg shadow-indigo-100/40 cursor-pointer ${
         isCollapsed ? "w-full" : "w-full sm:w-60 md:w-72 lg:w-80 xl:w-88"
       } h-auto`}
-      onClick={onClick}
+      
     >
       {/* Decorative elements */}
       <div className="absolute -right-12 -top-12 w-24 h-24 bg-gradient-to-br from-violet-200/40 to-indigo-200/40 rounded-full group-hover:scale-150 transition-transform duration-700" />
@@ -127,7 +127,8 @@ export const MentorCard = React.memo(
         </div>
 
         {/* Action button with enhanced hover effect */}
-        <Button className="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white rounded-lg transform transition-all duration-300 hover:scale-[1.02] active:scale-95 shadow-md hover:shadow-indigo-500/25">
+        <Button className="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white rounded-lg transform transition-all duration-300 hover:scale-[1.02] active:scale-95 shadow-md hover:shadow-indigo-500/25"
+        onClick={onClick}>
           <span className="text-xs md:text-sm mr-1">Schedule Session</span>
           <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-300" />
         </Button>

@@ -5,11 +5,11 @@ import {
   Briefcase,
   ChevronRight,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import MentorProfile from "./MentorProfile";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { MentorCard } from "./MentorCard"
+import ConfirmBooking from "./ConfirmBooking";
 export type mentortype = {
   id: number;
   name: string;
@@ -94,8 +94,9 @@ const Mentee = () => {
   const [searchCompany, setSearchCompany] = useState("");
   const [searchRole, setSearchRole] = useState("");
   const [selectedMentorId, setSelectedMentorId] = useState<number | null>(null);
+  const [bookingPageOpen,setBookingPageOpen]=useState(false)
   const mentorprofileRef = useRef(null);
-  
+  const BookingPageRef=useRef(null)
   const handleCompanyChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setSearchCompany(e.target.value);
@@ -151,7 +152,18 @@ const Mentee = () => {
       });
     }
   }, [selectedMentorId]);
-  
+
+  useGSAP(() => {
+    if (bookingPageOpen) {
+      gsap.to(BookingPageRef.current, {
+        transform: "translateY(0)",
+      });
+    } else {
+      gsap.to(BookingPageRef.current, {
+        transform: "translateY(100%)",
+      });
+    }
+  }, [bookingPageOpen]);
   return (
     <div>
       {/* Hero Section */}
@@ -335,6 +347,7 @@ const Mentee = () => {
                 <MentorProfile
                   setMentorProfile={handleCloseProfile}
                   selectedMentor={selectedMentor}
+                  OnClick={()=>setBookingPageOpen(true)}
                 />
               </div>
             )}
@@ -345,8 +358,15 @@ const Mentee = () => {
       className="fixed top-4 z-10 w-full h-full bg-white pt-12 px-3 
            translate-y-full overflow-y-auto pb-20 md:hidden">
             <MentorProfile setMentorProfile={handleCloseProfile}
-                  selectedMentor={selectedMentor}/>
+                  selectedMentor={selectedMentor}
+                  OnClick={()=>setBookingPageOpen(true)}/>
       </div>
+      <div className="fixed top-4 z-10 w-full h-full bg-white pt-12 px-3 
+           translate-y-full overflow-y-auto pb-20"
+           ref={BookingPageRef}>
+            <ConfirmBooking/>
+           </div>
+           
     </div>
   );
 };

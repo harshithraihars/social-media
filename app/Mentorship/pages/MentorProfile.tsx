@@ -16,13 +16,16 @@ type MentorType = {
 } | null;
 
 type MentorProfileProps = {
-  setMentorProfile: () => void;
-  selectedMentor: MentorType;
+  setMentorProfile: () => void; // Function to close the profile
+  OnClick: () => void
+  selectedMentor: MentorType; // Ensure MentorType is correctly defined
 };
 
 const MentorProfile = ({
   setMentorProfile,
-  selectedMentor,
+  OnClick,
+  selectedMentor
+  
 }: MentorProfileProps) => {
   const [liked, setLiked] = useState(false);
   const comments = [
@@ -174,7 +177,8 @@ const MentorProfile = ({
 
       {/* Book Session Button with better visibility and spacing */}
       <div className="px-6 py-5 mb-3 flex items-center justify-center sticky bottom-0">
-      <button className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:from-purple-700 hover:to-indigo-700 transform hover:scale-105 transition duration-300 flex items-center justify-center">
+      <button className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:from-purple-700 hover:to-indigo-700 transform hover:scale-105 transition duration-300 flex items-center justify-center0"
+      onClick={OnClick}>
           <span className="mr-2">Book a Session</span>
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>

@@ -12,6 +12,7 @@ interface CounterState {
   isLoading:boolean
   input:string,
   ConnectionRequest:ConnectionRequest[];
+  isMentor:boolean
   
 }
 export interface UserResult {
@@ -33,7 +34,8 @@ const initialState: CounterState = {
   user:null,
   isLoading:false,
   input:"",
-  ConnectionRequest:[]
+  ConnectionRequest:[],
+  isMentor:true
 }
 
 // Creating the slice
@@ -63,12 +65,15 @@ const counterSlice = createSlice({
     ,
     setRequest: (state, action: PayloadAction<any>) => {
       state.ConnectionRequest = action.payload
+    },
+    setMentee: (state, action: PayloadAction<any>) => {
+      state.isMentor= action.payload
     }
   }
 })
 
 // Export the actions
-export const {setSearching,setPosts,setSearchUsers,setUser,setisLoading,setisInput,setRequest } = counterSlice.actions
+export const {setSearching,setPosts,setSearchUsers,setUser,setisLoading,setisInput,setRequest,setMentee } = counterSlice.actions
 
 // Export the reducer
 export default counterSlice.reducer // This is where we export the counterReducer

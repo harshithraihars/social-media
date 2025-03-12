@@ -1,3 +1,4 @@
+/** @type {import('tailwindcss').Config} */
 import type { Config } from "tailwindcss";
 
 const config = {
@@ -114,3 +115,4 @@ const config = {
 } satisfies Config;
 
 export default config;
+
