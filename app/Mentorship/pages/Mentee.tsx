@@ -361,7 +361,7 @@ const Mentee = () => {
                   selectedMentor={selectedMentor}
                   OnClick={()=>setBookingPageOpen(true)}/>
       </div>
-      <div className="fixed top-4 z-10 w-full h-full bg-white pt-12 px-3 
+      <div className="fixed top-4 z-10 w-screen md:w-3/4 h-full bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200 pt-12  px-0 md:px-3 
            translate-y-full overflow-y-auto pb-20"
            ref={BookingPageRef}>
             <ConfirmBooking/>
