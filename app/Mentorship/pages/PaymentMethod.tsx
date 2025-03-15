@@ -11,29 +11,25 @@ export default function PaymentMethods() {
   const [focused, setFocused] = useState<string | null>(null)
 
   return (
-    <Tabs 
-      defaultValue="card" 
-      className="w-full" 
-      onValueChange={setPaymentMethod}
-    >
-      <TabsList className="grid w-full grid-cols-2 p-1 bg-gradient-to-r from-blue-100 to-blue-50 dark:from-blue-900/30 dark:to-blue-800/20 rounded-lg">
-        <TabsTrigger 
-          value="card" 
+    <Tabs defaultValue="card" className="w-full" onValueChange={setPaymentMethod}>
+      <TabsList className="grid w-full grid-cols-2 p-1 bg-white dark:bg-gray-800 rounded-lg border border-blue-200 dark:border-blue-800">
+        <TabsTrigger
+          value="card"
           className={`transition-all duration-300 ${
-            paymentMethod === "card" 
-              ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md font-medium" 
-              : "hover:bg-blue-100/60 dark:hover:bg-blue-800/40"
+            paymentMethod === "card"
+              ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md font-medium"
+              : "hover:bg-blue-50 dark:hover:bg-blue-900/30"
           }`}
         >
           <CreditCard className="h-4 w-4 mr-2" />
           Credit Card
         </TabsTrigger>
-        <TabsTrigger 
+        <TabsTrigger
           value="razorpay"
           className={`transition-all duration-300 ${
-            paymentMethod === "razorpay" 
-              ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md font-medium" 
-              : "hover:bg-blue-100/60 dark:hover:bg-blue-800/40"
+            paymentMethod === "razorpay"
+              ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md font-medium"
+              : "hover:bg-blue-50 dark:hover:bg-blue-900/30"
           }`}
         >
           <svg className="h-4 w-4 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -46,56 +42,66 @@ export default function PaymentMethods() {
       </TabsList>
       <TabsContent value="card" className="space-y-4 mt-4">
         <div className="space-y-2">
-          <Label htmlFor="cardName" className="text-blue-700 dark:text-blue-400 font-medium">Name on Card</Label>
-          <Input 
-            id="cardName" 
-            placeholder="John Doe" 
+          <Label htmlFor="cardName" className="text-blue-700 dark:text-blue-400 font-medium">
+            Name on Card
+          </Label>
+          <Input
+            id="cardName"
+            placeholder="John Doe"
             className={`transition-all duration-300 border-blue-200 dark:border-blue-800 focus:border-blue-500 focus:ring-blue-300 ${
-              focused === 'name' ? 'bg-blue-50 dark:bg-blue-900/20 shadow-sm' : 'hover:border-blue-300'
+              focused === "name" ? "bg-blue-50 dark:bg-blue-900/20 shadow-sm" : "hover:border-blue-300"
             }`}
-            onFocus={() => setFocused('name')}
+            onFocus={() => setFocused("name")}
             onBlur={() => setFocused(null)}
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="cardNumber" className="text-blue-700 dark:text-blue-400 font-medium">Card Number</Label>
+          <Label htmlFor="cardNumber" className="text-blue-700 dark:text-blue-400 font-medium">
+            Card Number
+          </Label>
           <div className="relative">
-            <Input 
-              id="cardNumber" 
-              placeholder="1234 5678 9012 3456" 
+            <Input
+              id="cardNumber"
+              placeholder="1234 5678 9012 3456"
               className={`transition-all duration-300 border-blue-200 dark:border-blue-800 focus:border-blue-500 focus:ring-blue-300 ${
-                focused === 'number' ? 'bg-blue-50 dark:bg-blue-900/20 shadow-sm' : 'hover:border-blue-300'
+                focused === "number" ? "bg-blue-50 dark:bg-blue-900/20 shadow-sm" : "hover:border-blue-300"
               }`}
-              onFocus={() => setFocused('number')}
+              onFocus={() => setFocused("number")}
               onBlur={() => setFocused(null)}
             />
-            <CreditCard className={`absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 transition-colors duration-300 ${
-              focused === 'number' ? 'text-blue-500' : 'text-muted-foreground'
-            }`} />
+            <CreditCard
+              className={`absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 transition-colors duration-300 ${
+                focused === "number" ? "text-blue-500" : "text-muted-foreground"
+              }`}
+            />
           </div>
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="expiry" className="text-blue-700 dark:text-blue-400 font-medium">Expiry Date</Label>
-            <Input 
-              id="expiry" 
-              placeholder="MM/YY" 
+            <Label htmlFor="expiry" className="text-blue-700 dark:text-blue-400 font-medium">
+              Expiry Date
+            </Label>
+            <Input
+              id="expiry"
+              placeholder="MM/YY"
               className={`transition-all duration-300 border-blue-200 dark:border-blue-800 focus:border-blue-500 focus:ring-blue-300 ${
-                focused === 'expiry' ? 'bg-blue-50 dark:bg-blue-900/20 shadow-sm' : 'hover:border-blue-300'
+                focused === "expiry" ? "bg-blue-50 dark:bg-blue-900/20 shadow-sm" : "hover:border-blue-300"
               }`}
-              onFocus={() => setFocused('expiry')}
+              onFocus={() => setFocused("expiry")}
               onBlur={() => setFocused(null)}
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="cvc" className="text-blue-700 dark:text-blue-400 font-medium">CVC</Label>
-            <Input 
-              id="cvc" 
-              placeholder="123" 
+            <Label htmlFor="cvc" className="text-blue-700 dark:text-blue-400 font-medium">
+              CVC
+            </Label>
+            <Input
+              id="cvc"
+              placeholder="123"
               className={`transition-all duration-300 border-blue-200 dark:border-blue-800 focus:border-blue-500 focus:ring-blue-300 ${
-                focused === 'cvc' ? 'bg-blue-50 dark:bg-blue-900/20 shadow-sm' : 'hover:border-blue-300'
+                focused === "cvc" ? "bg-blue-50 dark:bg-blue-900/20 shadow-sm" : "hover:border-blue-300"
               }`}
-              onFocus={() => setFocused('cvc')}
+              onFocus={() => setFocused("cvc")}
               onBlur={() => setFocused(null)}
             />
           </div>
@@ -120,3 +126,4 @@ export default function PaymentMethods() {
     </Tabs>
   )
 }
+

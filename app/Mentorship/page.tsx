@@ -4,7 +4,7 @@ import MentorSwitch from "./pages/MentorSwitch";
 const MentorshipPage = () => {
   return (
     <div
-      className={`min-h-screen shadow-2xl mt-20 transition-all duration-500 bg-gradient-to-br from-[#eef5ff] via-[#dbeafe] to-[#bfdbfe]`}
+      className={`min-h-screen shadow-2xl mt-14 transition-all duration-500 bg-gradient-to-br from-[#eef5ff] via-[#dbeafe] to-[#bfdbfe]`}
     >
       {/* Header Section */}
       <MentorShipHeader/>

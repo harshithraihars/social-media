@@ -1,14 +1,9 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
-import {
-  Search,
-  Users,
-  Briefcase,
-  ChevronRight,
-} from "lucide-react";
+import { Search, Users, Briefcase, ChevronRight } from "lucide-react";
 import MentorProfile from "./MentorProfile";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import { MentorCard } from "./MentorCard"
+import { MentorCard } from "./MentorCard";
 import ConfirmBooking from "./ConfirmBooking";
 export type mentortype = {
   id: number;
@@ -94,9 +89,9 @@ const Mentee = () => {
   const [searchCompany, setSearchCompany] = useState("");
   const [searchRole, setSearchRole] = useState("");
   const [selectedMentorId, setSelectedMentorId] = useState<number | null>(null);
-  const [bookingPageOpen,setBookingPageOpen]=useState(false)
+  const [bookingPageOpen, setBookingPageOpen] = useState(false);
   const mentorprofileRef = useRef(null);
-  const BookingPageRef=useRef(null)
+  const BookingPageRef = useRef(null);
   const handleCompanyChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setSearchCompany(e.target.value);
@@ -347,26 +342,31 @@ const Mentee = () => {
                 <MentorProfile
                   setMentorProfile={handleCloseProfile}
                   selectedMentor={selectedMentor}
-                  OnClick={()=>setBookingPageOpen(true)}
+                  OnClick={() => setBookingPageOpen(true)}
                 />
               </div>
             )}
           </div>
         </div>
       </div>
-      <div ref={mentorprofileRef}
-      className="fixed top-4 z-10 w-full h-full bg-white pt-12 px-3 
-           translate-y-full overflow-y-auto pb-20 md:hidden">
-            <MentorProfile setMentorProfile={handleCloseProfile}
-                  selectedMentor={selectedMentor}
-                  OnClick={()=>setBookingPageOpen(true)}/>
+      <div
+        ref={mentorprofileRef}
+        className="fixed top-4 z-10 w-full h-full bg-white pt-12 px-3 
+           translate-y-full overflow-y-auto pb-20 md:hidden"
+      >
+        <MentorProfile
+          setMentorProfile={handleCloseProfile}
+          selectedMentor={selectedMentor}
+          OnClick={() => setBookingPageOpen(true)}
+        />
       </div>
-      <div className="fixed top-4 z-10 w-screen md:w-3/4 h-full bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200 pt-12  px-0 md:px-3 
-           translate-y-full overflow-y-auto pb-20"
-           ref={BookingPageRef}>
-            <ConfirmBooking/>
-           </div>
-           
+      <div
+        className="fixed top-4 z-10 w-screen md:w-3/4 h-full bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200 pt-12  px-0 md:px-3 
+           translate-y-full overflow-y-auto pb-20 "
+        ref={BookingPageRef}
+      >
+        <ConfirmBooking selectedMentor={selectedMentor} setBookingPageOpen={setBookingPageOpen}/>
+      </div>
     </div>
   );
 };

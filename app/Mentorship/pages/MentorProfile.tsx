@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Heart, ChevronLeft, Star } from "lucide-react";
 import "./profile.css";
 
-type MentorType = {
+export type MentorType = {
   id: number;
   name: string;
   role: string;
