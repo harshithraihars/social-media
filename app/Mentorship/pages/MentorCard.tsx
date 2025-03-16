@@ -3,6 +3,7 @@ import { Star, ChevronRight, Clock, DollarSign } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { StaticImageData } from "next/image";
 
 // Types
 export type mentortype = {
@@ -12,7 +13,7 @@ export type mentortype = {
   company: string;
   about: string;
   rating: number;
-  image: string;
+  image: String;
   hourlyRate: number;
   availability: string;
   expertise: string[];
@@ -67,7 +68,7 @@ export const MentorCard = React.memo(
           <div className="relative">
             <div className="absolute inset-0 rounded-full bg-gradient-to-br from-violet-400 to-indigo-600 opacity-0 group-hover:opacity-100 blur-md transition-all duration-500 scale-110" />
             <img
-              src={mentor.image || "/placeholder.svg"}
+              src={mentor.image as string || "/placeholder.svg"}
               alt={mentor.name}
               loading="lazy"
               className="relative w-14 h-14 rounded-full object-cover ring-2 ring-indigo-100 group-hover:ring-indigo-300 transition-all duration-300 transform group-hover:scale-105 z-10"

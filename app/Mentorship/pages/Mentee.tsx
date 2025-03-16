@@ -1,3 +1,4 @@
+"use client"
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { Search, Users, Briefcase, ChevronRight } from "lucide-react";
 import MentorProfile from "./MentorProfile";

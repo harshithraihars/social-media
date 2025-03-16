@@ -1,5 +1,6 @@
+import Mentee from "./pages/Mentee";
 import MentorShipHeader from "./pages/MentorShipHeader";
-import MentorSwitch from "./pages/MentorSwitch";
+import { AnimatePresence,motion } from 'framer-motion'
 
 const MentorshipPage = () => {
   return (
@@ -8,7 +9,17 @@ const MentorshipPage = () => {
     >
       {/* Header Section */}
       <MentorShipHeader/>
-      <MentorSwitch/>
+      {/* <MentorSwitch/> */}
+      {/* <motion.div
+            key="mentee"
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 50 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            layout
+          > */}
+            <Mentee />
+          {/* </motion.div> */}
     </div>
   );
 };
