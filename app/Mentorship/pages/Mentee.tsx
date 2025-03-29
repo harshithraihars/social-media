@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { Search, Users, Briefcase, ChevronRight } from "lucide-react";
 import MentorProfile from "./MentorProfile";
@@ -6,6 +6,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { MentorCard } from "./MentorCard";
 import ConfirmBooking from "./ConfirmBooking";
+import AnimateOnScroll from "../Animation/Animate";
 export type mentortype = {
   id: number;
   name: string;
@@ -257,98 +258,99 @@ const Mentee = () => {
             )}
           </div>
         </div>
-
-        {/* Mentor Listings with Animation */}
-        <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-          {/* Dynamic layout that changes when a mentor is selected */}
-          <div
-            className={`transition-all duration-700 ease-in-out ${
-              selectedMentorId
-                ? "grid grid-cols-1 lg:grid-cols-7 gap-6 max-h-[1000px]"
-                : ""
-            }`}
-          >
-            {/* Left side: Mentor cards that stack vertically when one is selected */}
+        <AnimateOnScroll>
+          <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+            {/* Dynamic layout that changes when a mentor is selected */}
             <div
               className={`transition-all duration-700 ease-in-out ${
                 selectedMentorId
-                  ? "lg:col-span-3 max-h-[1000px] overflow-y-auto pr-2"
+                  ? "grid grid-cols-1 lg:grid-cols-7 gap-6 max-h-[1000px]"
                   : ""
               }`}
             >
-              <section
-                className={`transition-all duration-500 ${
-                  selectedMentorId ? "mb-6" : "mb-12"
+              {/* Left side: Mentor cards that stack vertically when one is selected */}
+              <div
+                className={`transition-all duration-700 ease-in-out ${
+                  selectedMentorId
+                    ? "lg:col-span-3 max-h-[1000px] overflow-y-auto pr-2"
+                    : ""
                 }`}
               >
-                <h2
-                  className={`text-2xl font-bold mb-6 sticky top-0 z-10 py-2 ${
-                    selectedMentorId
-                      ? "bg-gradient-to-r from-purple-300/85 to-indigo-200/75 backdrop-blur-md border border-white/20 shadow-md rounded-lg px-4"
-                      : ""
+                <section
+                  className={`transition-all duration-500 ${
+                    selectedMentorId ? "mb-6" : "mb-12"
                   }`}
                 >
-                  Top Mentors
-                </h2>
-                <div
-                  className={`transition-all duration-700 ease-in-out ${
-                    selectedMentorId
-                      ? "flex flex-col space-y-4"
-                      : "flex flex-wrap gap-6 justify-start"
-                  }`}
-                >
-                  {topMentors.map((mentor) => (
-                    <div
-                      key={mentor.id}
-                      className={`transition-all duration-700 transform ${
-                        selectedMentorId && selectedMentorId !== mentor.id
-                          ? "opacity-90"
-                          : ""
-                      }`}
-                    >
-                      <MentorCard
-                        mentor={mentor}
-                        isSelected={selectedMentorId === mentor.id}
-                        onClick={() => handleCardClick(mentor.id)}
-                        isCollapsed={selectedMentorId !== null}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </section>
-
-              {!selectedMentorId && (
-                <section className="mb-10">
-                  <h2 className="text-2xl font-bold mb-6">
-                    Recommended for You
+                  <h2
+                    className={`text-2xl font-bold mb-6 sticky top-0 z-10 py-2 ${
+                      selectedMentorId
+                        ? "bg-gradient-to-r from-purple-300/85 to-indigo-200/75 backdrop-blur-md border border-white/20 shadow-md rounded-lg px-4"
+                        : ""
+                    }`}
+                  >
+                    Top Mentors
                   </h2>
-                  <div className="flex flex-wrap gap-6 justify-start">
-                    {recommendedMentors.map((mentor) => (
-                      <MentorCard
-                        key={`rec-${mentor.id}`}
-                        mentor={mentor}
-                        isSelected={false}
-                        onClick={() => handleCardClick(mentor.id)}
-                        isCollapsed={false}
-                      />
+                  <div
+                    className={`transition-all duration-700 ease-in-out ${
+                      selectedMentorId
+                        ? "flex flex-col space-y-4"
+                        : "flex flex-wrap gap-6 justify-start"
+                    }`}
+                  >
+                    {topMentors.map((mentor) => (
+                      <div
+                        key={mentor.id}
+                        className={`transition-all duration-700 transform ${
+                          selectedMentorId && selectedMentorId !== mentor.id
+                            ? "opacity-90"
+                            : ""
+                        }`}
+                      >
+                        <MentorCard
+                          mentor={mentor}
+                          isSelected={selectedMentorId === mentor.id}
+                          onClick={() => handleCardClick(mentor.id)}
+                          isCollapsed={selectedMentorId !== null}
+                        />
+                      </div>
                     ))}
                   </div>
                 </section>
+
+                {!selectedMentorId && (
+                  <section className="mb-10">
+                    <h2 className="text-2xl font-bold mb-6">
+                      Recommended for You
+                    </h2>
+                    <div className="flex flex-wrap gap-6 justify-start">
+                      {recommendedMentors.map((mentor) => (
+                        <MentorCard
+                          key={`rec-${mentor.id}`}
+                          mentor={mentor}
+                          isSelected={false}
+                          onClick={() => handleCardClick(mentor.id)}
+                          isCollapsed={false}
+                        />
+                      ))}
+                    </div>
+                  </section>
+                )}
+              </div>
+
+              {/* Right side: Mentor profile that appears when a card is selected */}
+              {selectedMentorId && (
+                <div className="transition-all duration-700 ease-in-out transform translate-x-0 opacity-100 animate-slideIn lg:col-span-4 max-h-[1000px] overflow-y-auto">
+                  <MentorProfile
+                    setMentorProfile={handleCloseProfile}
+                    selectedMentor={selectedMentor}
+                    OnClick={() => setBookingPageOpen(true)}
+                  />
+                </div>
               )}
             </div>
-
-            {/* Right side: Mentor profile that appears when a card is selected */}
-            {selectedMentorId && (
-              <div className="transition-all duration-700 ease-in-out transform translate-x-0 opacity-100 animate-slideIn lg:col-span-4 max-h-[1000px] overflow-y-auto">
-                <MentorProfile
-                  setMentorProfile={handleCloseProfile}
-                  selectedMentor={selectedMentor}
-                  OnClick={() => setBookingPageOpen(true)}
-                />
-              </div>
-            )}
           </div>
-        </div>
+        </AnimateOnScroll>
+        {/* Mentor Listings with Animation */}
       </div>
       <div
         ref={mentorprofileRef}
@@ -366,7 +368,10 @@ const Mentee = () => {
            translate-y-full overflow-y-auto pb-20 "
         ref={BookingPageRef}
       >
-        <ConfirmBooking selectedMentor={selectedMentor} setBookingPageOpen={setBookingPageOpen}/>
+        <ConfirmBooking
+          selectedMentor={selectedMentor}
+          setBookingPageOpen={setBookingPageOpen}
+        />
       </div>
     </div>
   );

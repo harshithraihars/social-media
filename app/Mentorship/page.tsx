@@ -1,27 +1,19 @@
-import Mentee from "./pages/Mentee";
-import MentorShipHeader from "./pages/MentorShipHeader";
-import { AnimatePresence,motion } from 'framer-motion'
+import dynamic from "next/dynamic";
+import Loader from "../loading";
+
+// Lazy load components
+const Mentee = dynamic(() => import("./pages/Mentee"), { ssr: false, loading: () =><div><Loader/></div> });
+const MentorShipHeader = dynamic(() => import("./pages/MentorShipHeader"), { ssr: false, loading: () => <div><Loader/></div> });
 
 const MentorshipPage = () => {
   return (
-    <div
-      className={`min-h-screen shadow-2xl mt-14 transition-all duration-500 bg-gradient-to-br from-[#eef5ff] via-[#dbeafe] to-[#bfdbfe]`}
-    >
+    <div className="min-h-screen shadow-2xl mt-14 transition-all duration-500 bg-gradient-to-br from-[#eef5ff] via-[#dbeafe] to-[#bfdbfe]">
       {/* Header Section */}
-      <MentorShipHeader/>
-      {/* <MentorSwitch/> */}
-      {/* <motion.div
-            key="mentee"
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 50 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
-            layout
-          > */}
-            <Mentee />
-          {/* </motion.div> */}
+      <MentorShipHeader />
+      <Mentee />
     </div>
   );
 };
 
 export default MentorshipPage;
+
