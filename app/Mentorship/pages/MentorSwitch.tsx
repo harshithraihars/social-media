@@ -1,7 +1,7 @@
 "use client"
 import { AnimatePresence,motion } from 'framer-motion'
 import React from 'react'
-import MentorShipActivationCard from "../pages/MentorShipActivationCard"
+import MentorShipActivationCard from "../../Mentor/pages/MentorShipActivationCard"
 import { useAppSelector } from '@/lib/hooks'
 import Mentee from './Mentee'
 const MentorSwitch = () => {

@@ -4,7 +4,7 @@ import { useUser } from "@clerk/nextjs";
 import { Send } from "lucide-react";
 import { IUserDocument } from "@/models/user.model";
 import { useAppSelector } from "@/lib/hooks";
-import { UserResult } from "@/lib/feature/todos/todoSlice";
+import { setUser, UserResult } from "@/lib/feature/todos/todoSlice";
 import { getCurrentUser, SendConnectionRequest } from "@/lib/serveractions";
 import ProfilePhoto from "./shared/ProfilePhoto";
 
