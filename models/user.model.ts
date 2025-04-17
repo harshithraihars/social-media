@@ -84,7 +84,7 @@ userSchema.virtual("requestsDetails", {
 userSchema.virtual("profile", {
   ref: "Profile",
   localField: "_id",
-  foreignField: "user",
+  foreignField: "userId",
   justOne: true,
 });
 

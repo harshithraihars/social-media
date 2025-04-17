@@ -1,22 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Profile } from "@/models/profile.model";
 import connectDB from "@/lib/db";
-import { Rat } from "lucide-react";
 
 export const PUT = async (req: NextRequest) => {
   try {
     await connectDB();
     const body = await req.json();
-
-    const { CompanyName, Role, Skills, About, Rate, userId } = body;  
-    console.log(CompanyName,Role,Skills,About,Rate,userId);
-      
+    const {formData,userId}=body
+    const { CompanyName, Role, Skills, About, Rate} =formData;        
     if (
       !CompanyName ||
       !Role ||
       !Skills ||
       !About ||
-      typeof Rate !== "number"
+      !Rate
     ) {
       return NextResponse.json(
         { error: "All fields are required and must be valid." },

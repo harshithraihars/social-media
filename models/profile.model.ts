@@ -1,7 +1,7 @@
 import mongoose, { Model } from "mongoose";
 
 interface IProfile {
-  user: mongoose.Schema.Types.ObjectId;
+  user: string;
   CompanyName: string;
   Role: string;
   Skills: string[];
@@ -11,8 +11,7 @@ interface IProfile {
 
 const profileSchema = new mongoose.Schema<IProfile>({
   user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    type:String,
     required: true,
   },
   CompanyName: {
