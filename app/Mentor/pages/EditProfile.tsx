@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import CompanyInfoForm from "./CompanyInfoForm";
@@ -72,14 +72,14 @@ export default function ProfileEdit({ onClose }: ProfileEditProps) {
   useEffect(() => {
     const fetchProfileData = async () => {
       if (!user?.id) return;
-      
+
       try {
         setLoading(true);
         const res = await fetch(`/api/profile?userId=${user.id}`);
-        
+
         if (res.ok) {
           const data = await res.json();
-          
+
           if (data && data.profile) {
             // Populate form with existing data
             setFormData({
@@ -94,11 +94,6 @@ export default function ProfileEdit({ onClose }: ProfileEditProps) {
         }
       } catch (error) {
         console.error("Error fetching profile:", error);
-        toast({
-          title: "Error loading profile",
-          description: "Failed to load your profile information",
-          variant: "destructive",
-        });
       } finally {
         setLoading(false);
       }
@@ -115,7 +110,8 @@ export default function ProfileEdit({ onClose }: ProfileEditProps) {
       Skills: formData.Skills.length < 3,
       About:
         formData.About.trim().length < 50 || formData.About.trim().length > 100,
-      Rate: formData.Rate.toString().trim() === "" || isNaN(Number(formData.Rate)),
+      Rate:
+        formData.Rate.toString().trim() === "" || isNaN(Number(formData.Rate)),
     };
 
     setErrors(newErrors);
@@ -137,18 +133,11 @@ export default function ProfileEdit({ onClose }: ProfileEditProps) {
   };
 
   const updateFormData = (updates: Partial<ProfileData>) => {
-    setFormData(prev => ({ ...prev, ...updates }));
+    setFormData((prev) => ({ ...prev, ...updates }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
     if (!isFormValid) {
-      toast({
-        title: "Please fix the errors",
-        description: "All fields must be filled correctly before saving.",
-        variant: "destructive",
-      });
       return;
     }
 
@@ -162,31 +151,15 @@ export default function ProfileEdit({ onClose }: ProfileEditProps) {
       });
 
       const data = await res.json();
-      
+
       if (res.ok) {
-        toast({
-          title: "Profile updated",
-          description: "Your profile has been successfully updated.",
-          variant: "default",
-        });
-        
         if (onClose) {
           onClose();
         }
       } else {
-        toast({
-          title: "Error updating profile",
-          description: data.message || "Failed to update your profile",
-          variant: "destructive",
-        });
       }
     } catch (error) {
       console.error(error);
-      toast({
-        title: "Error updating profile",
-        description: "An unexpected error occurred",
-        variant: "destructive",
-      });
     }
   };
 
@@ -197,9 +170,19 @@ export default function ProfileEdit({ onClose }: ProfileEditProps) {
   return (
     <div className="w-full max-w-2xl py-4 px-4 sm:px-4">
       <Card className="shadow-2xl bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-950 border-none overflow-hidden">
-        <form onSubmit={handleSubmit}>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            const promise = handleSubmit(e); 
+            toast.promise(promise, {
+              loading: "Updating Profile...",
+              success: "Profile Updated",
+              error: "Failed to Update Profile",
+            });
+          }}
+        >
           <CardContent className="space-y-4 p-6">
-            <CompanyInfoForm 
+            <CompanyInfoForm
               formData={formData}
               handleChange={handleChange}
               handleBlur={handleBlur}
@@ -207,7 +190,7 @@ export default function ProfileEdit({ onClose }: ProfileEditProps) {
               touched={touched}
             />
 
-            <SkillsForm 
+            <SkillsForm
               formData={formData}
               updateFormData={updateFormData}
               handleBlur={handleBlur}
@@ -216,7 +199,7 @@ export default function ProfileEdit({ onClose }: ProfileEditProps) {
               setTouched={setTouched}
             />
 
-            <AboutForm 
+            <AboutForm
               formData={formData}
               handleChange={handleChange}
               handleBlur={handleBlur}
@@ -224,7 +207,7 @@ export default function ProfileEdit({ onClose }: ProfileEditProps) {
               touched={touched}
             />
 
-            <RateForm 
+            <RateForm
               formData={formData}
               handleChange={handleChange}
               handleBlur={handleBlur}
