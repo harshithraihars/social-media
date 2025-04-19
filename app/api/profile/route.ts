@@ -1,20 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Profile } from "@/models/profile.model";
 import connectDB from "@/lib/db";
+import { User } from "@/models/user.model";
 
 export const PUT = async (req: NextRequest) => {
   try {
     await connectDB();
     const body = await req.json();
-    const {formData,userId}=body
-    const { CompanyName, Role, Skills, About, Rate} =formData;        
-    if (
-      !CompanyName ||
-      !Role ||
-      !Skills ||
-      !About ||
-      !Rate
-    ) {
+    const { formData, userId } = body;
+    const { CompanyName, Role, Skills, About, Rate } = formData;
+    if (!CompanyName || !Role || !Skills || !About || !Rate) {
       return NextResponse.json(
         { error: "All fields are required and must be valid." },
         { status: 400 }
@@ -27,10 +22,15 @@ export const PUT = async (req: NextRequest) => {
       { upsert: true, new: true, runValidators: true }
     );
 
+    await User.findOneAndUpdate(
+      { userId: userId },
+      { MentorshipEnabled: true }
+    );
     return NextResponse.json({
       message: "Profile updated successfully.",
       profile: updatedProfile,
     });
+
   } catch (error) {
     console.error("Profile update error:", error);
     return NextResponse.json(
@@ -39,7 +39,6 @@ export const PUT = async (req: NextRequest) => {
     );
   }
 };
-
 
 export const GET = async (req: NextRequest) => {
   try {

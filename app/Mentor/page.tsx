@@ -1,14 +1,23 @@
-import dynamic from "next/dynamic";
+import { Suspense } from "react";
 import Loader from "../loading";
-import a from "./pages/MentorShipActivationCard"
-import ProfileEdit from "./pages/EditProfile";
-// Lazy load components
-const MentorShipActivationCard = dynamic(() => import("./pages/MentorShipActivationCard"), { ssr: false, loading: () =><div><Loader/></div> });
+import BookingsPage from "./pages/BookingPage";
+import MentorShipActivationCard from "./pages/MentorShipActivationCard";
+import { getCurrentUser } from "@/lib/serveractions";
 
-const MentorshipPage = () => {
+const MentorshipPage = async () => {
+  // Get user data server-side
+  const user = await getCurrentUser();
+  console.log(user.MentorshipEnabled);
+
   return (
     <div className="min-h-screen shadow-2xl mt-14 transition-all duration-500 bg-gradient-to-br from-[#eef5ff] via-[#dbeafe] to-[#bfdbfe]">
-        <MentorShipActivationCard/>
+      <Suspense fallback={<Loader />}>
+        {user?.MentorshipEnabled ? (
+          <BookingsPage />
+        ) : (
+          <MentorShipActivationCard />
+        )}
+      </Suspense>
     </div>
   );
 };

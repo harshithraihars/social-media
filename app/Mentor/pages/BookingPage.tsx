@@ -1,15 +1,15 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { TabType } from "./Booking";
-import Sidebar from "./SideBar";
-import Header from "./Header";
-import TabSelector from "./TabSelector";
-import EventCard from "./EventCard";
-import { motion } from "framer-motion";
-import MentorshipSettings from "./MentorShipSetting";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
+import { TabType } from "@/app/Mentorship/pages/Booking";
+import {motion} from "framer-motion"
+import Header from "@/app/Mentorship/pages/Header";
+import TabSelector from "@/app/Mentorship/pages/TabSelector";
+import EventCard from "@/app/Mentorship/pages/EventCard";
+import MentorshipSettings from "@/app/Mentorship/pages/MentorShipSetting";
+import Sidebar from "@/app/Mentorship/pages/SideBar";
 
 const BookingsPage = () => {
   const [activeTab, setActiveTab] = useState<TabType>("Upcoming");

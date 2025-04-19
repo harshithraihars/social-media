@@ -17,13 +17,14 @@ export interface IUser {
   connections?: [string];
   sentReqest?: Sent[];
   requests?: Sent[];
+  MentorshipEnabled: Boolean;
 }
 
 // Define the IUserDocument interface that extends mongoose Document
 export interface IUserDocument extends IUser, Document {
   createdAt: Date;
   updatedAt: Date;
-  requestsDetails?: IUser[]
+  requestsDetails?: IUser[];
 }
 
 // Define the userSchema
@@ -69,6 +70,10 @@ const userSchema = new mongoose.Schema<IUserDocument>(
         sentAt: { type: Date, default: Date.now },
       },
     ],
+    MentorshipEnabled: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
