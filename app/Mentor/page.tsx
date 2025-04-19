@@ -7,7 +7,6 @@ import { getCurrentUser } from "@/lib/serveractions";
 const MentorshipPage = async () => {
   // Get user data server-side
   const user = await getCurrentUser();
-  console.log(user.MentorshipEnabled);
 
   return (
     <div className="min-h-screen shadow-2xl mt-14 transition-all duration-500 bg-gradient-to-br from-[#eef5ff] via-[#dbeafe] to-[#bfdbfe]">

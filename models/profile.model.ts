@@ -7,6 +7,7 @@ interface IProfile {
   Skills: string[];
   About: string;
   Rate: Number;
+  Rating:Number;
 }
 
 const profileSchema = new mongoose.Schema<IProfile>({
@@ -34,6 +35,10 @@ const profileSchema = new mongoose.Schema<IProfile>({
     type: Number,
     required: true,
   },
+  Rating:{
+    type:Number,
+    default:0
+  }
 });
 
 export const Profile: Model<IProfile> =
