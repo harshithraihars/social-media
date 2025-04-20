@@ -1,7 +1,7 @@
 import mongoose, { Model } from "mongoose";
 
 interface IProfile {
-  user: string;
+  userId: string;
   CompanyName: string;
   Role: string;
   Skills: string[];
@@ -11,7 +11,7 @@ interface IProfile {
 }
 
 const profileSchema = new mongoose.Schema<IProfile>({
-  user: {
+  userId: {
     type:String,
     required: true,
   },

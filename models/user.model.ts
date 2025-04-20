@@ -88,10 +88,11 @@ userSchema.virtual("requestsDetails", {
 
 userSchema.virtual("profile", {
   ref: "Profile",
-  localField: "_id",
-  foreignField: "userId",
+  localField: "userId",      // This is the string from Clerk
+  foreignField: "userId",    // Also a string in Profile
   justOne: true,
 });
+
 
 // Include virtual fields in JSON and plain object output
 userSchema.set("toJSON", { virtuals: true });

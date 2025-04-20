@@ -88,22 +88,22 @@ const mentors: mentortype[] = [
 ];
 
 const Mentee = () => {
-  const [searchCompany, setSearchCompany] = useState("");
-  const [searchRole, setSearchRole] = useState("");
+  const [ComapnyName, setComapnyName] = useState("");
+  const [Role, setRole] = useState("");
   const [selectedMentorId, setSelectedMentorId] = useState<number | null>(null);
   const [bookingPageOpen, setBookingPageOpen] = useState(false);
   const mentorprofileRef = useRef(null);
   const BookingPageRef = useRef(null);
   const handleCompanyChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      setSearchCompany(e.target.value);
+      setComapnyName(e.target.value);
     },
     []
   );
 
   const handleRoleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      setSearchRole(e.target.value);
+      setRole(e.target.value);
     },
     []
   );
@@ -112,13 +112,13 @@ const Mentee = () => {
   const filteredMentors = useMemo(() => {
     return mentors.filter((mentor) => {
       return (
-        (!searchCompany ||
-          mentor.company.toLowerCase().includes(searchCompany.toLowerCase())) &&
-        (!searchRole ||
-          mentor.role.toLowerCase().includes(searchRole.toLowerCase()))
+        (!ComapnyName ||
+          mentor.company.toLowerCase().includes(ComapnyName.toLowerCase())) &&
+        (!Role ||
+          mentor.role.toLowerCase().includes(Role.toLowerCase()))
       );
     });
-  }, [searchCompany, searchRole]);
+  }, [ComapnyName, Role]);
 
   const topMentors = useMemo(() => filteredMentors, [filteredMentors]);
   const recommendedMentors = useMemo(
@@ -161,6 +161,13 @@ const Mentee = () => {
       });
     }
   }, [bookingPageOpen]);
+
+  const handleSearch=async()=>{
+    const response=await fetch(`/api/mentors?ComapnyName=${ComapnyName}&Role=${Role}`)
+    const data=await response.json()
+    console.log(data);
+    
+  }
   return (
     <div>
       {/* Hero Section */}
@@ -202,7 +209,7 @@ const Mentee = () => {
                 <input
                   type="text"
                   placeholder="Search by company..."
-                  value={searchCompany}
+                  value={ComapnyName}
                   onChange={handleCompanyChange}
                   className="w-full pl-12 pr-4 py-2 bg-gray-50 border-2 border-gray-200 rounded-lg transition-all duration-200 ease-in-out placeholder:text-gray-400 text-gray-700 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:bg-white"
                 />
@@ -217,7 +224,7 @@ const Mentee = () => {
                 <input
                   type="text"
                   placeholder="Search by role..."
-                  value={searchRole}
+                  value={Role}
                   onChange={handleRoleChange}
                   className="w-full pl-12 pr-4 py-2 bg-gray-50 border-2 border-gray-200 rounded-lg transition-all duration-200 ease-in-out placeholder:text-gray-400 text-gray-700 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:bg-white"
                 />
@@ -226,7 +233,8 @@ const Mentee = () => {
             </div>
 
             {/* Search Button */}
-            <button className="flex items-center justify-center gap-2 px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium rounded-lg transition-all duration-200 ease-in-out shadow-md hover:shadow-lg transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-blue-300 w-full sm:w-auto">
+            <button className="flex items-center justify-center gap-2 px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium rounded-lg transition-all duration-200 ease-in-out shadow-md hover:shadow-lg transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-blue-300 w-full sm:w-auto"
+            onClick={handleSearch}>
               <Search className="w-5 h-5" />
               <span>Search</span>
             </button>
@@ -234,22 +242,22 @@ const Mentee = () => {
 
           {/* Optional Search Tags/Filters */}
           <div className="mt-4 flex flex-wrap gap-2">
-            {searchCompany && (
+            {ComapnyName && (
               <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm">
-                Company: {searchCompany}
+                Company: {ComapnyName}
                 <button
-                  onClick={() => setSearchCompany("")}
+                  onClick={() => setComapnyName("")}
                   className="hover:text-blue-900"
                 >
                   ×
                 </button>
               </span>
             )}
-            {searchRole && (
+            {Role && (
               <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm">
-                Role: {searchRole}
+                Role: {Role}
                 <button
-                  onClick={() => setSearchRole("")}
+                  onClick={() => setRole("")}
                   className="hover:text-blue-900"
                 >
                   ×

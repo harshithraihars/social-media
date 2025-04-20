@@ -1,10 +1,10 @@
 import connectDB from "@/lib/db";
 import { User } from "@/models/user.model";
 import { NextRequest, NextResponse } from "next/server";
-
+import { Profile } from "@/models/profile.model";
 // Interface for query filter
 interface MentorQuery {
-  mentorshipEnabled: boolean;
+  MentorshipEnabled: boolean;
   company?: string;
   role?: string;
 }
@@ -12,21 +12,23 @@ interface MentorQuery {
 export const GET = async (req: NextRequest) => {
   try {
     await connectDB();
-
     const { searchParams } = new URL(req.url);
     const company = searchParams.get("company");
     const role = searchParams.get("role");
 
     const query: MentorQuery = {
-      mentorshipEnabled: true,
+      MentorshipEnabled: true,
     };
 
     if (company) query.company = company;
     if (role) query.role = role;
 
     const mentors = await User.find(query)
+      .populate({ path: "profile", model: "Profile" })
+      .lean({ virtuals: true });
 
     return NextResponse.json(mentors, { status: 200 });
+
   } catch (error) {
     console.error("Error fetching mentors:", error);
     return NextResponse.json(
