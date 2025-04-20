@@ -23,9 +23,21 @@ export const GET = async (req: NextRequest) => {
     if (company) query.company = company;
     if (role) query.role = role;
 
-    const mentors = await User.find(query)
-      .populate({ path: "profile", model: "Profile" })
-      .lean({ virtuals: true });
+    const mentors = await User.aggregate([
+      { $match: { MentorshipEnabled: true } },
+      {
+        $lookup: {
+          from: "profiles",
+          localField: "userId",
+          foreignField: "userId",
+          as: "profile"
+        }
+      },
+      { $unwind: "$profile" },
+      ...(company ? [{ $match: { "profile.CompanyName": company } }] : []),
+      ...(role ? [{ $match: { "profile.Role": role } }] : [])
+    ]);
+    
 
     return NextResponse.json(mentors, { status: 200 });
 
