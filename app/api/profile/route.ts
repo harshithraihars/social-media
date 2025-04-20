@@ -17,7 +17,7 @@ export const PUT = async (req: NextRequest) => {
     }
 
     const updatedProfile = await Profile.findOneAndUpdate(
-      { user: userId },
+      { userId: userId },
       { CompanyName, Role, Skills, About, Rate, user: userId },
       { upsert: true, new: true, runValidators: true }
     );
@@ -54,7 +54,7 @@ export const GET = async (req: NextRequest) => {
       );
     }
 
-    const userProfile = await Profile.findOne({ user: userId });
+    const userProfile = await Profile.findOne({ userId: userId });
 
     if (!userProfile) {
       return NextResponse.json(

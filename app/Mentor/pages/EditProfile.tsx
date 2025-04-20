@@ -151,7 +151,10 @@ export default function ProfileEdit({ onClose }: ProfileEditProps) {
       });
 
       const data = await res.json();
-
+      if(window.location.pathname=="/Mentor"){
+        window.location.reload()
+      }
+      
       if (res.ok) {
         if (onClose) {
           onClose();
