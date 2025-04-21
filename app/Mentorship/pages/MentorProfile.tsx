@@ -7,7 +7,7 @@ import { IMentor } from "./Mentee";
 type MentorProfileProps = {
   setMentorProfile: () => void; // Function to close the profile
   OnClick: () => void
-  selectedMentor: IMentor; // Ensure MentorType is correctly defined
+  selectedMentor: IMentor|null; // Ensure MentorType is correctly defined
 };
 
 const MentorProfile = ({
@@ -93,7 +93,7 @@ const MentorProfile = ({
                   className={`${
                     i < Math.floor(selectedMentor.profile.Rating)
                       ? "text-yellow-400 fill-yellow-400"
-                      : i < selectedMentor.rating
+                      : i < selectedMentor.profile.Rating
                       ? "text-yellow-400 fill-yellow-400/50"
                       : "text-gray-300 fill-gray-300"
                   }`}
@@ -120,7 +120,7 @@ const MentorProfile = ({
       <div className="px-6 py-3">
         <h3 className="font-bold text-lg mb-2 text-purple-900">About</h3>
         <div className="bg-white p-4 rounded-lg shadow-md">
-          <p className="text-gray-700 mb-3">{selectedMentor.about}</p>
+          <p className="text-gray-700 mb-3">{selectedMentor.profile.About}</p>
           <p className="text-gray-700 mb-3">
             With extensive experience in {selectedMentor.profile.Skills.join(", ")},{" "}
             {selectedMentor.firstName} {selectedMentor.lastName} provides personalized mentorship to help you

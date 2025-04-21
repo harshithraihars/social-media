@@ -8,10 +8,9 @@ import PaymentSection from "./PaymentSection";
 import BookingSummary from "./BookingSummary";
 import BookingConfirmation from "./BookingConfirmation";
 import MentorInfo from "./MentorInfo";
-import {MentorType} from "./MentorProfile"
 import { ArrowRight, X, XCircle } from "lucide-react";
 import { IMentor } from "./Mentee";
-export default function ConfirmBooking({selectedMentor,setBookingPageOpen}:{selectedMentor:IMentor,setBookingPageOpen:React.Dispatch<React.SetStateAction<boolean>>}) {
+export default function ConfirmBooking({selectedMentor,setBookingPageOpen}:{selectedMentor:IMentor|null,setBookingPageOpen:React.Dispatch<React.SetStateAction<boolean>>}) {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [duration, setDuration] = useState("30");
   const [timeSlot, setTimeSlot] = useState<string | null>(null);

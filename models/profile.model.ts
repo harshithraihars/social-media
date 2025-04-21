@@ -6,8 +6,8 @@ export interface IProfile {
   Role: string;
   Skills: string[];
   About: string;
-  Rate: Number;
-  Rating:Number;
+  Rate: number;
+  Rating:number;
 }
 
 const profileSchema = new mongoose.Schema<IProfile>({

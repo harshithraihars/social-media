@@ -1,12 +1,11 @@
 import { Card, CardContent } from "@/components/ui/card";
-import Image from "next/image";
 import { Users, Award, Sparkles, Star } from "lucide-react";
 import { IMentor } from "./Mentee";
 
 export default function MentorInfo({
   selectedMentor,
 }: {
-  selectedMentor: IMentor;
+  selectedMentor: IMentor|null;
 }) {
   return (
     <Card className="border-0 shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 dark:shadow-gray-900/30 hidden md:block">
@@ -16,19 +15,20 @@ export default function MentorInfo({
           TOP RATED
         </div>
         <div className="flex flex-col items-center text-center mb-6">
-        <div className="relative w-28 h-28 rounded-full overflow-hidden mb-4 border-4 border-white dark:border-gray-800 shadow-lg group">
-  <img
-    src={selectedMentor?.profilePhoto}
-    alt="Mentor profile"
-    className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-  />
-  <div className="absolute inset-0 bg-gradient-to-t from-blue-500/30 to-transparent"></div>
-</div>
+          <div className="relative w-28 h-28 rounded-full overflow-hidden mb-4 border-4 border-white dark:border-gray-800 shadow-lg group">
+            <img
+              src={selectedMentor?.profilePhoto}
+              alt="Mentor profile"
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-blue-500/30 to-transparent"></div>
+          </div>
           <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             {selectedMentor?.firstName} {selectedMentor?.lastName}
           </h2>
           <p className="text-sm text-muted-foreground text-gray-800 font-semibold">
-            {selectedMentor?.profile.Role} at {selectedMentor?.profile.CompanyName}
+            {selectedMentor?.profile.Role} at{" "}
+            {selectedMentor?.profile.CompanyName}
           </p>
           <div className="flex gap-2 mt-3">
             <span className="bg-gradient-to-r from-blue-100 to-blue-200 dark:from-blue-900/50 dark:to-blue-800/50 text-blue-800 dark:text-blue-300 text-xs px-3 py-1 rounded-full font-medium shadow-sm transform hover:scale-105 transition-transform duration-200">
@@ -39,7 +39,7 @@ export default function MentorInfo({
             </span>
           </div>
           <div className="flex items-center mt-3 text-yellow-500">
-          {Array(5)
+            {Array(5)
               .fill(0)
               .map((_, i) => (
                 <Star key={i} className="h-4 w-4 fill-current" />

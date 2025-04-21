@@ -1,7 +1,6 @@
 import connectDB from "@/lib/db";
 import { User } from "@/models/user.model";
 import { NextRequest, NextResponse } from "next/server";
-import { Profile } from "@/models/profile.model";
 // Interface for query filter
 interface MentorQuery {
   MentorshipEnabled: boolean;
