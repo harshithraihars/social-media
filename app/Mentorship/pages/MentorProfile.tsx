@@ -1,24 +1,13 @@
 import React, { useState } from "react";
 import { Heart, ChevronLeft, Star } from "lucide-react";
 import "./profile.css";
+import { IMentor } from "./Mentee";
 
-export type MentorType = {
-  id: number;
-  name: string;
-  role: string;
-  company: string;
-  about: string;
-  rating: number;
-  image: string;
-  hourlyRate: number;
-  availability: string;
-  expertise: string[];
-} | null;
 
 type MentorProfileProps = {
   setMentorProfile: () => void; // Function to close the profile
   OnClick: () => void
-  selectedMentor: MentorType; // Ensure MentorType is correctly defined
+  selectedMentor: IMentor; // Ensure MentorType is correctly defined
 };
 
 const MentorProfile = ({
@@ -50,7 +39,7 @@ const MentorProfile = ({
         <div
           className="w-full h-56 md:h-72 lg:h-80 bg-no-repeat bg-cover bg-center"
           style={{
-            backgroundImage: `url(${selectedMentor.image})`,
+            backgroundImage: `url(${selectedMentor.profilePhoto})`,
           }}
         >
           {/* Corner navigation buttons */}
@@ -86,7 +75,7 @@ const MentorProfile = ({
         <div className="flex justify-between items-start">
           <div>
             <h2 className="text-xl md:text-2xl font-bold flex items-center gap-1 text-purple-900">
-              {selectedMentor.name}
+              {selectedMentor.firstName} {selectedMentor.lastName}
               <span className="text-blue-600">
                 <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
                   <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
@@ -94,7 +83,7 @@ const MentorProfile = ({
               </span>
             </h2>
             <p className="text-gray-600 text-sm">
-              {selectedMentor.role} at {selectedMentor.company}
+              {selectedMentor.profile.Role} at {selectedMentor.profile.CompanyName}
             </p>
             <div className="flex items-center mt-1">
               {[...Array(5)].map((_, i) => (
@@ -102,7 +91,7 @@ const MentorProfile = ({
                   key={i}
                   size={16}
                   className={`${
-                    i < Math.floor(selectedMentor.rating)
+                    i < Math.floor(selectedMentor.profile.Rating)
                       ? "text-yellow-400 fill-yellow-400"
                       : i < selectedMentor.rating
                       ? "text-yellow-400 fill-yellow-400/50"
@@ -111,14 +100,14 @@ const MentorProfile = ({
                 />
               ))}
               <span className="text-gray-600 text-sm ml-1">
-                {selectedMentor.rating.toFixed(1)}
+                {selectedMentor.profile.Rating.toFixed(1)}
               </span>
             </div>
           </div>
 
           <div className="bg-purple-100 px-4 py-2 rounded-lg shadow-sm">
             <p className="text-purple-800 font-bold text-xl">
-              ${selectedMentor.hourlyRate}
+              ${selectedMentor.profile.Rate}
             </p>
             <p className="text-purple-600 text-xs font-medium text-right">
               per hour
@@ -133,12 +122,12 @@ const MentorProfile = ({
         <div className="bg-white p-4 rounded-lg shadow-md">
           <p className="text-gray-700 mb-3">{selectedMentor.about}</p>
           <p className="text-gray-700 mb-3">
-            With extensive experience in {selectedMentor.expertise.join(", ")},{" "}
-            {selectedMentor.name} provides personalized mentorship to help you
+            With extensive experience in {selectedMentor.profile.Skills.join(", ")},{" "}
+            {selectedMentor.firstName} {selectedMentor.lastName} provides personalized mentorship to help you
             achieve your career goals and develop new skills.
           </p>
           <div className="flex gap-2 mt-3 flex-wrap">
-            {selectedMentor.expertise.map((skill, index) => (
+            {selectedMentor.profile.Skills.map((skill, index) => (
               <span
                 key={index}
                 className="px-3 py-1 bg-purple-100 text-purple-800 text-xs rounded-full shadow-sm"

@@ -1,5 +1,11 @@
 "use client";
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Search, Users, Briefcase, ChevronRight } from "lucide-react";
 import MentorProfile from "./MentorProfile";
 import { useGSAP } from "@gsap/react";
@@ -7,6 +13,8 @@ import gsap from "gsap";
 import { MentorCard } from "./MentorCard";
 import ConfirmBooking from "./ConfirmBooking";
 import AnimateOnScroll from "../Animation/Animate";
+import { IUser } from "@/models/user.model";
+import { IProfile } from "@/models/profile.model";
 export type mentortype = {
   id: number;
   name: string;
@@ -86,11 +94,20 @@ const mentors: mentortype[] = [
     expertise: ["Python", "Machine Learning", "Data Analysis"],
   },
 ];
+// Define a Mentor type that includes the user and profile information
+export interface IMentor extends IUser {
+  profile: IProfile;
+}
+
+
+// Type for the response from the API (list of mentors)
+export type IMentorListResponse = IMentor[];
 
 const Mentee = () => {
+  const [mentorrs, setMentors] = useState<IMentor[]>([]);
   const [ComapnyName, setComapnyName] = useState("");
   const [Role, setRole] = useState("");
-  const [selectedMentorId, setSelectedMentorId] = useState<number | null>(null);
+  const [selectedMentorId, setSelectedMentorId] = useState<String | null>(null);
   const [bookingPageOpen, setBookingPageOpen] = useState(false);
   const mentorprofileRef = useRef(null);
   const BookingPageRef = useRef(null);
@@ -114,8 +131,7 @@ const Mentee = () => {
       return (
         (!ComapnyName ||
           mentor.company.toLowerCase().includes(ComapnyName.toLowerCase())) &&
-        (!Role ||
-          mentor.role.toLowerCase().includes(Role.toLowerCase()))
+        (!Role || mentor.role.toLowerCase().includes(Role.toLowerCase()))
       );
     });
   }, [ComapnyName, Role]);
@@ -127,10 +143,10 @@ const Mentee = () => {
   );
 
   const selectedMentor = useMemo(() => {
-    return mentors.find((mentor) => mentor.id === selectedMentorId) || null;
+    return mentorrs.find((mentor) => mentor.userId === selectedMentorId) || null;
   }, [selectedMentorId]);
 
-  const handleCardClick = (mentorId: number) => {
+  const handleCardClick = (mentorId: string) => {
     setSelectedMentorId(mentorId);
   };
 
@@ -162,12 +178,19 @@ const Mentee = () => {
     }
   }, [bookingPageOpen]);
 
-  const handleSearch=async()=>{
-    const response=await fetch(`/api/mentors?ComapnyName=${ComapnyName}&Role=${Role}`)
-    const data=await response.json()
+  const handleSearch = async () => {
+    const response = await fetch(
+      `/api/mentors?ComapnyName=${ComapnyName}&Role=${Role}`
+    );
+    const data = await response.json();
     console.log(data);
     
-  }
+    setMentors(data);
+  };
+
+  useEffect(() => {
+    handleSearch();
+  }, []);
   return (
     <div>
       {/* Hero Section */}
@@ -233,8 +256,10 @@ const Mentee = () => {
             </div>
 
             {/* Search Button */}
-            <button className="flex items-center justify-center gap-2 px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium rounded-lg transition-all duration-200 ease-in-out shadow-md hover:shadow-lg transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-blue-300 w-full sm:w-auto"
-            onClick={handleSearch}>
+            <button
+              className="flex items-center justify-center gap-2 px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium rounded-lg transition-all duration-200 ease-in-out shadow-md hover:shadow-lg transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-blue-300 w-full sm:w-auto"
+              onClick={handleSearch}
+            >
               <Search className="w-5 h-5" />
               <span>Search</span>
             </button>
@@ -305,19 +330,19 @@ const Mentee = () => {
                         : "flex flex-wrap gap-6 justify-start"
                     }`}
                   >
-                    {topMentors.map((mentor) => (
+                    {mentorrs.map((mentor) => (
                       <div
-                        key={mentor.id}
+                        key={mentor.userId}
                         className={`transition-all duration-700 transform ${
-                          selectedMentorId && selectedMentorId !== mentor.id
+                          selectedMentorId && selectedMentorId !== mentor.userId
                             ? "opacity-90"
                             : ""
                         }`}
                       >
                         <MentorCard
                           mentor={mentor}
-                          isSelected={selectedMentorId === mentor.id}
-                          onClick={() => handleCardClick(mentor.id)}
+                          isSelected={selectedMentorId === mentor.userId}
+                          onClick={() => handleCardClick(mentor.userId)}
                           isCollapsed={selectedMentorId !== null}
                         />
                       </div>
@@ -331,7 +356,7 @@ const Mentee = () => {
                       Recommended for You
                     </h2>
                     <div className="flex flex-wrap gap-6 justify-start">
-                      {recommendedMentors.map((mentor) => (
+                      {/* {recommendedMentors.map((mentor) => (
                         <MentorCard
                           key={`rec-${mentor.id}`}
                           mentor={mentor}
@@ -339,7 +364,7 @@ const Mentee = () => {
                           onClick={() => handleCardClick(mentor.id)}
                           isCollapsed={false}
                         />
-                      ))}
+                      ))} */}
                     </div>
                   </section>
                 )}

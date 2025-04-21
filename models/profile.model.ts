@@ -1,6 +1,6 @@
 import mongoose, { Model } from "mongoose";
 
-interface IProfile {
+export interface IProfile {
   userId: string;
   CompanyName: string;
   Role: string;

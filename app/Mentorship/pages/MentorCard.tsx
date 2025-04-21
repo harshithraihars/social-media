@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { StaticImageData } from "next/image";
+import { IMentor } from "./Mentee";
 
 // Types
 export type mentortype = {
@@ -20,7 +21,7 @@ export type mentortype = {
 };
 
 export type MentorCardProps = {
-  mentor: mentortype;
+  mentor: IMentor;
   isSelected: boolean;
   onClick: () => void;
   isCollapsed: boolean;
@@ -68,26 +69,26 @@ export const MentorCard = React.memo(
           <div className="relative">
             <div className="absolute inset-0 rounded-full bg-gradient-to-br from-violet-400 to-indigo-600 opacity-0 group-hover:opacity-100 blur-md transition-all duration-500 scale-110" />
             <img
-              src={mentor.image as string || "/placeholder.svg"}
-              alt={mentor.name}
+              src={mentor.profilePhoto as string || "/placeholder.svg"}
+              alt={mentor.firstName}
               loading="lazy"
               className="relative w-14 h-14 rounded-full object-cover ring-2 ring-indigo-100 group-hover:ring-indigo-300 transition-all duration-300 transform group-hover:scale-105 z-10"
             />
           </div>
           <div>
             <h3 className="font-semibold text-base md:text-lg text-gray-800 group-hover:text-indigo-700 transition-colors duration-300">
-              {mentor.name}
+              {mentor.firstName} {mentor.lastName}
             </h3>
             <p className="text-gray-600 text-xs md:text-sm font-medium">
-              {mentor.role}
+              {mentor.profile.Role}
             </p>
-            <p className="text-gray-500 text-xs md:text-sm">{mentor.company}</p>
+            <p className="text-gray-500 text-xs md:text-sm">{mentor.profile.CompanyName}</p>
           </div>
         </div>
 
         {/* Expertise tags */}
         <div className="flex flex-wrap gap-1.5 mb-3">
-          {mentor.expertise.map((skill, index) => (
+          {mentor.profile.Skills.map((skill, index) => (
             <Badge
               variant="secondary"
               key={index}
@@ -100,15 +101,15 @@ export const MentorCard = React.memo(
 
         {/* Rating stars with animation */}
         <div className="flex items-center space-x-1 mb-3">
-          <RatingStars rating={mentor.rating} />
+          <RatingStars rating={mentor.profile.Rating} />
           <span className="text-xs md:text-sm text-gray-600 ml-1 font-medium">
-            {mentor.rating.toFixed(1)}
+            {mentor.profile.Rating.toFixed(1)}
           </span>
         </div>
 
         {/* About section */}
         <p className="text-xs md:text-sm text-gray-700 line-clamp-2 md:line-clamp-3 mb-4 group-hover:text-gray-900 transition-colors duration-300">
-          {mentor.about}
+          {mentor.profile.About}
         </p>
 
         {/* Info badges */}
@@ -116,13 +117,13 @@ export const MentorCard = React.memo(
           <div className="flex items-center text-gray-700 bg-white/70 backdrop-blur-sm p-2 rounded-lg group-hover:bg-white/90 transition-all duration-300 shadow-sm">
             <DollarSign className="w-4 h-4 mr-2 text-indigo-500" />
             <span className="text-xs md:text-sm font-medium">
-              ${mentor.hourlyRate}/hour
+              ${mentor.profile.Rate}/hour
             </span>
           </div>
           <div className="flex items-center text-gray-700 bg-white/70 backdrop-blur-sm p-2 rounded-lg group-hover:bg-white/90 transition-all duration-300 shadow-sm">
             <Clock className="w-4 h-4 mr-2 text-indigo-500" />
             <span className="text-xs md:text-sm font-medium">
-              {mentor.availability}
+            2 slots/week
             </span>
           </div>
         </div>
