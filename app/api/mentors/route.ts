@@ -1,45 +1,56 @@
 import connectDB from "@/lib/db";
 import { User } from "@/models/user.model";
 import { NextRequest, NextResponse } from "next/server";
-// Interface for query filter
-interface MentorQuery {
-  MentorshipEnabled: boolean;
-  company?: string;
-  role?: string;
-}
 
 export const GET = async (req: NextRequest) => {
   try {
     await connectDB();
+
     const { searchParams } = new URL(req.url);
-    const company = searchParams.get("company");
-    const role = searchParams.get("role");
-
-    const query: MentorQuery = {
-      MentorshipEnabled: true,
-    };
-
-    if (company) query.company = company;
-    if (role) query.role = role;
-
-    const mentors = await User.aggregate([
+    console.log(searchParams);
+    
+    const CompanyName = searchParams.get("CompanyName");
+    const Role = searchParams.get("Role");
+    console.log(CompanyName);
+    
+    const pipeline: any[] = [
       { $match: { MentorshipEnabled: true } },
       {
         $lookup: {
           from: "profiles",
           localField: "userId",
           foreignField: "userId",
-          as: "profile"
-        }
+          as: "profile",
+        },
       },
       { $unwind: "$profile" },
-      ...(company ? [{ $match: { "profile.CompanyName": company } }] : []),
-      ...(role ? [{ $match: { "profile.Role": role } }] : [])
-    ]);
-    
+    ];
+
+    if (CompanyName) {
+      pipeline.push({
+        $match: {
+          "profile.CompanyName": {
+            $regex: CompanyName,
+            $options: "i", // case-insensitive match
+          },
+        },
+      });
+    }
+
+    if (Role) {
+      pipeline.push({
+        $match: {
+          "profile.Role": {
+            $regex: Role,
+            $options: "i", // case-insensitive match
+          },
+        },
+      });
+    }
+
+    const mentors = await User.aggregate(pipeline);
 
     return NextResponse.json(mentors, { status: 200 });
-
   } catch (error) {
     console.error("Error fetching mentors:", error);
     return NextResponse.json(

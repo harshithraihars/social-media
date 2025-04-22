@@ -15,85 +15,6 @@ import ConfirmBooking from "./ConfirmBooking";
 import AnimateOnScroll from "../Animation/Animate";
 import { IUser } from "@/models/user.model";
 import { IProfile } from "@/models/profile.model";
-export type mentortype = {
-  id: number;
-  name: string;
-  role: string;
-  company: string;
-  about: string;
-  rating: number;
-  image: string;
-  hourlyRate: number;
-  availability: string;
-  expertise: string[];
-};
-const mentors: mentortype[] = [
-  {
-    id: 1,
-    name: "Sarah Chen",
-    role: "Senior Product Manager",
-    company: "Google",
-    about:
-      "Passionate about helping others grow in product management. 8+ years of experience in tech.",
-    rating: 4.8,
-    image: "./google.jpg",
-    hourlyRate: 120,
-    availability: "2 slots/week",
-    expertise: ["python", "java", "aws"],
-  },
-  {
-    id: 2,
-    name: "Michael Rodriguez",
-    role: "Engineering Director",
-    company: "Microsoft",
-    about:
-      "Technical leader with focus on scaling engineering teams and mentoring future leaders.",
-    rating: 4.9,
-    image: "./img2.jpg",
-    hourlyRate: 150,
-    availability: "3 slots/week",
-    expertise: ["React Native", "Cloud", "aws"],
-  },
-  {
-    id: 3,
-    name: "Priya Patel",
-    role: "UX Design Lead",
-    company: "Apple",
-    about:
-      "Helping designers bridge the gap between junior and senior roles. Design systems expert.",
-    rating: 4.7,
-    image: "./img3.jpg",
-    hourlyRate: 100,
-    availability: "4 slots/week",
-    expertise: ["SpringBoot", "System Design", "Linux"],
-  },
-  {
-    id: 4,
-    name: "David Kim",
-    role: "Frontend Developer",
-    company: "Netflix",
-    about:
-      "Frontend specialist with expertise in React and modern UI frameworks. Passionate about mentoring junior developers.",
-    rating: 4.6,
-    image: "./img4.jpg",
-    hourlyRate: 90,
-    availability: "5 slots/week",
-    expertise: ["React", "JavaScript", "CSS"],
-  },
-  {
-    id: 5,
-    name: "Emily Johnson",
-    role: "Data Scientist",
-    company: "Amazon",
-    about:
-      "Experienced data scientist helping others break into the field and develop specialized skills in ML and AI.",
-    rating: 4.9,
-    image: "./img5.jpg",
-    hourlyRate: 130,
-    availability: "2 slots/week",
-    expertise: ["Python", "Machine Learning", "Data Analysis"],
-  },
-];
 // Define a Mentor type that includes the user and profile information
 export interface IMentor extends IUser {
   profile: IProfile;
@@ -105,7 +26,7 @@ export type IMentorListResponse = IMentor[];
 
 const Mentee = () => {
   const [mentorrs, setMentors] = useState<IMentor[]>([]);
-  const [ComapnyName, setComapnyName] = useState("");
+  const [CompanyName, setCompanyName] = useState("");
   const [Role, setRole] = useState("");
   const [selectedMentorId, setSelectedMentorId] = useState<String | null>(null);
   const [bookingPageOpen, setBookingPageOpen] = useState(false);
@@ -113,7 +34,7 @@ const Mentee = () => {
   const BookingPageRef = useRef(null);
   const handleCompanyChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      setComapnyName(e.target.value);
+      setCompanyName(e.target.value);
     },
     []
   );
@@ -123,23 +44,6 @@ const Mentee = () => {
       setRole(e.target.value);
     },
     []
-  );
-
-  // Filter mentors based on search inputs
-  const filteredMentors = useMemo(() => {
-    return mentors.filter((mentor) => {
-      return (
-        (!ComapnyName ||
-          mentor.company.toLowerCase().includes(ComapnyName.toLowerCase())) &&
-        (!Role || mentor.role.toLowerCase().includes(Role.toLowerCase()))
-      );
-    });
-  }, [ComapnyName, Role]);
-
-  const topMentors = useMemo(() => filteredMentors, [filteredMentors]);
-  const recommendedMentors = useMemo(
-    () => filteredMentors.slice(0, 2),
-    [filteredMentors]
   );
 
   const selectedMentor = useMemo(() => {
@@ -180,7 +84,7 @@ const Mentee = () => {
 
   const handleSearch = async () => {
     const response = await fetch(
-      `/api/mentors?ComapnyName=${ComapnyName}&Role=${Role}`
+      `/api/mentors?CompanyName=${CompanyName}&Role=${Role}`
     );
     const data = await response.json();
     console.log(data);
@@ -232,7 +136,7 @@ const Mentee = () => {
                 <input
                   type="text"
                   placeholder="Search by company..."
-                  value={ComapnyName}
+                  value={CompanyName}
                   onChange={handleCompanyChange}
                   className="w-full pl-12 pr-4 py-2 bg-gray-50 border-2 border-gray-200 rounded-lg transition-all duration-200 ease-in-out placeholder:text-gray-400 text-gray-700 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:bg-white"
                 />
@@ -267,11 +171,11 @@ const Mentee = () => {
 
           {/* Optional Search Tags/Filters */}
           <div className="mt-4 flex flex-wrap gap-2">
-            {ComapnyName && (
+            {CompanyName && (
               <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm">
-                Company: {ComapnyName}
+                Company: {CompanyName}
                 <button
-                  onClick={() => setComapnyName("")}
+                  onClick={() => setCompanyName("")}
                   className="hover:text-blue-900"
                 >
                   ×
