@@ -6,7 +6,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { Search, Users, Briefcase, ChevronRight } from "lucide-react";
+import { Search, Users, Briefcase, ChevronRight, Loader2 } from "lucide-react";
 import MentorProfile from "./MentorProfile";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -15,23 +15,26 @@ import ConfirmBooking from "./ConfirmBooking";
 import AnimateOnScroll from "../Animation/Animate";
 import { IUser } from "@/models/user.model";
 import { IProfile } from "@/models/profile.model";
+
 // Define a Mentor type that includes the user and profile information
 export interface IMentor extends IUser {
   profile: IProfile;
 }
 
-
 // Type for the response from the API (list of mentors)
 export type IMentorListResponse = IMentor[];
 
 const Mentee = () => {
-  const [mentorrs, setMentors] = useState<IMentor[]>([]);
-  const [CompanyName, setCompanyName] = useState("");
-  const [Role, setRole] = useState("");
+  const [mentors, setMentors] = useState<IMentor[]>([]);
+  const [companyName, setCompanyName] = useState("");
+  const [role, setRole] = useState("");
   const [selectedMentorId, setSelectedMentorId] = useState<String | null>(null);
   const [bookingPageOpen, setBookingPageOpen] = useState(false);
-  const mentorprofileRef = useRef(null);
-  const BookingPageRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasSearched, setHasSearched] = useState(false);
+  const mentorProfileRef = useRef(null);
+  const bookingPageRef = useRef(null);
+
   const handleCompanyChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setCompanyName(e.target.value);
@@ -47,8 +50,8 @@ const Mentee = () => {
   );
 
   const selectedMentor = useMemo(() => {
-    return mentorrs.find((mentor) => mentor.userId === selectedMentorId) || null;
-  }, [selectedMentorId]);
+    return mentors.find((mentor) => mentor.userId === selectedMentorId) || null;
+  }, [selectedMentorId, mentors]);
 
   const handleCardClick = (mentorId: string) => {
     setSelectedMentorId(mentorId);
@@ -58,13 +61,30 @@ const Mentee = () => {
     setSelectedMentorId(null);
   };
 
+  // Generate a dynamic heading based on search criteria
+  const getHeading = () => {
+    if (!hasSearched) return "Top Mentors";
+    
+    if (companyName && role) {
+      return `${role} Mentors at ${companyName}`;
+    } else if (companyName) {
+      return `Mentors from ${companyName}`;
+    } else if (role) {
+      return `${role} Mentors`;
+    } else if (mentors.length === 0) {
+      return "No Mentors Found";
+    } else {
+      return "Search Results";
+    }
+  };
+
   useGSAP(() => {
     if (selectedMentorId) {
-      gsap.to(mentorprofileRef.current, {
+      gsap.to(mentorProfileRef.current, {
         transform: "translateY(0)",
       });
     } else {
-      gsap.to(mentorprofileRef.current, {
+      gsap.to(mentorProfileRef.current, {
         transform: "translateY(100%)",
       });
     }
@@ -72,29 +92,50 @@ const Mentee = () => {
 
   useGSAP(() => {
     if (bookingPageOpen) {
-      gsap.to(BookingPageRef.current, {
+      gsap.to(bookingPageRef.current, {
         transform: "translateY(0)",
       });
     } else {
-      gsap.to(BookingPageRef.current, {
+      gsap.to(bookingPageRef.current, {
         transform: "translateY(100%)",
       });
     }
   }, [bookingPageOpen]);
 
   const handleSearch = async () => {
-    const response = await fetch(
-      `/api/mentors?CompanyName=${CompanyName}&Role=${Role}`
-    );
-    const data = await response.json();
-    console.log(data);
+    setIsLoading(true);
+    setHasSearched(true);
     
-    setMentors(data);
+    try {
+      const response = await fetch(
+        `/api/mentors?CompanyName=${companyName}&Role=${role}`
+      );
+      const data = await response.json();
+      setMentors(data);
+    } catch (error) {
+      console.error("Error fetching mentors:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
-    handleSearch();
+    const fetchInitialMentors = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch(`/api/mentors`);
+        const data = await response.json();
+        setMentors(data);
+      } catch (error) {
+        console.error("Error fetching initial mentors:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchInitialMentors();
   }, []);
+
   return (
     <div>
       {/* Hero Section */}
@@ -136,7 +177,7 @@ const Mentee = () => {
                 <input
                   type="text"
                   placeholder="Search by company..."
-                  value={CompanyName}
+                  value={companyName}
                   onChange={handleCompanyChange}
                   className="w-full pl-12 pr-4 py-2 bg-gray-50 border-2 border-gray-200 rounded-lg transition-all duration-200 ease-in-out placeholder:text-gray-400 text-gray-700 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:bg-white"
                 />
@@ -151,7 +192,7 @@ const Mentee = () => {
                 <input
                   type="text"
                   placeholder="Search by role..."
-                  value={Role}
+                  value={role}
                   onChange={handleRoleChange}
                   className="w-full pl-12 pr-4 py-2 bg-gray-50 border-2 border-gray-200 rounded-lg transition-all duration-200 ease-in-out placeholder:text-gray-400 text-gray-700 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:bg-white"
                 />
@@ -163,17 +204,22 @@ const Mentee = () => {
             <button
               className="flex items-center justify-center gap-2 px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium rounded-lg transition-all duration-200 ease-in-out shadow-md hover:shadow-lg transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-blue-300 w-full sm:w-auto"
               onClick={handleSearch}
+              disabled={isLoading}
             >
-              <Search className="w-5 h-5" />
-              <span>Search</span>
+              {isLoading ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <Search className="w-5 h-5" />
+              )}
+              <span>{isLoading ? "Searching..." : "Search"}</span>
             </button>
           </div>
 
           {/* Optional Search Tags/Filters */}
           <div className="mt-4 flex flex-wrap gap-2">
-            {CompanyName && (
+            {companyName && (
               <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm">
-                Company: {CompanyName}
+                Company: {companyName}
                 <button
                   onClick={() => setCompanyName("")}
                   className="hover:text-blue-900"
@@ -182,9 +228,9 @@ const Mentee = () => {
                 </button>
               </span>
             )}
-            {Role && (
+            {role && (
               <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm">
-                Role: {Role}
+                Role: {role}
                 <button
                   onClick={() => setRole("")}
                   className="hover:text-blue-900"
@@ -225,50 +271,59 @@ const Mentee = () => {
                         : ""
                     }`}
                   >
-                    Top Mentors
+                    {getHeading()}
                   </h2>
-                  <div
-                    className={`transition-all duration-700 ease-in-out ${
-                      selectedMentorId
-                        ? "flex flex-col space-y-4"
-                        : "flex flex-wrap gap-6 justify-start"
-                    }`}
-                  >
-                    {mentorrs.map((mentor) => (
-                      <div
-                        key={mentor.userId}
-                        className={`transition-all duration-700 transform ${
-                          selectedMentorId && selectedMentorId !== mentor.userId
-                            ? "opacity-90"
-                            : ""
-                        }`}
-                      >
-                        <MentorCard
-                          mentor={mentor}
-                          isSelected={selectedMentorId === mentor.userId}
-                          onClick={() => handleCardClick(mentor.userId)}
-                          isCollapsed={selectedMentorId !== null}
-                        />
+                  
+                  {isLoading ? (
+                    <div className="flex justify-center items-center h-48">
+                      <div className="flex flex-col items-center space-y-4">
+                        <Loader2 className="w-12 h-12 text-blue-500 animate-spin" />
+                        <p className="text-gray-500 font-medium">Loading mentors...</p>
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  ) : mentors.length === 0 ? (
+                    <div className="flex justify-center items-center h-48">
+                      <div className="text-center p-6 bg-blue-50 rounded-lg border border-blue-100 max-w-md">
+                        <p className="text-lg font-medium text-gray-700 mb-2">No mentors found</p>
+                        <p className="text-gray-500">Try adjusting your search criteria or explore our recommended mentors below.</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div
+                      className={`transition-all duration-700 ease-in-out ${
+                        selectedMentorId
+                          ? "flex flex-col space-y-4"
+                          : "flex flex-wrap gap-6 justify-start"
+                      }`}
+                    >
+                      {mentors.map((mentor) => (
+                        <div
+                          key={mentor.userId}
+                          className={`transition-all duration-700 transform ${
+                            selectedMentorId && selectedMentorId !== mentor.userId
+                              ? "opacity-90"
+                              : ""
+                          }`}
+                        >
+                          <MentorCard
+                            mentor={mentor}
+                            isSelected={selectedMentorId === mentor.userId}
+                            onClick={() => handleCardClick(mentor.userId)}
+                            isCollapsed={selectedMentorId !== null}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </section>
 
-                {!selectedMentorId && (
+                {!selectedMentorId && !isLoading && mentors.length > 0 && (
                   <section className="mb-10">
                     <h2 className="text-2xl font-bold mb-6">
                       Recommended for You
                     </h2>
                     <div className="flex flex-wrap gap-6 justify-start">
-                      {/* {recommendedMentors.map((mentor) => (
-                        <MentorCard
-                          key={`rec-${mentor.id}`}
-                          mentor={mentor}
-                          isSelected={false}
-                          onClick={() => handleCardClick(mentor.id)}
-                          isCollapsed={false}
-                        />
-                      ))} */}
+                      {/* Recommended mentors would go here if you have that feature */}
                     </div>
                   </section>
                 )}
@@ -287,10 +342,9 @@ const Mentee = () => {
             </div>
           </div>
         </AnimateOnScroll>
-        {/* Mentor Listings with Animation */}
       </div>
       <div
-        ref={mentorprofileRef}
+        ref={mentorProfileRef}
         className="fixed top-4 z-10 w-full h-full bg-white pt-12 px-3 
            translate-y-full overflow-y-auto pb-20 md:hidden"
       >
@@ -301,9 +355,9 @@ const Mentee = () => {
         />
       </div>
       <div
-        className="fixed top-4 z-10 w-screen md:w-3/4 h-full bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200 pt-12  px-0 md:px-3 
-           translate-y-full overflow-y-auto pb-20 "
-        ref={BookingPageRef}
+        className="fixed top-4 z-10 w-screen md:w-3/4 h-full bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200 pt-12 px-0 md:px-3 
+           translate-y-full overflow-y-auto pb-20"
+        ref={bookingPageRef}
       >
         <ConfirmBooking
           selectedMentor={selectedMentor}
