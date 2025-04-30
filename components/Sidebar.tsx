@@ -9,11 +9,6 @@ import ProfilePhoto from './shared/ProfilePhoto'
 import { setUser } from '@/lib/feature/todos/todoSlice'
 
 const Sidebar =  ({ user }: { user: any }) => {
-    const dispatch=useAppDispatch();
-    (async function getSetUser(){
-        const user=await getCurrentUser();
-        dispatch(setUser(user))
-    })()
     const [postCount,setPostCount]=useState<number>(0)
     const currentuser=useUser().user
     const posts=useAppSelector((state)=>state.counter.posts)

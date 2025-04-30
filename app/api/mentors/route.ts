@@ -9,7 +9,7 @@ export const GET = async (req: NextRequest) => {
     const { searchParams } = new URL(req.url);
     console.log(searchParams);
     
-    const CompanyName = searchParams.get("CompanyName");
+    const CompanyName = searchParams.get("ComapnyName");
     const Role = searchParams.get("Role");
     console.log(CompanyName);
     

@@ -17,7 +17,8 @@ const UserProfile = () => {
     const res = await fetch(`/api/profile?userId=${user?.id}`);
     const data = await res.json();
     console.log(data);
-
+    console.log("clicking");
+    
     setShowProfileModal(true);
   };
   return (
@@ -28,7 +29,7 @@ const UserProfile = () => {
             <UserButton />
             <div className="absolute -top-2 -right-3 bg-white dark:bg-gray-800 rounded-full p-1 shadow-md transform transition-transform duration-200 group-hover:scale-110">
               <Settings
-                className="w-4 h-4 text-indigo-500 hover:text-indigo-600 dark:text-indigo-400 dark:hover:text-indigo-300 cursor-pointer"
+                className="w-4 h-4  text-indigo-500 hover:text-indigo-600 dark:text-indigo-400 dark:hover:text-indigo-300 cursor-pointer"
                 onClick={EditProfile}
               />
             </div>

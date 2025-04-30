@@ -3,18 +3,16 @@ import { Heart, ChevronLeft, Star } from "lucide-react";
 import "./profile.css";
 import { IMentor } from "./Mentee";
 
-
 type MentorProfileProps = {
   setMentorProfile: () => void; // Function to close the profile
-  OnClick: () => void
-  selectedMentor: IMentor|null; // Ensure MentorType is correctly defined
+  OnClick: () => void;
+  selectedMentor: IMentor | null; // Ensure MentorType is correctly defined
 };
 
 const MentorProfile = ({
   setMentorProfile,
   OnClick,
-  selectedMentor
-  
+  selectedMentor,
 }: MentorProfileProps) => {
   const [liked, setLiked] = useState(false);
   const comments = [
@@ -83,7 +81,8 @@ const MentorProfile = ({
               </span>
             </h2>
             <p className="text-gray-600 text-sm">
-              {selectedMentor.profile.Role} at {selectedMentor.profile.CompanyName}
+              {selectedMentor.profile.Role} at{" "}
+              {selectedMentor.profile.CompanyName}
             </p>
             <div className="flex items-center mt-1">
               {[...Array(5)].map((_, i) => (
@@ -122,9 +121,11 @@ const MentorProfile = ({
         <div className="bg-white p-4 rounded-lg shadow-md">
           <p className="text-gray-700 mb-3">{selectedMentor.profile.About}</p>
           <p className="text-gray-700 mb-3">
-            With extensive experience in {selectedMentor.profile.Skills.join(", ")},{" "}
-            {selectedMentor.firstName} {selectedMentor.lastName} provides personalized mentorship to help you
-            achieve your career goals and develop new skills.
+            With extensive experience in{" "}
+            {selectedMentor.profile.Skills.join(", ")},{" "}
+            {selectedMentor.firstName} {selectedMentor.lastName} provides
+            personalized mentorship to help you achieve your career goals and
+            develop new skills.
           </p>
           <div className="flex gap-2 mt-3 flex-wrap">
             {selectedMentor.profile.Skills.map((skill, index) => (
@@ -166,11 +167,24 @@ const MentorProfile = ({
 
       {/* Book Session Button with better visibility and spacing */}
       <div className="px-6 py-5 mb-3 flex items-center justify-center sticky bottom-0">
-      <button className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:from-purple-700 hover:to-indigo-700 transform hover:scale-105 transition duration-300 flex items-center justify-center0"
-      onClick={OnClick}>
+        <button
+          className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:from-purple-700 hover:to-indigo-700 transform hover:scale-105 transition duration-300 flex items-center justify-center0"
+          onClick={OnClick}
+        >
           <span className="mr-2">Book a Session</span>
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M17 8l4 4m0 0l-4 4m4-4H3"
+            ></path>
           </svg>
         </button>
       </div>
