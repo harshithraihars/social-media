@@ -36,7 +36,7 @@ const MentorshipHeader = () => {
   return (
     <div className="relative">
       <header className="shadow-sm rounded-t-[10px]">
-        <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+        <div className="py-6">
           {/* Flex container to keep items in the same row */}
           <div className="flex flex-row flex-nowrap justify-between items-start sm:items-center w-full gap-4">
             {/* Left Section (Heading + Quote) */}

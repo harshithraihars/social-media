@@ -64,7 +64,7 @@ const Mentee = () => {
   // Generate a dynamic heading based on search criteria
   const getHeading = () => {
     if (!hasSearched) return "Top Mentors";
-    
+
     if (companyName && role) {
       return `${role} Mentors at ${companyName}`;
     } else if (companyName) {
@@ -105,7 +105,7 @@ const Mentee = () => {
   const handleSearch = async () => {
     setIsLoading(true);
     setHasSearched(true);
-    
+
     try {
       const response = await fetch(
         `/api/mentors?CompanyName=${companyName}&Role=${role}`
@@ -139,17 +139,17 @@ const Mentee = () => {
   return (
     <div>
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-400 text-white mx-2 md:mx-12 rounded-xl h-[160px] sm:h-[300px] lg:h-80 mt-5 md:mt-10">
-        <div className="max-w-7xl mx-auto px-4 py-4 md:py-8 sm:px-6 lg:px-8">
+      <div className="bg-gradient-to-r from-blue-600 to-blue-400 text-white rounded-xl h-[160px] sm:h-[300px] lg:h-80 mt-5 md:mt-10">
+        <div className="px-4 py-4 md:py-8">
           <div className="flex items-center justify-between">
-            <div className="flex-1 pr-4">
+            <div className="flex-1 pr-4 md:px-6">
               <h2 className="text-lg sm:text-4xl font-bold mb-3 sm:mb-4 whitespace-nowrap">
                 Let's find the Right mentor
               </h2>
               <p className="text-sm sm:text-xl mb-4 sm:mb-6">
                 Connect with industry experts who can guide your career journey
               </p>
-              <button className="bg-white text-blue-600 px-3 py-1.5 sm:px-6 sm:py-3 rounded-lg font-semibold transition-all duration-300 flex items-center whitespace-nowrap hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-700 hover:text-white hover:shadow-lg transform hover:scale-105">
+              <button className="bg-white text-blue-600 md:px- py-1.5 sm:px-6 sm:py-3 rounded-lg font-semibold transition-all duration-300 flex items-center whitespace-nowrap hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-700 hover:text-white hover:shadow-lg transform hover:scale-105">
                 Explore Mentors
                 <ChevronRight className="ml-2 transition-transform duration-300 group-hover:translate-x-1" />
               </button>
@@ -168,10 +168,10 @@ const Mentee = () => {
 
       {/* Search Section */}
       <div>
-        <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+        <div className="py-6">
           <div className="flex flex-wrap gap-4 sm:flex-nowrap">
             {/* Company Search Input */}
-            <div className="flex-1 min-w-[calc(50%-0.5rem)] sm:min-w-0 group">
+            <div className="flex-1 min-w-[calc(50%-0.5rem)] sm:min-w-0 sm:w-5/12 group">
               <div className="relative">
                 <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 transition-colors duration-200 group-focus-within:text-blue-500" />
                 <input
@@ -186,7 +186,7 @@ const Mentee = () => {
             </div>
 
             {/* Role Search Input */}
-            <div className="flex-1 min-w-[calc(50%-0.5rem)] sm:min-w-0 group">
+            <div className="flex-1 min-w-[calc(50%-0.5rem)] sm:min-w-0 sm:w-5/12 group">
               <div className="relative">
                 <Users className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 transition-colors duration-200 group-focus-within:text-blue-500" />
                 <input
@@ -202,7 +202,7 @@ const Mentee = () => {
 
             {/* Search Button */}
             <button
-              className="flex items-center justify-center gap-2 px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium rounded-lg transition-all duration-200 ease-in-out shadow-md hover:shadow-lg transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-blue-300 w-full sm:w-auto"
+              className="flex items-center justify-center gap-2 px-6 py-0 sm:py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium rounded-lg transition-all duration-200 ease-in-out shadow-md hover:shadow-lg transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-blue-300 w-full sm:w-2/12"
               onClick={handleSearch}
               disabled={isLoading}
             >
@@ -242,7 +242,7 @@ const Mentee = () => {
           </div>
         </div>
         <AnimateOnScroll>
-          <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+          <div className="py-8">
             {/* Dynamic layout that changes when a mentor is selected */}
             <div
               className={`transition-all duration-700 ease-in-out ${
@@ -273,19 +273,26 @@ const Mentee = () => {
                   >
                     {getHeading()}
                   </h2>
-                  
+
                   {isLoading ? (
                     <div className="flex justify-center items-center h-48">
                       <div className="flex flex-col items-center space-y-4">
                         <Loader2 className="w-12 h-12 text-blue-500 animate-spin" />
-                        <p className="text-gray-500 font-medium">Loading mentors...</p>
+                        <p className="text-gray-500 font-medium">
+                          Loading mentors...
+                        </p>
                       </div>
                     </div>
                   ) : mentors.length === 0 ? (
                     <div className="flex justify-center items-center h-48">
                       <div className="text-center p-6 bg-blue-50 rounded-lg border border-blue-100 max-w-md">
-                        <p className="text-lg font-medium text-gray-700 mb-2">No mentors found</p>
-                        <p className="text-gray-500">Try adjusting your search criteria or explore our recommended mentors below.</p>
+                        <p className="text-lg font-medium text-gray-700 mb-2">
+                          No mentors found
+                        </p>
+                        <p className="text-gray-500">
+                          Try adjusting your search criteria or explore our
+                          recommended mentors below.
+                        </p>
                       </div>
                     </div>
                   ) : (
@@ -300,7 +307,8 @@ const Mentee = () => {
                         <div
                           key={mentor.userId}
                           className={`transition-all duration-700 transform ${
-                            selectedMentorId && selectedMentorId !== mentor.userId
+                            selectedMentorId &&
+                            selectedMentorId !== mentor.userId
                               ? "opacity-90"
                               : ""
                           }`}

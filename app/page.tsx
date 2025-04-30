@@ -1,5 +1,4 @@
 import Feed from "@/components/Feed";
-import Loader from "@/components/Loader";
 import News from "@/components/News";
 import Sidebar from "@/components/Sidebar";
 import { handleUSerConnections } from "@/lib/serveractions";
@@ -12,7 +11,6 @@ export default async function Home() {
   const userInfo=await handleUSerConnections(user)  
   return (
     <div className="pt-20">
-      <Loader/>
       <div className="max-w-6xl mx-auto flex justify-center gap-8">
         <Sidebar user={user}/>
         <Feed user={user!} userInfo={userInfo}/>
