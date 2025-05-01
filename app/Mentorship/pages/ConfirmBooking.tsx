@@ -10,6 +10,7 @@ import BookingConfirmation from "./BookingConfirmation";
 import MentorInfo from "./MentorInfo";
 import { ArrowRight, X, XCircle } from "lucide-react";
 import { IMentor } from "./Mentee";
+
 export default function ConfirmBooking({selectedMentor,setBookingPageOpen}:{selectedMentor:IMentor|null,setBookingPageOpen:React.Dispatch<React.SetStateAction<boolean>>}) {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [duration, setDuration] = useState("30");
@@ -54,15 +55,15 @@ export default function ConfirmBooking({selectedMentor,setBookingPageOpen}:{sele
   }
 
   return (
-    <div className="container max-w-7xl mx-auto py-8 px-0 md:px-6 bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 min-h-screen rounded-xl">
-      <div className="grid md:grid-cols-3 gap-4 md:gap-8">
+    <div className="container mx-auto py-8 px-0 md:px-8 bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 min-h-screen w-full">
+      <div className="grid md:grid-cols-3 gap-4 md:gap-8 w-full">
         <div className="md:col-span-1 order-2 md:order-1 px-4 md:px-0">
           <div className="md:sticky md:top-4 space-y-6">
             <MentorInfo selectedMentor={selectedMentor}/>
           </div>
         </div>
 
-        <div className="md:col-span-2 order-1 md:order-2 space-y-6 px-4 md:px-0">
+        <div className="md:col-span-2 order-1 md:order-2 space-y-6 px-4 md:px-0 w-full">
           <div className="bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200 dark:bg-gray-900 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 w-full">
             <div className="h-2 bg-gradient-to-r from-blue-500 to-purple-600"></div>
             <div className="p-4 md:p-6">
@@ -78,7 +79,7 @@ export default function ConfirmBooking({selectedMentor,setBookingPageOpen}:{sele
                   steps={["Select Date & Time", "Select Duration", "Payment"]}
                 />
 
-              {/* Timeline steps with vertical line connector that hides on smaller screens */}
+              {/* Timeline steps with vertical line connector */}
               <div className="relative">
                 <div className="absolute left-[22px] top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500 via-blue-400 to-blue-300 dark:from-blue-600 dark:via-blue-500 dark:to-blue-400 hidden md:block"></div>
 

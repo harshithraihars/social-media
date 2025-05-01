@@ -28,14 +28,14 @@ export default function DateTimeSelector({
   setTimeSlot,
 }: DateTimeSelectorProps) {
   return (
-    <div className="bg-blue-50/50 dark:bg-blue-900/10 rounded-lg p-4 shadow-sm">
+    <div className="bg-blue-50/50 dark:bg-blue-900/10 rounded-lg p-4 shadow-sm w-full">
       <div className="grid md:grid-cols-2 gap-6">
         <div className="bg-gradient-to-br from-blue-100 to-blue-50 dark:from-gray-800 dark:to-gray-900 rounded-lg p-3 shadow-sm hover:shadow-md transition-all duration-300">
           <Calendar
             mode="single"
             selected={date}
             onSelect={setDate}
-            className="rounded-md border-0 bg-transparent"
+            className="rounded-md border-0 bg-transparent w-full"
             disabled={(date) => {
               // Disable past dates and weekends
               return (

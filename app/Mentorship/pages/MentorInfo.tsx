@@ -8,9 +8,9 @@ export default function MentorInfo({
   selectedMentor: IMentor|null;
 }) {
   return (
-    <Card className="border-0 shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 dark:shadow-gray-900/30 hidden md:block">
+    <Card className="border-0 shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 dark:shadow-gray-900/30 hidden md:block h-full">
       <div className="h-2 bg-gradient-to-r from-blue-500 to-purple-600"></div>
-      <CardContent className="pt-6 relative bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200 dark:bg-gray-900">
+      <CardContent className="pt-6 relative bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200 dark:bg-gray-900 h-full flex flex-col">
         <div className="absolute top-0 right-0 bg-gradient-to-br from-yellow-400 to-orange-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg shadow-md">
           TOP RATED
         </div>
@@ -49,7 +49,7 @@ export default function MentorInfo({
             </span>
           </div>
         </div>
-        <div className="space-y-5">
+        <div className="space-y-5 flex-grow">
           <div>
             <h3 className="font-medium flex items-center text-blue-700 dark:text-blue-400">
               <Users className="h-4 w-4 mr-2" />
@@ -65,8 +65,8 @@ export default function MentorInfo({
               Expertise
             </h3>
             <ul className="text-sm text-muted-foreground space-y-2 mt-2">
-              {selectedMentor?.profile.Skills.map((expertice) => (
-                <li className="flex items-center transform hover:translate-x-1 transition-transform duration-200">
+              {selectedMentor?.profile.Skills?.map((expertice, index) => (
+                <li key={index} className="flex items-center transform hover:translate-x-1 transition-transform duration-200">
                   <Sparkles className="h-3 w-3 text-blue-500 dark:text-blue-400 mr-2" />
                   {expertice}
                 </li>
@@ -82,6 +82,10 @@ export default function MentorInfo({
               — Michael T., Product Designer
             </p>
           </div>
+        </div>
+        <div className="mt-6 w-full py-4 px-4 bg-gradient-to-r from-blue-100/50 to-blue-200/50 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg text-center">
+          <p className="text-blue-800 dark:text-blue-300 text-sm font-medium">Available for booking</p>
+          <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">Responds within 24 hours</p>
         </div>
       </CardContent>
     </Card>

@@ -385,16 +385,16 @@ const Mentee = () => {
       </div>
       {/* Booking page overlay - Adjusted to ensure full coverage */}
       <div
-        className="fixed inset-0 z-30 w-full h-full bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200 overflow-y-auto pb-20 translate-y-full"
-        ref={bookingPageRef}
-      >
-        <div className="pt-4 px-3">
-          <ConfirmBooking
-            selectedMentor={selectedMentor}
-            setBookingPageOpen={setBookingPageOpen}
-          />
-        </div>
-      </div>
+    className="fixed inset-0 z-30 w-full h-full bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200 overflow-y-auto translate-y-full"
+    ref={bookingPageRef}
+  >
+    <div className="w-full min-h-screen pt-4 px-0 md:px-4 pb-16 sm:pb-20">
+      <ConfirmBooking
+        selectedMentor={selectedMentor}
+        setBookingPageOpen={setBookingPageOpen}
+      />
+    </div>
+  </div>
     </div>
   );
 };
