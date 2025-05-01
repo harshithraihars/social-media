@@ -168,7 +168,7 @@ const MentorProfile = ({
       {/* Book Session Button with better visibility and spacing */}
       <div className="px-6 py-5 mb-3 flex items-center justify-center sticky bottom-0">
         <button
-          className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:from-purple-700 hover:to-indigo-700 transform hover:scale-105 transition duration-300 flex items-center justify-center0"
+          className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:from-purple-700 hover:to-indigo-700 transform hover:scale-105 transition duration-300 flex items-center justify-center"
           onClick={OnClick}
         >
           <span className="mr-2">Book a Session</span>

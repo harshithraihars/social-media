@@ -26,6 +26,7 @@ export type IMentorListResponse = IMentor[];
 
 const Mentee = () => {
   const [mentors, setMentors] = useState<IMentor[]>([]);
+  const [RecommendedMentors, setRecommendedMentors] = useState<IMentor[]>([]);
   const [companyName, setCompanyName] = useState("");
   const [role, setRole] = useState("");
   const [selectedMentorId, setSelectedMentorId] = useState<String | null>(null);
@@ -126,6 +127,7 @@ const Mentee = () => {
         const response = await fetch(`/api/mentors`);
         const data = await response.json();
         setMentors(data);
+        setRecommendedMentors(data);
       } catch (error) {
         console.error("Error fetching initial mentors:", error);
       } finally {
@@ -149,7 +151,7 @@ const Mentee = () => {
               <p className="text-sm sm:text-xl mb-4 sm:mb-6">
                 Connect with industry experts who can guide your career journey
               </p>
-              <button className="bg-white text-blue-600 md:px- py-1.5 sm:px-6 sm:py-3 rounded-lg font-semibold transition-all duration-300 flex items-center whitespace-nowrap hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-700 hover:text-white hover:shadow-lg transform hover:scale-105">
+              <button className="bg-white/15 text-white py-1.5 pl-2 md:px-6 sm:py-3 rounded-lg font-bold transition-all duration-300 flex items-center whitespace-nowrap hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-700 hover:text-white hover:shadow-2xl transform hover:scale-105">
                 Explore Mentors
                 <ChevronRight className="ml-2 transition-transform duration-300 group-hover:translate-x-1" />
               </button>
@@ -202,7 +204,7 @@ const Mentee = () => {
 
             {/* Search Button */}
             <button
-              className="flex items-center justify-center gap-2 px-6 py-0 sm:py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium rounded-lg transition-all duration-200 ease-in-out shadow-md hover:shadow-lg transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-blue-300 w-full sm:w-2/12"
+              className="flex items-center justify-center gap-2 px-6 py-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium rounded-lg transition-all duration-200 ease-in-out shadow-md hover:shadow-lg transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-blue-300 w-full sm:w-2/12"
               onClick={handleSearch}
               disabled={isLoading}
             >
@@ -265,7 +267,7 @@ const Mentee = () => {
                   }`}
                 >
                   <h2
-                    className={`text-2xl font-bold mb-6 sticky top-0 z-10 py-2 ${
+                    className={`text-3xl font-bold mb-6 sticky top-0 z-10 py-2 text-gray-800 ${
                       selectedMentorId
                         ? "bg-gradient-to-r from-purple-300/85 to-indigo-200/75 backdrop-blur-md border border-white/20 shadow-md rounded-lg px-4"
                         : ""
@@ -297,10 +299,10 @@ const Mentee = () => {
                     </div>
                   ) : (
                     <div
-                      className={`transition-all duration-700 ease-in-out ${
+                      className={`transition-all duration-700 ease-in-out md:ml-10 ${
                         selectedMentorId
                           ? "flex flex-col space-y-4"
-                          : "flex flex-wrap gap-6 justify-start"
+                          : "flex flex-wrap gap-8 justify-start"
                       }`}
                     >
                       {mentors.map((mentor) => (
@@ -330,8 +332,25 @@ const Mentee = () => {
                     <h2 className="text-2xl font-bold mb-6">
                       Recommended for You
                     </h2>
-                    <div className="flex flex-wrap gap-6 justify-start">
-                      {/* Recommended mentors would go here if you have that feature */}
+                    <div className="flex flex-wrap gap-8 justify-start md:ml-10">
+                      {mentors.map((mentor) => (
+                        <div
+                          key={mentor.userId}
+                          className={`transition-all duration-700 transform ${
+                            selectedMentorId &&
+                            selectedMentorId !== mentor.userId
+                              ? "opacity-90"
+                              : ""
+                          }`}
+                        >
+                          <MentorCard
+                            mentor={mentor}
+                            isSelected={selectedMentorId === mentor.userId}
+                            onClick={() => handleCardClick(mentor.userId)}
+                            isCollapsed={selectedMentorId !== null}
+                          />
+                        </div>
+                      ))}
                     </div>
                   </section>
                 )}
@@ -351,26 +370,30 @@ const Mentee = () => {
           </div>
         </AnimateOnScroll>
       </div>
+      {/* Mobile mentor profile overlay - Fixed the positioning and sizing */}
       <div
         ref={mentorProfileRef}
-        className="fixed top-4 z-10 w-full h-full bg-white pt-12 px-3 
-           translate-y-full overflow-y-auto pb-20 md:hidden"
+        className="fixed inset-0 z-20 w-full h-full bg-white overflow-y-auto pb-20 md:hidden translate-y-full"
       >
-        <MentorProfile
-          setMentorProfile={handleCloseProfile}
-          selectedMentor={selectedMentor}
-          OnClick={() => setBookingPageOpen(true)}
-        />
+        <div className="pt-16 px-3">
+          <MentorProfile
+            setMentorProfile={handleCloseProfile}
+            selectedMentor={selectedMentor}
+            OnClick={() => setBookingPageOpen(true)}
+          />
+        </div>
       </div>
+      {/* Booking page overlay - Adjusted to ensure full coverage */}
       <div
-        className="fixed top-4 z-10 w-screen md:w-3/4 h-full bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200 pt-12 px-0 md:px-3 
-           translate-y-full overflow-y-auto pb-20"
+        className="fixed inset-0 z-30 w-full h-full bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200 overflow-y-auto pb-20 translate-y-full"
         ref={bookingPageRef}
       >
-        <ConfirmBooking
-          selectedMentor={selectedMentor}
-          setBookingPageOpen={setBookingPageOpen}
-        />
+        <div className="pt-4 px-3">
+          <ConfirmBooking
+            selectedMentor={selectedMentor}
+            setBookingPageOpen={setBookingPageOpen}
+          />
+        </div>
       </div>
     </div>
   );

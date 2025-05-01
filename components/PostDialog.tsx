@@ -56,6 +56,7 @@ export function PostDialog({
       console.log("error occurred", error);
     }
     setInputText("");
+    setOpen(false)
   };
   
   return (
