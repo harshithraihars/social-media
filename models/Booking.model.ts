@@ -1,10 +1,11 @@
-import { Schema, model, Document } from 'mongoose';
+import mongoose, { Schema, model, models, Document } from 'mongoose';
 
 interface IBooking extends Document {
-    mentorId: String;
-    menteeId: String;
+    mentorId: string;
+    menteeId: string;
     date: Date;
-    time:String
+    time: string;
+    Duration: string;
     sessionAmount: number;
     createdAt: Date;
 }
@@ -28,6 +29,10 @@ const bookingSchema = new Schema<IBooking>({
         type: String,
         required: true
     },
+    Duration: {
+        type: String,
+        required: true
+    },
     sessionAmount: {
         type: Number,
         required: true
@@ -38,4 +43,4 @@ const bookingSchema = new Schema<IBooking>({
     }
 });
 
-export const Booking = model<IBooking>('Booking', bookingSchema);
+export const Booking = models.Booking || model<IBooking>('Booking', bookingSchema);

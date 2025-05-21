@@ -1,4 +1,4 @@
-import mongoose, { Document, Model } from "mongoose";
+import mongoose, { Document, Model, Mongoose } from "mongoose";
 
 // Define the Sent interface
 interface Sent {
@@ -17,6 +17,7 @@ export interface IUser {
   connections?: [string];
   sentReqest?: Sent[];
   requests?: Sent[];
+  Bookings?:mongoose.Types.ObjectId[]
   MentorshipEnabled: Boolean;
 }
 
@@ -68,6 +69,12 @@ const userSchema = new mongoose.Schema<IUserDocument>(
       {
         receiverId: { type: String, ref: "User" },
         sentAt: { type: Date, default: Date.now },
+      },
+    ],
+    Bookings: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Booking",
       },
     ],
     MentorshipEnabled: {

@@ -9,9 +9,16 @@ import BookingSummary from "./BookingSummary";
 import BookingConfirmation from "./BookingConfirmation";
 import MentorInfo from "./MentorInfo";
 import { ArrowRight, X, XCircle } from "lucide-react";
-import { IMentor } from "./Mentee";
-
-export default function ConfirmBooking({selectedMentor,setBookingPageOpen}:{selectedMentor:IMentor|null,setBookingPageOpen:React.Dispatch<React.SetStateAction<boolean>>}) {
+import Mentee, { IMentor } from "./Mentee";
+import { getCurrentUser } from "@/lib/serveractions";
+import axios from "axios";
+export default function ConfirmBooking({
+  selectedMentor,
+  setBookingPageOpen,
+}: {
+  selectedMentor: IMentor | null;
+  setBookingPageOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [duration, setDuration] = useState("30");
   const [timeSlot, setTimeSlot] = useState<string | null>(null);
@@ -31,16 +38,20 @@ export default function ConfirmBooking({selectedMentor,setBookingPageOpen}:{sele
     }
   };
 
-  const handleBooking = () => {
-    if (!date || !timeSlot || !duration) return;
-
+  const handleBooking = async () => {
     setIsProcessing(true);
+    const user = await getCurrentUser();
 
-    // Simulate payment processing
-    setTimeout(() => {
-      setIsProcessing(false);
-      setIsBooked(true);
-    }, 2000);
+    const res = await axios.post("/api/booking", {
+      mentorId: selectedMentor?.userId,
+      menteeId: user.userId,
+      date,
+      time: timeSlot,
+      Duration: duration,
+      sessionAmount: totalPrice,
+    });
+    setIsProcessing(false);
+    setIsBooked(true);
   };
 
   if (isBooked) {
@@ -59,7 +70,7 @@ export default function ConfirmBooking({selectedMentor,setBookingPageOpen}:{sele
       <div className="grid md:grid-cols-3 gap-4 md:gap-8 w-full">
         <div className="md:col-span-1 order-2 md:order-1 px-4 md:px-0">
           <div className="md:sticky md:top-4 space-y-6">
-            <MentorInfo selectedMentor={selectedMentor}/>
+            <MentorInfo selectedMentor={selectedMentor} />
           </div>
         </div>
 
@@ -71,13 +82,17 @@ export default function ConfirmBooking({selectedMentor,setBookingPageOpen}:{sele
                 <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                   Book a Session
                 </h2>
-                <ArrowRight className="text-gray-500 hover:text-gray-800 cursor-pointer" size={30} onClick={()=>setBookingPageOpen(false)}/>
+                <ArrowRight
+                  className="text-gray-500 hover:text-gray-800 cursor-pointer"
+                  size={30}
+                  onClick={() => setBookingPageOpen(false)}
+                />
               </div>
 
-                <BookingProgress
-                  currentStep={!date ? 0 : !timeSlot ? 0 : !duration ? 1 : 2}
-                  steps={["Select Date & Time", "Select Duration", "Payment"]}
-                />
+              <BookingProgress
+                currentStep={!date ? 0 : !timeSlot ? 0 : !duration ? 1 : 2}
+                steps={["Select Date & Time", "Select Duration", "Payment"]}
+              />
 
               {/* Timeline steps with vertical line connector */}
               <div className="relative">

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { BookingsList } from "./BookingsList";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { bookings } from "./BookingCard";
+import axios from "axios";
 
 const MentorshipHeader = () => {
   const dispatch = useAppDispatch();
@@ -50,7 +51,11 @@ const MentorshipHeader = () => {
             </div>
 
             <Button
-              onClick={() => setShowBookings(!showBookings)}
+              onClick={async () => {
+                setShowBookings(!showBookings);
+                const data = await axios.get("/api/booking");
+                console.log(data.data);
+              }}
               className="flex items-center gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary relative z-20"
             >
               <Calendar className="w-4 h-4" />
@@ -68,10 +73,10 @@ const MentorshipHeader = () => {
       {/* Bookings overlay panel */}
       <AnimatePresence>
         {showBookings && (
-          <BookingsList 
-            bookingsRef={bookingsRef} 
-            bookings={bookings} 
-            onClose={() => setShowBookings(false)} 
+          <BookingsList
+            bookingsRef={bookingsRef}
+            bookings={bookings}
+            onClose={() => setShowBookings(false)}
           />
         )}
       </AnimatePresence>

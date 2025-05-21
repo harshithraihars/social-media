@@ -7,11 +7,9 @@ export const GET = async (req: NextRequest) => {
     await connectDB();
 
     const { searchParams } = new URL(req.url);
-    console.log(searchParams);
     
     const CompanyName = searchParams.get("ComapnyName");
     const Role = searchParams.get("Role");
-    console.log(CompanyName);
     
     const pipeline: any[] = [
       { $match: { MentorshipEnabled: true } },

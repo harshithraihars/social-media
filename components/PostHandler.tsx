@@ -4,8 +4,8 @@ import React, { useEffect } from 'react'
 import Posts from './Posts'
 import { useAppDispatch, useAppSelector } from '@/lib/hooks'
 import { IPostDocument } from '@/models/post.model'
-import { setPosts, setRequest } from '@/lib/feature/todos/todoSlice'
-import { getAllRequests } from '@/lib/serveractions'
+import { setPosts, setRequest, setUser } from '@/lib/feature/todos/todoSlice'
+import { getAllRequests, getCurrentUser } from '@/lib/serveractions'
 
 const PostHandler = ({ posts,userInfo }: { posts: IPostDocument[] ,userInfo:any}) => {
 
@@ -16,12 +16,16 @@ const PostHandler = ({ posts,userInfo }: { posts: IPostDocument[] ,userInfo:any}
     }
 
     useEffect(()=>{
-      async function getRequest() {
-            const requests = await getAllRequests();                            
+      async function handleData() {
+            const user=await getCurrentUser()
+            const requests = await getAllRequests();   
+            dispatch(setUser(user))                         
             dispatch(setRequest(requests));
           }
-          getRequest();
+          handleData();
     })
+
+
   return (
     <div>
         <Posts userInfo={userInfo}/>
