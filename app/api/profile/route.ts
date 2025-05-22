@@ -21,16 +21,20 @@ export const PUT = async (req: NextRequest) => {
       { CompanyName, Role, Skills, About, Rate, user: userId },
       { upsert: true, new: true, runValidators: true }
     );
-
-    await User.findOneAndUpdate(
-      { userId: userId },
-      { MentorshipEnabled: true }
+    const updateduser = await User.findOneAndUpdate(
+      { userId },
+      {
+        $set: {
+          MentorshipEnabled: true,
+          profileId: updatedProfile._id,
+        },
+      },
+      { new: true, runValidators: true }
     );
     return NextResponse.json({
       message: "Profile updated successfully.",
       profile: updatedProfile,
     });
-
   } catch (error) {
     console.error("Profile update error:", error);
     return NextResponse.json(

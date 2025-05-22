@@ -1,8 +1,8 @@
-import mongoose, { Schema, model, models, Document } from 'mongoose';
+import mongoose, { Schema, model, models, Document, Mongoose } from 'mongoose';
 
 interface IBooking extends Document {
-    mentorId: string;
-    menteeId: string;
+    mentorId: mongoose.Types.ObjectId;
+    menteeId: mongoose.Types.ObjectId;
     date: Date;
     time: string;
     Duration: string;
@@ -12,12 +12,12 @@ interface IBooking extends Document {
 
 const bookingSchema = new Schema<IBooking>({
     mentorId: {
-        type: String,
+        type: Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
     menteeId: {
-        type: String,
+        type: Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },

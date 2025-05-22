@@ -17,7 +17,7 @@ const PostHandler = ({ posts,userInfo }: { posts: IPostDocument[] ,userInfo:any}
 
     useEffect(()=>{
       async function handleData() {
-            const user=await getCurrentUser()
+            const user=await getCurrentUser()            
             const requests = await getAllRequests();   
             dispatch(setUser(user))                         
             dispatch(setRequest(requests));

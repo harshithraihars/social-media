@@ -1,18 +1,18 @@
-import mongoose, { Model } from "mongoose";
+import mongoose, { Document, Model } from "mongoose";
 
-export interface IProfile {
+export interface IProfile extends Document {
   userId: string;
   CompanyName: string;
   Role: string;
   Skills: string[];
   About: string;
   Rate: number;
-  Rating:number;
+  Rating: number;
 }
 
 const profileSchema = new mongoose.Schema<IProfile>({
   userId: {
-    type:String,
+    type: String,
     required: true,
   },
   CompanyName: {
@@ -35,12 +35,11 @@ const profileSchema = new mongoose.Schema<IProfile>({
     type: Number,
     required: true,
   },
-  Rating:{
-    type:Number,
-    default:0
-  }
+  Rating: {
+    type: Number,
+    default: 0,
+  },
 });
 
-export const Profile: Model<IProfile> =
-  mongoose.models?.Profile ||
-  mongoose.model<IProfile>("Profile", profileSchema);
+export const Profile =
+  mongoose.models.Profile || mongoose.model<IProfile>("Profile", profileSchema);

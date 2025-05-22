@@ -1,15 +1,16 @@
 "use client";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, use } from "react";
 import { AnimatePresence } from "framer-motion";
 import { Calendar, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BookingsList } from "./BookingsList";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { bookings } from "./BookingCard";
+import { getCurrentUser } from "@/lib/serveractions";
 import axios from "axios";
 
 const MentorshipHeader = () => {
-  const dispatch = useAppDispatch();
+  const user=useAppSelector((state)=>state.counter.user)
   const isMentorView = useAppSelector((state) => state.counter.isMentor);
   const [showBookings, setShowBookings] = useState(false);
   const bookingsRef = useRef<HTMLDivElement>(null);
@@ -53,8 +54,8 @@ const MentorshipHeader = () => {
             <Button
               onClick={async () => {
                 setShowBookings(!showBookings);
-                const data = await axios.get("/api/booking");
-                console.log(data.data);
+                const user=await getCurrentUser()                              
+                const res = await axios.get(`/api/booking?userId=${user._id}`);
               }}
               className="flex items-center gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary relative z-20"
             >
