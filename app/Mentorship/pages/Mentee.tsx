@@ -112,7 +112,6 @@ const Mentee = () => {
         `/api/mentors?CompanyName=${companyName}&Role=${role}`
       );
       const data = await response.json();
-      // console.log(data);
       
       setMentors(data);
     } catch (error) {

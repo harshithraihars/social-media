@@ -16,7 +16,6 @@ interface BookingsListProps {
 }
 
 export const BookingsList = ({ bookingsRef, bookings, onClose }: BookingsListProps) => {
-  console.log(bookings);
   
   const [joinInputStates, setJoinInputStates] = useState<Record<string, string>>({});
 

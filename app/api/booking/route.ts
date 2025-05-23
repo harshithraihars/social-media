@@ -1,5 +1,7 @@
 import connectDB from "@/lib/db";
 import { Booking } from "@/models/Booking.model";
+import { Profile } from "@/models/profile.model";
+import { User } from "@/models/user.model";
 import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (req: NextRequest) => {
@@ -48,7 +50,6 @@ export const GET = async (req: NextRequest) => {
     const { searchParams } = new URL(req.url);
 
     const id = searchParams.get("userId");
-    console.log(id);
 
     if (!id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -73,9 +74,11 @@ export const GET = async (req: NextRequest) => {
       firstName: booking.mentorId?.firstName || "",
       lastName: booking.mentorId?.lastName || "",
       profilePhoto: booking.mentorId?.profilePhoto || "",
-    }));    
+    }));
     return NextResponse.json({ data: bookings });
   } catch (error) {
+    console.log(error.message);
+
     return NextResponse.json(
       {
         error: "Something went wrong.",

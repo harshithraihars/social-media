@@ -69,7 +69,6 @@ const MentorshipHeader = () => {
             <Button
               onClick={async () => {
                 setShowBookings(!showBookings);
-                console.log(bookings);
                 
               }}
               className="flex items-center gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary relative z-20"
