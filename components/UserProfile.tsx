@@ -15,10 +15,7 @@ const UserProfile = () => {
 
   const EditProfile = async () => {
     const res = await fetch(`/api/profile?userId=${user?.id}`);
-    const data = await res.json();
-    console.log(data);
-    console.log("clicking");
-    
+    const data = await res.json();    
     setShowProfileModal(true);
   };
   return (

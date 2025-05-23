@@ -5,38 +5,38 @@ import { Calendar, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { BookingCard } from "./BookingCard";
-import { Booking } from "./BookingCard";
+// import { Booking } from "./BookingCard";
 import React from "react";
+import { BookingI } from "./MentorShipHeader";
 
 interface BookingsListProps {
   bookingsRef: React.RefObject<HTMLDivElement>;
-  bookings: Booking[];
+  bookings: BookingI[];
   onClose: () => void;
 }
 
 export const BookingsList = ({ bookingsRef, bookings, onClose }: BookingsListProps) => {
-  // With tracking of join inputs per booking
-  const [joinInputStates, setJoinInputStates] = useState<Record<number, string>>({});
+  
+  const [joinInputStates, setJoinInputStates] = useState<Record<string, string>>({});
 
-  const handleJoinClick = (bookingId: number) => {
-    // Toggle the join input for this specific booking
-    setJoinInputStates((prev) => ({
-      ...prev,
-      [bookingId]: prev[bookingId] || "", // Initialize with empty string if not present
-    }));
+  const handleJoinClick = (bookingId: string) => {
+    // setJoinInputStates((prev) => ({
+    //   ...prev,
+    //   [bookingId]: prev[bookingId] || "", // Initialize with empty string if not present
+    // }));
   };
 
-  const handleJoinSession = (bookingId: number) => {
-    const joinCode = joinInputStates[bookingId];
-    // Here you would handle the actual joining logic with the joinCode
-    console.log(`Joining session ${bookingId} with code: ${joinCode}`);
+  const handleJoinSession = (bookingId: string) => {
+    // const joinCode = joinInputStates[bookingId];
+    // // Here you would handle the actual joining logic with the joinCode
+    // console.log(`Joining session ${bookingId} with code: ${joinCode}`);
 
-    // Clear the join input after joining
-    setJoinInputStates((prev) => {
-      const newState = { ...prev };
-      delete newState[bookingId];
-      return newState;
-    });
+    // // Clear the join input after joining
+    // setJoinInputStates((prev) => {
+    //   const newState = { ...prev };
+    //   delete newState[bookingId];
+    //   return newState;
+    // });
   };
 
   return (
@@ -68,17 +68,17 @@ export const BookingsList = ({ bookingsRef, bookings, onClose }: BookingsListPro
       </div>
 
       <div className="p-3 space-y-3">
-        {bookings.length > 0 ? (
-          bookings.map((booking) => (
+        {bookings?.length > 0 ? (
+          bookings?.map((booking) => (
             <motion.div
-              key={booking.id}
+              key={booking.date}
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.2, delay: booking.id * 0.05 }}
+              transition={{ duration: 0.2, delay: 2* 0.05 }}
             >
               <BookingCard
                 booking={booking}
-                joinInputState={joinInputStates[booking.id]}
+                // joinInputState={joinInputStates[booking.id]}
                 onJoinClick={() => handleJoinClick(booking.id)}
                 onJoinSession={() => handleJoinSession(booking.id)}
                 onJoinInputChange={(value) =>

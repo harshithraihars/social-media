@@ -24,7 +24,6 @@
 // export default Feed
 import React from 'react'
 import PostInput from './PostInput'
-import Posts from './Posts'
 import { getAllPost } from '@/lib/serveractions'
 import PostHandler from './PostHandler'
 import SearchResult from './SearchResult'

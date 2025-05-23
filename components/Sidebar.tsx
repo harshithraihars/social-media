@@ -1,6 +1,6 @@
 "use client"
 import Image from 'next/image'
-import React, { useActionState, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '@/lib/hooks'
 import { getCurrentUser } from '@/lib/serveractions'
 import { useUser } from '@clerk/nextjs'
@@ -8,17 +8,34 @@ import { IUser } from '@/models/user.model'
 import ProfilePhoto from './shared/ProfilePhoto'
 import { setUser } from '@/lib/feature/todos/todoSlice'
 
-const Sidebar =  ({ user }: { user: any }) => {
-    const [postCount,setPostCount]=useState<number>(0)
-    const currentuser=useUser().user
-    const posts=useAppSelector((state)=>state.counter.posts)
+const Sidebar = ({ user }: { user: any }) => {
+    const dispatch = useAppDispatch()
+    const [postCount, setPostCount] = useState<number>(0)
+    const { user: currentUser } = useUser()
+    const posts = useAppSelector((state) => state.counter.posts)
+
     useEffect(() => {
         if (user && posts) {
-          // Count the number of posts for the current user
-          const userPosts = posts.filter((post) => post.user.userId === currentuser?.id); // Adjust based on your post structure
-          setPostCount(userPosts.length);
+            const userPosts = posts.filter((post) => post.user.userId === currentUser?.id)
+            setPostCount(userPosts.length)
         }
-      }, [currentuser, posts]);
+    }, [user, posts, currentUser?.id])
+
+    const fetchUserInfo = async () => {
+        try {
+            const userInfo = await getCurrentUser()
+            
+            dispatch(setUser(userInfo))
+        } catch (error) {
+            console.error('Error fetching user data:', error)
+        }
+    }
+
+    useEffect(() => {
+        if (currentUser) {
+            fetchUserInfo()
+        }
+    }, [currentUser])
     return (
         <div className='hidden md:block w-[20%] h-fit border bordergray-300 bg-white rounded-lg'>
             <div className='flex relative flex-col items-center'>
