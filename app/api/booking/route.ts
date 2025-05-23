@@ -1,8 +1,5 @@
-import { User } from "@/models/user.model"; // ✅ Required for nested population to work
-import { Profile } from "@/models/profile.model";
 import connectDB from "@/lib/db";
 import { Booking } from "@/models/Booking.model";
-import mongoose from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (req: NextRequest) => {
@@ -57,38 +54,28 @@ export const GET = async (req: NextRequest) => {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // const bookings = await Booking.find({
-    //   menteeId: new mongoose.Types.ObjectId(id),
-    // })
-    //   .populate({
-    //     path: "mentorId",
-    //     model: "User",
-    //     populate: {
-    //       path: "profile", // <- virtual field
-    //       model: "Profile",
-    //     },
-    //   })
-    //   .lean({ virtuals: true });
-    // // bookings.map((booking) => {
-    // //   console.log(booking.mentor);
-    // // });
-    // const userid = new mongoose.Types.ObjectId(id);
-    // const bookings = await User.findById(userid)
-    //   .populate("profile") // populate virtual 'profile'
-    //   .lean({ virtuals: true });
-
-    // console.log(bookings);
-    const user = await User.findOne({_id:new mongoose.Types.ObjectId(id)})
+    const bookingsRaw = await Booking.find({ menteeId: id })
+      .select(" date time Duration sessionAmount")
       .populate({
-        path: "requestsDetails",
-        select: "firstName lastName profilePhoto userId _id bio",
+        path: "mentorId",
+        select: "userId firstName lastName profilePhoto",
+        model: "User",
       })
-      .lean({ virtuals: true });
-      console.log(user);
-      
-    return NextResponse.json({ data: "ekdkd" });
+      .sort({ date: 1 })
+      .limit(5)
+      .lean();
+    const bookings = bookingsRaw.map((booking) => ({
+      id: booking.mentorId?.userId,
+      date: booking.date,
+      time: booking.time,
+      Duration: booking.Duration,
+      sessionAmount: booking.sessionAmount,
+      firstName: booking.mentorId?.firstName || "",
+      lastName: booking.mentorId?.lastName || "",
+      profilePhoto: booking.mentorId?.profilePhoto || "",
+    }));    
+    return NextResponse.json({ data: bookings });
   } catch (error) {
-    console.log(error.message);
     return NextResponse.json(
       {
         error: "Something went wrong.",

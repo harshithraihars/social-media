@@ -4,13 +4,21 @@ import { AnimatePresence } from "framer-motion";
 import { Calendar, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BookingsList } from "./BookingsList";
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { bookings } from "./BookingCard";
+import { useAppSelector } from "@/lib/hooks";
 import { getCurrentUser } from "@/lib/serveractions";
 import axios from "axios";
-
+export interface BookingI {
+    id:string,
+    firstName:string
+    lastName:string
+    profilePhoto:string
+    date: string;
+    time: string;
+    Duration:string
+    sessionAmount:number
+  }
 const MentorshipHeader = () => {
-  const user=useAppSelector((state)=>state.counter.user)
+  const [bookings, setBookings] = useState<BookingI[]>();
   const isMentorView = useAppSelector((state) => state.counter.isMentor);
   const [showBookings, setShowBookings] = useState(false);
   const bookingsRef = useRef<HTMLDivElement>(null);
@@ -35,6 +43,13 @@ const MentorshipHeader = () => {
     };
   }, [showBookings]);
 
+  useEffect(() => {
+    (async () => {
+      const user = await getCurrentUser();
+      const res = await axios.get(`/api/booking?userId=${user._id}`);
+      setBookings(res.data.data);
+    })();
+  }, []);
   return (
     <div className="relative">
       <header className="shadow-sm rounded-t-[10px]">
@@ -54,8 +69,8 @@ const MentorshipHeader = () => {
             <Button
               onClick={async () => {
                 setShowBookings(!showBookings);
-                const user=await getCurrentUser()                              
-                const res = await axios.get(`/api/booking?userId=${user._id}`);
+                console.log(bookings);
+                
               }}
               className="flex items-center gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary relative z-20"
             >
@@ -76,7 +91,7 @@ const MentorshipHeader = () => {
         {showBookings && (
           <BookingsList
             bookingsRef={bookingsRef}
-            bookings={bookings}
+            bookings={bookings!}
             onClose={() => setShowBookings(false)}
           />
         )}

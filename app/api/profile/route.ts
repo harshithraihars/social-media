@@ -21,7 +21,7 @@ export const PUT = async (req: NextRequest) => {
       { CompanyName, Role, Skills, About, Rate, user: userId },
       { upsert: true, new: true, runValidators: true }
     );
-    const updateduser = await User.findOneAndUpdate(
+    await User.findOneAndUpdate(
       { userId },
       {
         $set: {
@@ -31,6 +31,7 @@ export const PUT = async (req: NextRequest) => {
       },
       { new: true, runValidators: true }
     );
+
     return NextResponse.json({
       message: "Profile updated successfully.",
       profile: updatedProfile,
