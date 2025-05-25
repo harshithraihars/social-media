@@ -45,8 +45,7 @@ const MentorshipHeader = () => {
 
   useEffect(() => {
     (async () => {
-      const user = await getCurrentUser();
-      const res = await axios.get(`/api/booking?userId=${user._id}`);
+      const res = await axios.get(`/api/mentee/booking`);
       setBookings(res.data.data);
     })();
   }, []);

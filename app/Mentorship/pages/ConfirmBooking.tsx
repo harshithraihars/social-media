@@ -42,7 +42,7 @@ export default function ConfirmBooking({
     setIsProcessing(true);
     const user = await getCurrentUser();
 
-    const res = await axios.post("/api/booking", {
+    const res = await axios.post("/api/mentee/booking", {
       mentorId: selectedMentor?._id,
       menteeId: user._id,
       date,
