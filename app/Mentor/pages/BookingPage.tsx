@@ -4,37 +4,55 @@ import React, { useEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { TabType } from "@/app/Mentorship/pages/Booking";
-import {motion} from "framer-motion"
+import { motion } from "framer-motion";
 import Header from "@/app/Mentorship/pages/Header";
-import TabSelector from "@/app/Mentorship/pages/TabSelector";
+import TabSelector from "@/app/Mentor/pages/TabSelector";
 import EventCard from "@/app/Mentor/pages/EventCard";
 import MentorshipSettings from "@/app/Mentorship/pages/MentorShipSetting";
-import Sidebar from "@/app/Mentorship/pages/SideBar";
+import Sidebar from "@/app/Mentor/pages/SideBar";
 import axios from "axios";
-import { getCurrentUser } from "@/lib/serveractions";
 import { BookingI } from "@/app/Mentorship/pages/MentorShipHeader";
-import { useAppSelector } from "@/lib/hooks";
+import { getCurrentUser } from "@/lib/serveractions";
 
 const BookingsPage = () => {
-  const user=useAppSelector((state)=>state.counter.user)
-  
-  // const [user,setUser]=useState();
-  const [bookings,setBookings]=useState<BookingI[]>()
-  const [activeTab, setActiveTab] = useState<TabType>("Upcoming");
+  const [user, setUser] = useState();
+  const [bookings, setBookings] = useState<BookingI[]>();
+  const [filteredBookings, setFilteredBookings] = useState<BookingI[]>();
+  const [activeTab, setActiveTab] = useState<TabType>("Bookings");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const settingRef = useRef<HTMLDivElement | null>(null); // Correct typing
-  const tabs: TabType[] = [
-    "Upcoming",
-    "Pending",
-    "Recurring",
-    "Past",
-    "Cancelled",
-  ];
+  const tabs: TabType[] = ["Bookings", "Upcoming", "Past"];
+
+  useEffect(() => {
+    (async () => {
+      const res = await axios.get(`/api/mentor/booking`);
+      const user = await getCurrentUser();
+      setUser(user);
+
+      setBookings(res.data.data);
+      setFilteredBookings(res.data.data);
+    })();
+  }, []);
+
+  const filterBookings = (type: "Bookings" | "Upcoming" | "Past"): void => {
+    if (type == "Bookings") {
+      setFilteredBookings(bookings);
+      return;
+    }
+    const date = new Date();
+    const filteredbookings = bookings?.filter((booking) =>
+      type == "Upcoming"
+        ? new Date(booking.date) > date
+        : new Date(booking.date) < date
+    );
+
+    setFilteredBookings(filteredbookings);
+  };
 
   useEffect(() => {
     if (settingsOpen && settingRef.current) {
-      settingRef.current.scrollTop = 0; 
+      settingRef.current.scrollTop = 0;
     }
   }, [settingsOpen]);
 
@@ -49,18 +67,6 @@ const BookingsPage = () => {
       });
     }
   }, [settingsOpen]);
-
-  useEffect(() => {
-    (async () => {
-      const res = await axios.get(`/api/mentor/booking`);
-      // const user=await getCurrentUser();
-      // setUser(user)
-      console.log(res);
-      
-      setBookings(res.data.data);
-    })();
-  }, []);
-
   return (
     <div className="flex min-h-screen bg-gray-50 relative">
       {/* Mobile Sidebar Overlay */}
@@ -76,7 +82,7 @@ const BookingsPage = () => {
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         } sm:block`}
       >
-        <Sidebar />
+        <Sidebar setActiveTab={setActiveTab} filterBookings={filterBookings}/>
       </div>
 
       <div className="flex-1 flex flex-col w-full">
@@ -107,22 +113,22 @@ const BookingsPage = () => {
             tabs={tabs}
             activeTab={activeTab}
             setActiveTab={setActiveTab}
+            bookings={filteredBookings!}
+            filterBookings={filterBookings}
           />
 
           {/* Events */}
           <div className="space-y-6">
-            {
-              bookings?.map((booking,index)=>(
-                <motion.div
+            {filteredBookings?.map((booking, index) => (
+              <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1, duration: 0.5 }}
               >
-                <EventCard booking={booking} user={user!} index={index}/>
+                <EventCard booking={booking} user={user!} index={index} />
               </motion.div>
-              ))
-            }            
+            ))}
           </div>
         </div>
         <div

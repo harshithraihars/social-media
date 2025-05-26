@@ -1,4 +1,4 @@
-export type TabType = 'Upcoming' | 'Pending' | 'Recurring' | 'Past' | 'Cancelled';
+export type TabType = "Bookings" | "Upcoming" | "Past"
 
 export type Event = {
   id: string;

@@ -2,60 +2,83 @@ import React, { useEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import {
   Calendar,
-  Puzzle,
-  Clock,
-  Video,
-  Users,
+  History,
+  CalendarCheck,
   Workflow,
-  ChevronDown,
   X,
   User,
   Settings,
 } from "lucide-react";
-import SidebarItem from "./SideBarItem";
+import SidebarItem from "../../Mentorship/pages/SideBarItem";
 import gsap from "gsap";
-import MentorshipSettings from "./MentorShipSetting";
-
-export default function Sidebar() {
+import MentorshipSettings from "../../Mentorship/pages/MentorShipSetting";
+import { TabType } from "@/app/Mentorship/pages/Booking";
+interface sidebarProps {
+  filterBookings:(tab:TabType)=>void
+  setActiveTab:React.Dispatch<React.SetStateAction<TabType>>
+}
+export default function Sidebar({filterBookings,setActiveTab}:sidebarProps) {
   const settingPageRef = useRef<HTMLDivElement | null>(null);
   const [mentorSettingOpen, setMentorSettingOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
 
-   useEffect(() => {
-      if (mentorSettingOpen && settingPageRef.current) {
-        settingPageRef.current.scrollTop = 0; // Scroll to top when settings are opened
+  useEffect(() => {
+    if (mentorSettingOpen && settingPageRef.current) {
+      settingPageRef.current.scrollTop = 0; // Scroll to top when settings are opened
+    }
+  }, [mentorSettingOpen]);
+  useGSAP(() => {
+    if (mentorSettingOpen) {
+      if (settingPageRef.current) {
+        settingPageRef.current.style.display = "block"; // Show before animating
       }
-    }, [mentorSettingOpen]);
-    useGSAP(() => {
-      if (mentorSettingOpen) {
-        if (settingPageRef.current) {
-          settingPageRef.current.style.display = "block"; // Show before animating
-        }
-        gsap.to(settingPageRef.current, {
-          y: "0%",
-          opacity: 1,
-          duration: 0.5,
-          ease: "power3.out",
-          onComplete: () => {
-            if (settingPageRef.current) {
-              settingPageRef.current.scrollTop = 0; // Scroll after animation completes
-            }
-          },
-        });
-      } else {
-        gsap.to(settingPageRef.current, {
-          y: "100%",
-          opacity: 0,
-          duration: 0.4,
-          ease: "power3.in",
-          onComplete: () => {
-            if (settingPageRef.current) {
-              settingPageRef.current.style.display = "none"; // Hide after animation
-            }
-          },
-        });
-      }
-    }, [mentorSettingOpen]);
+      gsap.to(settingPageRef.current, {
+        y: "0%",
+        opacity: 1,
+        duration: 0.5,
+        ease: "power3.out",
+        onComplete: () => {
+          if (settingPageRef.current) {
+            settingPageRef.current.scrollTop = 0; // Scroll after animation completes
+          }
+        },
+      });
+    } else {
+      gsap.to(settingPageRef.current, {
+        y: "100%",
+        opacity: 0,
+        duration: 0.4,
+        ease: "power3.in",
+        onComplete: () => {
+          if (settingPageRef.current) {
+            settingPageRef.current.style.display = "none"; // Hide after animation
+          }
+        },
+      });
+    }
+  }, [mentorSettingOpen]);
+
+  const sidebarItems = [
+    {
+      icon: (
+        <Calendar className="transition-transform duration-200 group-hover:rotate-12" />
+      ),
+      label: "Bookings",
+      active: true,
+    },
+    {
+      icon: (
+        <CalendarCheck className="transition-transform duration-200 group-hover:rotate-12" />
+      ),
+      label: "Upcoming",
+    },
+    {
+      icon: (
+        <History className="transition-transform duration-200 group-hover:rotate-12 h-14" />
+      ),
+      label: "Past",
+    },
+  ];
   return (
     <div className="flex h-full w-full flex-col bg-white shadow-lg transition-all duration-300 ease-in-out hover:shadow-xl sm:w-16 md:w-72">
       {/* Logo Section */}
@@ -126,57 +149,27 @@ export default function Sidebar() {
       </div>
 
       {/* Sidebar Content: Navigation + Profile */}
+
       <div className="flex flex-col flex-1 justify-between">
-        {/* Navigation Section */}
         <div className="flex-1 overflow-y-auto py-4">
           <nav className="space-y-1 px-3">
-            <SidebarItem
-              icon={
-                <Calendar className="transition-transform duration-200 group-hover:rotate-12" />
-              }
-              label="Bookings"
-              active
-              badge={4}
-            />
-            <SidebarItem
-              icon={
-                <Puzzle className="transition-transform duration-200 group-hover:rotate-12" />
-              }
-              label="Event Types"
-            />
-            <SidebarItem
-              icon={
-                <Clock className="transition-transform duration-200 group-hover:rotate-12" />
-              }
-              label="Availability"
-            />
-            <SidebarItem
-              icon={
-                <Video className="transition-transform duration-200 group-hover:rotate-12" />
-              }
-              label="Calls Library"
-            />
-            <SidebarItem
-              icon={
-                <Users className="transition-transform duration-200 group-hover:rotate-12" />
-              }
-              label="Teams"
-            />
-            <SidebarItem
-              icon={
-                <Puzzle className="transition-transform duration-200 group-hover:rotate-12" />
-              }
-              label="Integrations"
-            />
-            <SidebarItem
-              icon={
-                <Workflow className="transition-transform duration-200 group-hover:rotate-12" />
-              }
-              label="Workflows"
-            />
+            {sidebarItems.map(({ icon, label, active}) => (
+              <div onClick={()=>{
+                setActiveTab(label as TabType)
+                filterBookings(label as TabType)
+              }}>
+                <SidebarItem
+                  key={label}
+                  icon={icon}
+                  label={label}
+                  active={active}
+                />
+              </div>
+            ))}
           </nav>
         </div>
       </div>
+
       <div
         className="fixed bottom-0 z-10 w-full h-full bg-white pt-12 px-3 
              translate-y-full overflow-y-auto"

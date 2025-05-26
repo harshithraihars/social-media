@@ -6,7 +6,6 @@ const SidebarItem = ({
   icon,
   label,
   active = false,
-  badge,
 }: SidebarItemProps) => {
   return (
     <div
@@ -44,13 +43,6 @@ const SidebarItem = ({
       <span className="transform transition-transform duration-200 sm:opacity-0 md:opacity-100 sm:block sm:translate-x-0">
         {label}
       </span>
-
-      {/* Badge with pulse animation */}
-      {badge && (
-        <div className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-indigo-100 px-1.5 text-xs font-semibold text-indigo-600 transition-all duration-200 group-hover:bg-indigo-600 group-hover:text-white">
-          {badge}
-        </div>
-      )}
     </div>
   );
 };
