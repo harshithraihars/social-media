@@ -8,18 +8,31 @@ export const GET = async () => {
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const id=await User.findOne({userId}).select("_id")
-  const bookingsRaw = await Booking.find({ mentorId: id })
+ const bookingsRaw = await Booking.find({ menteeId: id })
     .select("date time Duration sessionAmount")
     .populate({
       path: "mentorId",
       select: "userId firstName lastName profilePhoto",
       model: "User",
     })
-    .sort({ date: 1 })
-    .limit(5)
     .lean();
 
-  const bookings = bookingsRaw.map((booking) => ({
+  const today = new Date();
+
+  bookingsRaw.sort((a, b) => {
+    const dateA = new Date(a.date);
+    const dateB = new Date(b.date);
+
+    const isFutureA = dateA >= today;
+    const isFutureB = dateB >= today;
+
+    if (isFutureA && !isFutureB) return -1;
+    if (!isFutureA && isFutureB) return 1;
+
+    return dateA.getTime() - dateB.getTime();
+  });
+
+  const bookings = bookingsRaw.slice(0, 5).map((booking) => ({
     id: booking.mentorId?.userId,
     date: booking.date,
     time: booking.time,
@@ -30,6 +43,5 @@ export const GET = async () => {
     profilePhoto: booking.mentorId?.profilePhoto || "",
   }));
 
-  
   return NextResponse.json({ data: bookings });
 };

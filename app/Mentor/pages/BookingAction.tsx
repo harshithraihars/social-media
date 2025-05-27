@@ -1,8 +1,10 @@
+"use client"
 import React from "react";
 import { X, Video, PhoneOff } from "lucide-react";
 import { BookingI } from "@/app/Mentorship/pages/MentorShipHeader";
 import { IUser } from "@/models/user.model";
 import { TabType } from "@/app/Mentorship/pages/Booking";
+import { useRouter } from "next/navigation";
 
 interface BookingActionPopupProps {
   booking: BookingI;
@@ -23,6 +25,7 @@ const BookingActionPopup = ({
   onStartCall,
   onCancelBooking,
 }: BookingActionPopupProps) => {
+  const router=useRouter()
   function getDateAndDay(dateStr: string): { day: string; date: number } {
     const dateObj = new Date(dateStr);
     if (isNaN(dateObj.getTime())) {
@@ -51,17 +54,14 @@ const BookingActionPopup = ({
 
   return (
     <>
-      {/* Backdrop */}
       <div 
         className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
         onClick={onClose}
       >
-        {/* Modal */}
         <div 
           className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all duration-200 scale-100"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Close Button */}
           <div className="flex justify-end p-4 pb-0">
             <button
               onClick={onClose}
@@ -71,9 +71,7 @@ const BookingActionPopup = ({
             </button>
           </div>
 
-          {/* Content */}
           <div className="px-6 pb-6">
-            {/* Meeting Info */}
             <div className="bg-gray-50 rounded-lg p-4 mb-6">
               <div className="flex items-start gap-3">
                 <div className="flex">
@@ -103,7 +101,6 @@ const BookingActionPopup = ({
               </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="space-y-3">
               <button
                 onClick={onStartCall}

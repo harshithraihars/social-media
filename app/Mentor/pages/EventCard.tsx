@@ -4,6 +4,7 @@ import { BookingI } from "@/app/Mentorship/pages/MentorShipHeader";
 import { IUser } from "@/models/user.model";
 import { TabType } from "@/app/Mentorship/pages/Booking";
 import BookingActionPopup from "./BookingAction";
+import { useRouter } from "next/navigation";
 
 interface EventCardProps {
   booking: BookingI;
@@ -13,6 +14,8 @@ interface EventCardProps {
 }
 
 const EventCard = ({ booking, user, index, activeTab }: EventCardProps) => {
+
+  const router=useRouter()
   const [showPopup, setShowPopup] = useState(false);
 
   function getDateAndDay(dateStr: string): { day: string; date: number } {
@@ -37,8 +40,7 @@ const EventCard = ({ booking, user, index, activeTab }: EventCardProps) => {
   }
 
   const handleStartCall = () => {
-    // Add your call start logic here
-    console.log("Starting call for booking:", booking);
+    router.push("/Mentorship/call/123")
     setShowPopup(false);
   };
 
@@ -52,7 +54,6 @@ const EventCard = ({ booking, user, index, activeTab }: EventCardProps) => {
 
   return (
     <>
-      {/* Original Card Design - Kept Exactly Same */}
       <div 
         className="flex flex-row border rounded-md overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-150 bg-white group cursor-pointer"
         onClick={() => setShowPopup(true)}
