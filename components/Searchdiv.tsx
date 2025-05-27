@@ -4,9 +4,7 @@ import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { handleSearch } from "@/lib/SearchHandler";
 import { getAllUsers } from "@/lib/serveractions";
 import { UserType } from "@/models/UserInfo";
-import { stat } from "fs";
 import { Clock } from "lucide-react";
-import { ObjectId } from "mongoose";
 import React, { RefObject, useEffect, useState } from "react";
 
 const Searchdiv = ({

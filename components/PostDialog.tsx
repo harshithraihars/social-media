@@ -27,7 +27,6 @@ export function PostDialog({
   open: boolean;
   src: string;
 }) {
-  console.log("rendered");
 
   const { user } = useUser();
   const posts = useAppSelector((state) => state.counter.posts);

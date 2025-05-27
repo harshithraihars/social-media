@@ -1,14 +1,24 @@
 "use client";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, use } from "react";
 import { AnimatePresence } from "framer-motion";
 import { Calendar, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BookingsList } from "./BookingsList";
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { bookings } from "./BookingCard";
-
+import { useAppSelector } from "@/lib/hooks";
+import { getCurrentUser } from "@/lib/serveractions";
+import axios from "axios";
+export interface BookingI {
+    id:string,
+    firstName:string
+    lastName:string
+    profilePhoto:string
+    date: string;
+    time: string;
+    Duration:string
+    sessionAmount:number
+  }
 const MentorshipHeader = () => {
-  const dispatch = useAppDispatch();
+  const [bookings, setBookings] = useState<BookingI[]>();
   const isMentorView = useAppSelector((state) => state.counter.isMentor);
   const [showBookings, setShowBookings] = useState(false);
   const bookingsRef = useRef<HTMLDivElement>(null);
@@ -33,6 +43,12 @@ const MentorshipHeader = () => {
     };
   }, [showBookings]);
 
+  useEffect(() => {
+    (async () => {
+      const res = await axios.get(`/api/mentee/booking`);
+      setBookings(res.data.data);
+    })();
+  }, []);
   return (
     <div className="relative">
       <header className="shadow-sm rounded-t-[10px]">
@@ -50,7 +66,10 @@ const MentorshipHeader = () => {
             </div>
 
             <Button
-              onClick={() => setShowBookings(!showBookings)}
+              onClick={async () => {
+                setShowBookings(!showBookings);
+                
+              }}
               className="flex items-center gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary relative z-20"
             >
               <Calendar className="w-4 h-4" />
@@ -68,10 +87,10 @@ const MentorshipHeader = () => {
       {/* Bookings overlay panel */}
       <AnimatePresence>
         {showBookings && (
-          <BookingsList 
-            bookingsRef={bookingsRef} 
-            bookings={bookings} 
-            onClose={() => setShowBookings(false)} 
+          <BookingsList
+            bookingsRef={bookingsRef}
+            bookings={bookings!}
+            onClose={() => setShowBookings(false)}
           />
         )}
       </AnimatePresence>

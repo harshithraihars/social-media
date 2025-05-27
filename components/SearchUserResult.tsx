@@ -25,7 +25,6 @@ const SearchUserResult = () => {
   useEffect(() => {
     async function getUser() {
       const User = await getCurrentUser();
-      // dispatch(setUser(User))
       setcurrentUser(User)
       const sentRequest = User.sentReqest?.map((user: { receiverId: any; }) => user.receiverId) || [];      
       setSentRequset(sentRequest);

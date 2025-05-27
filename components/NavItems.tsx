@@ -1,11 +1,14 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { Handshake, ChalkboardTeacher } from "phosphor-react";
 import {
   Home,
   Users,
   BriefcaseBusiness,
   MessageCircleMore,
   Bell,
+  UserCog,
+  CalendarCheck2,
 } from "lucide-react";
 import Link from "next/link";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
@@ -36,13 +39,13 @@ export const navItems: NAVITEMS[] = [
     text: "My Network",
   },
   {
-    src: "/job",
-    icon: <BriefcaseBusiness />,
-    text: "Jobs",
+    src: "/Mentor",
+    icon: <CalendarCheck2/>,
+    text: "Mentor",
   },
   {
     src: "/Mentorship",
-    icon: <MessageCircleMore />,
+    icon: <ChalkboardTeacher size={28}/>,
     text: "Mentorship",
   },
   {

@@ -1,6 +1,7 @@
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { CalendarIcon, Clock, CheckCircle, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface BookingSummaryProps {
   date: Date | undefined;
@@ -89,7 +90,16 @@ export default function BookingSummary({
           {/* Confirm button */}
           <Button
             className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 rounded-lg mt-4 transition-all duration-300"
-            onClick={handleBooking}
+            onClick={() => {
+              const promise = Promise.resolve(handleBooking());
+              toast.promise(promise, {
+                loading: "Scheduling your session...",
+                success: "Session booked successfully!",
+                error: "Failed to book the session. Please try again.",
+              });
+            }}
+            // onClick={}
+
             disabled={!date || !timeSlot || !duration || isProcessing}
           >
             {isProcessing ? (

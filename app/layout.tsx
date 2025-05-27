@@ -42,15 +42,12 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Inter } from "next/font/google";
-import { ClerkProvider} from "@clerk/nextjs"; // Use `auth` to check authentication
+import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/sonner";
 import StoreProvider from "./StoreProvider";
 import MobileNavbar from "@/components/MobileNavBar";
 import SearchOptions from "@/components/SearchOption";
 import Navbar from "@/components/Navbar";
-import { redirect } from "next/navigation";
-import { auth } from "@clerk/nextjs/server";
-import { headers } from "next/headers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -64,24 +61,23 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
     <ClerkProvider signInUrl="/sign-in">
-      <StoreProvider>
-        <html lang="en">
-          <body className="min-h-screen flex flex-col">
+      <html lang="en">
+        <body className={`min-h-screen flex flex-col ${inter.className}`}>
+          <StoreProvider>
             <Navbar />
             <SearchOptions />
             <div className="md:bg-[#F4F2EE] flex-1 w-full">
-              <main className="">
+              <main>
                 {children}
                 <Toaster position="top-right" />
               </main>
             </div>
             <MobileNavbar />
-          </body>
-        </html>
-      </StoreProvider>
+          </StoreProvider>
+        </body>
+      </html>
     </ClerkProvider>
   );
 }

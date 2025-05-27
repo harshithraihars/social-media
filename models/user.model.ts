@@ -1,4 +1,4 @@
-import mongoose, { Document, Model } from "mongoose";
+import mongoose, { Document, Model, Mongoose, Schema } from "mongoose";
 
 // Define the Sent interface
 interface Sent {
@@ -17,6 +17,7 @@ export interface IUser {
   connections?: [string];
   sentReqest?: Sent[];
   requests?: Sent[];
+  profileId: mongoose.Types.ObjectId;
   MentorshipEnabled: Boolean;
 }
 
@@ -70,6 +71,12 @@ const userSchema = new mongoose.Schema<IUserDocument>(
         sentAt: { type: Date, default: Date.now },
       },
     ],
+    profileId: {
+      type: Schema.Types.ObjectId,
+      ref: "Profile",
+      default: null,
+    },
+
     MentorshipEnabled: {
       type: Boolean,
       default: false,
@@ -86,13 +93,12 @@ userSchema.virtual("requestsDetails", {
   justOne: false, // It's an array of objects, so it's false
 });
 
-userSchema.virtual("profile", {
+userSchema.virtual("Profile", {
   ref: "Profile",
-  localField: "userId",      // This is the string from Clerk
-  foreignField: "userId",    // Also a string in Profile
+  localField: "userId", // This is the string from Clerk
+  foreignField: "userId", // Also a string in Profile
   justOne: true,
 });
-
 
 // Include virtual fields in JSON and plain object output
 userSchema.set("toJSON", { virtuals: true });
