@@ -126,7 +126,7 @@ const BookingsPage = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1, duration: 0.5 }}
               >
-                <EventCard booking={booking} user={user!} index={index} />
+                <EventCard booking={booking} user={user!} index={index} activeTab={activeTab}/>
               </motion.div>
             ))}
           </div>
