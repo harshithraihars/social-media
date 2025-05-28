@@ -252,7 +252,6 @@ const VideoCallPage = ({ params }: PageProps) => {
       await setupSources(role);
     })();
   }, []);
-  startLocalVideo
   return (
     <div
       className="video-call-page relative w-full h-screen bg-black overflow-hidden"
