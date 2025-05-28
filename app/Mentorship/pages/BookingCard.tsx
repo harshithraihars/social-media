@@ -8,6 +8,7 @@ import {
   MapPin,
   Video,
   MessageSquare,
+  AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,11 +23,13 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { BookingI } from "./MentorShipHeader";
+import axios from "axios";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface BookingCardProps {
   booking: BookingI;
   joinInputState?: string;
-  onJoinClick: () => void;
   onJoinSession: () => void;
   onJoinInputChange: (value: string) => void;
 }
@@ -34,13 +37,15 @@ interface BookingCardProps {
 export const BookingCard = ({
   booking,
   joinInputState,
-  onJoinClick,
   onJoinSession,
   onJoinInputChange,
 }: BookingCardProps) => {
 
-  const calculateTimePercentage = (date: string) => {
+  const router=useRouter()
+  const [callNotStarted, setCallNotStarted] = useState<string | null>(null);
+  const [isCheckingCall, setIsCheckingCall] = useState(false);
 
+  const calculateTimePercentage = (date: string) => {
     const bookingDate = new Date(date);
     const now = new Date();
 
@@ -77,6 +82,32 @@ export const BookingCard = ({
   };
 
   const bookingcompleted = new Date(booking.date) < new Date();
+
+  const handleJoinClick = async () => {
+    try {
+      setIsCheckingCall(true);
+      setCallNotStarted(null);
+      
+      const res = await axios.get(`api/booking/${booking.bookingId}`);
+      const callId=res.data.data.callId
+      if (!callId) {
+        setCallNotStarted("Session hasn't started yet. Please wait for your mentor to begin the call.");
+        setTimeout(() => {
+          setCallNotStarted(null);
+        }, 5000);
+      } else {
+            router.push(`/Mentorship/call/${callId}`)
+      }
+    } catch (error) {
+      console.error("Error checking call status:", error);
+      setCallNotStarted("Unable to check call status. Please try again.");
+      setTimeout(() => {
+        setCallNotStarted(null);
+      }, 3000);
+    } finally {
+      setIsCheckingCall(false);
+    }
+  };
 
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 group bg-gradient-to-br to-gray-700 border-l-4 border-l-primary/70">
@@ -221,12 +252,32 @@ export const BookingCard = ({
                   variant="default"
                   size="sm"
                   className="text-xs h-7 rounded-full bg-primary hover:bg-primary/90 flex items-center gap-1"
-                  onClick={onJoinClick}
+                  onClick={handleJoinClick}
+                  disabled={isCheckingCall}
                 >
                   <Video className="h-3 w-3" />
-                  {joinInputState !== undefined ? "Cancel" : "Join"}
+                  {isCheckingCall ? "Checking..." : joinInputState !== undefined ? "Cancel" : "Join"}
                 </Button>
               </div>
+
+              {/* Call not started message */}
+              <AnimatePresence>
+                {callNotStarted && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="pt-2 border-t border-orange-200 mt-2"
+                  >
+                    <div className="flex gap-2 items-center bg-orange-50 border border-orange-200 rounded-md p-2">
+                      <AlertCircle className="h-4 w-4 text-orange-500 flex-shrink-0" />
+                      <span className="text-xs text-orange-700 font-medium">
+                        {callNotStarted}
+                      </span>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               {/* Join input appears inline when join button is clicked */}
               <AnimatePresence>

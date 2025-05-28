@@ -82,7 +82,7 @@ const BookingsPage = () => {
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         } sm:block`}
       >
-        <Sidebar setActiveTab={setActiveTab} filterBookings={filterBookings}/>
+        <Sidebar setActiveTab={setActiveTab} filterBookings={filterBookings} />
       </div>
 
       <div className="flex-1 flex flex-col w-full">
@@ -126,7 +126,12 @@ const BookingsPage = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1, duration: 0.5 }}
               >
-                <EventCard booking={booking} user={user!} index={index} activeTab={activeTab}/>
+                <EventCard
+                  booking={booking}
+                  user={user!}
+                  index={index}
+                  activeTab={activeTab}
+                />
               </motion.div>
             ))}
           </div>

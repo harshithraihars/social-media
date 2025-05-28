@@ -19,12 +19,7 @@ export const BookingsList = ({ bookingsRef, bookings, onClose }: BookingsListPro
   
   const [joinInputStates, setJoinInputStates] = useState<Record<string, string>>({});
 
-  const handleJoinClick = (bookingId: string) => {
-    // setJoinInputStates((prev) => ({
-    //   ...prev,
-    //   [bookingId]: prev[bookingId] || "", // Initialize with empty string if not present
-    // }));
-  };
+  
 
   const handleJoinSession = (bookingId: string) => {
     // const joinCode = joinInputStates[bookingId];
@@ -79,7 +74,6 @@ export const BookingsList = ({ bookingsRef, bookings, onClose }: BookingsListPro
               <BookingCard
                 booking={booking}
                 // joinInputState={joinInputStates[booking.id]}
-                onJoinClick={() => handleJoinClick(booking.id)}
                 onJoinSession={() => handleJoinSession(booking.id)}
                 onJoinInputChange={(value) =>
                   setJoinInputStates((prev) => ({

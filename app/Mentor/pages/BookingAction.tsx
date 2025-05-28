@@ -14,6 +14,7 @@ interface BookingActionPopupProps {
   onClose: () => void;
   onStartCall: () => void;
   onCancelBooking: () => void;
+  isCalling:boolean
 }
 
 const BookingActionPopup = ({
@@ -24,6 +25,7 @@ const BookingActionPopup = ({
   onClose,
   onStartCall,
   onCancelBooking,
+  isCalling
 }: BookingActionPopupProps) => {
   const router=useRouter()
   function getDateAndDay(dateStr: string): { day: string; date: number } {
@@ -112,7 +114,7 @@ const BookingActionPopup = ({
                 }`}
               >
                 <Video className="w-5 h-5" />
-                <span>{isUpcoming ? 'Start Call Now' : 'Call Not Available'}</span>
+                <span>{isUpcoming ? `${isCalling?"Calling..":"Start Call Now"}` : 'Call Not Available'}</span>
               </button>
 
               <button

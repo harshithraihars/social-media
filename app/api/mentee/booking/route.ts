@@ -56,7 +56,7 @@ export const GET = async () => {
   const user = await User.findOne({ userId }).select("_id");
 
   const bookingsRaw = await Booking.find({ menteeId: user })
-    .select("date time Duration sessionAmount")
+    .select("_id date time Duration sessionAmount")
     .populate({
       path: "mentorId",
       select: "userId firstName lastName profilePhoto",
@@ -81,6 +81,7 @@ export const GET = async () => {
 
   const bookings = bookingsRaw.slice(0, 5).map((booking) => ({
     id: booking.mentorId?.userId,
+    bookingId:booking._id,
     date: booking.date,
     time: booking.time,
     Duration: booking.Duration,

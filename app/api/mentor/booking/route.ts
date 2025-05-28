@@ -8,8 +8,8 @@ export const GET = async () => {
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const id=await User.findOne({userId}).select("_id")
- const bookingsRaw = await Booking.find({ menteeId: id })
-    .select("date time Duration sessionAmount")
+ const bookingsRaw = await Booking.find({ mentorId: id })
+    .select("_id date time Duration sessionAmount")
     .populate({
       path: "mentorId",
       select: "userId firstName lastName profilePhoto",
@@ -34,6 +34,7 @@ export const GET = async () => {
 
   const bookings = bookingsRaw.slice(0, 5).map((booking) => ({
     id: booking.mentorId?.userId,
+    bookingId:booking._id.toString(),
     date: booking.date,
     time: booking.time,
     Duration: booking.Duration,

@@ -5,6 +5,9 @@ import { IUser } from "@/models/user.model";
 import { TabType } from "@/app/Mentorship/pages/Booking";
 import BookingActionPopup from "./BookingAction";
 import { useRouter } from "next/navigation";
+import { firestore } from "@/lib/firebase";
+import { collection, doc } from "firebase/firestore";
+import axios from "axios";
 
 interface EventCardProps {
   booking: BookingI;
@@ -17,7 +20,7 @@ const EventCard = ({ booking, user, index, activeTab }: EventCardProps) => {
 
   const router=useRouter()
   const [showPopup, setShowPopup] = useState(false);
-
+  const [isCalling,setIscalling]=useState(false)
   function getDateAndDay(dateStr: string): { day: string; date: number } {
     const dateObj = new Date(dateStr);
     if (isNaN(dateObj.getTime())) {
@@ -39,8 +42,18 @@ const EventCard = ({ booking, user, index, activeTab }: EventCardProps) => {
     return { day, date };
   }
 
-  const handleStartCall = () => {
-    router.push("/Mentorship/call/123")
+  const handleStartCall = async() => {
+    setIscalling(true)
+    const callCollection=collection(firestore,"calls")
+    const callDoc=doc(callCollection)
+    const callId=callDoc.id
+    console.log(callId);
+    
+    await axios.patch(`api/booking/${booking.bookingId}`,{
+      callId
+    })
+    router.push(`/Mentorship/call/${callId}`)
+    setIscalling(false)
     setShowPopup(false);
   };
 
@@ -146,6 +159,7 @@ const EventCard = ({ booking, user, index, activeTab }: EventCardProps) => {
         onClose={() => setShowPopup(false)}
         onStartCall={handleStartCall}
         onCancelBooking={handleCancelBooking}
+        isCalling={isCalling}
       />
     </>
   );

@@ -9,6 +9,7 @@ import { getCurrentUser } from "@/lib/serveractions";
 import axios from "axios";
 export interface BookingI {
     id:string,
+    bookingId:string
     firstName:string
     lastName:string
     profilePhoto:string

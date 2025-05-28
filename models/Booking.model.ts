@@ -8,6 +8,7 @@ interface IBooking extends Document {
     Duration: string;
     sessionAmount: number;
     createdAt: Date;
+    callId:String
 }
 
 const bookingSchema = new Schema<IBooking>({
@@ -40,6 +41,10 @@ const bookingSchema = new Schema<IBooking>({
     createdAt: {
         type: Date,
         default: Date.now
+    },
+    callId:{
+        type:String,
+        default:null
     }
 });
 
