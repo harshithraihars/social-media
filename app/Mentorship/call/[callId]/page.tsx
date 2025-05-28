@@ -32,7 +32,6 @@ const VideoCallPage = ({ params }: PageProps) => {
   const { callId } = params;
   const [isCallActive, setIsCallActive] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
-  const [isVideoOff, setIsVideoOff] = useState(false);
   const [callDuration, setCallDuration] = useState(0);
   const [showControls, setShowControls] = useState(true);
   const [roomId, setRoomId] = useState(callId);
@@ -89,6 +88,9 @@ const VideoCallPage = ({ params }: PageProps) => {
       audio: true,
     });
 
+    console.log("Local tracks:", localStream.getTracks());
+    console.log("Video tracks:", localStream.getVideoTracks());
+
     const remoteStream = new MediaStream();
 
     localStream.getTracks().forEach((track) => {
@@ -103,6 +105,9 @@ const VideoCallPage = ({ params }: PageProps) => {
 
     localRef.current.srcObject = localStream;
     remoteRef.current.srcObject = remoteStream;
+
+
+    console.log("Assigned to localRef:", localRef.current?.srcObject);
 
     setWebcamActive(true);
 
@@ -295,30 +300,26 @@ const VideoCallPage = ({ params }: PageProps) => {
       <div className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 w-32 h-24 sm:w-64 sm:h-48 md:w-80 md:h-60 bg-white rounded-lg overflow-hidden border-2 border-gray-200 shadow-xl">
         <video
           ref={localRef}
-          className={`w-full h-full object-cover ${isVideoOff ? "hidden" : ""}`}
+          className={`w-full h-full object-cover`}
           autoPlay
           playsInline
           muted
         />
         {/* Placeholder for local video */}
-        <div
-          className={`absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center ${
-            isVideoOff ? "" : "hidden"
-          }`}
-        >
-          <div className="text-center text-gray-700">
-            <div className="w-8 h-8 sm:w-12 sm:h-12 bg-white/60 rounded-full flex items-center justify-center mb-2 mx-auto border border-gray-200">
-              <Camera size={16} className="sm:w-6 sm:h-6 text-gray-600" />
+        {!webcamActive && (
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+            <div className="text-center text-gray-700">
+              <div className="w-8 h-8 sm:w-12 sm:h-12 bg-white/60 rounded-full flex items-center justify-center mb-2 mx-auto border border-gray-200">
+                <Camera size={16} className="sm:w-6 sm:h-6 text-gray-600" />
+              </div>
+              <p className="text-xs sm:text-sm text-gray-600 font-medium">
+                You
+              </p>
             </div>
-            <p className="text-xs sm:text-sm text-gray-600 font-medium">You</p>
-          </div>
-        </div>
-        {/* Video off overlay */}
-        {isVideoOff && (
-          <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
-            <VideoOff size={20} className="sm:w-8 sm:h-8 text-gray-500" />
           </div>
         )}
+
+        {/* Video off overlay */}
       </div>
 
       {/* Timer Display - Responsive */}
@@ -362,19 +363,9 @@ const VideoCallPage = ({ params }: PageProps) => {
 
         {/* Video Toggle Button */}
         <button
-          onClick={() => setIsVideoOff(!isVideoOff)}
-          className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center transition-all duration-200 shadow-lg backdrop-blur-md border-2 ${
-            isVideoOff
-              ? "bg-red-500/90 hover:bg-red-600/90 border-red-400/50"
-              : "bg-white/80 hover:bg-white/90 border-gray-200/50"
-          }`}
-        >
-          {isVideoOff ? (
-            <VideoOff size={20} className="sm:w-7 sm:h-7 text-white" />
-          ) : (
-            <Video size={20} className="sm:w-7 sm:h-7 text-gray-700" />
-          )}
-        </button>
+          // onClick={() => setIsVideoOff(!isVideoOff)}
+          className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center transition-all duration-200 shadow-lg backdrop-blur-md border-2`}
+        ></button>
       </div>
     </div>
   );
