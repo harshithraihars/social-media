@@ -78,20 +78,6 @@ const VideoCallPage = ({ params }: PageProps) => {
       };
     }
   }, [isCallActive]);
-  useEffect(() => {
-    const startLocalVideo = async () => {
-      try {
-        
-        console.log("Video call initialized");
-      } catch (error) {
-        console.error("Error accessing camera:", error);
-      }
-    };
-
-    if (isCallActive) {
-      startLocalVideo();
-    }
-  }, [isCallActive]);
 
   const handleEndCall = () => {
     setIsCallActive(false);
@@ -266,6 +252,7 @@ const VideoCallPage = ({ params }: PageProps) => {
       await setupSources(role);
     })();
   }, []);
+  startLocalVideo
   return (
     <div
       className="video-call-page relative w-full h-screen bg-black overflow-hidden"
