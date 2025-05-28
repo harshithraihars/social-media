@@ -29,16 +29,10 @@ import { useRouter } from "next/navigation";
 
 interface BookingCardProps {
   booking: BookingI;
-  joinInputState?: string;
-  onJoinSession: () => void;
-  onJoinInputChange: (value: string) => void;
 }
 
 export const BookingCard = ({
   booking,
-  joinInputState,
-  onJoinSession,
-  onJoinInputChange,
 }: BookingCardProps) => {
 
   const router=useRouter()
@@ -195,12 +189,6 @@ export const BookingCard = ({
           {!bookingcompleted && (
             <div className="pt-1">
               <div className="flex justify-between text-xs mb-1">
-                {/* <span className="text-blue-600 font-medium"> */}
-                {/* {calculateTimeLeft(booking.date, booking.time)} */}
-                {/* </span> */}
-                {/* <span className="text-gray-500"> */}
-                {/* {calculateTimePercentage(booking.date, booking.time)}% */}
-                {/* </span> */}
               </div>
               <Progress
                 value={calculateTimePercentage(booking.date)}
@@ -256,7 +244,7 @@ export const BookingCard = ({
                   disabled={isCheckingCall}
                 >
                   <Video className="h-3 w-3" />
-                  {isCheckingCall ? "Checking..." : joinInputState !== undefined ? "Cancel" : "Join"}
+                  {isCheckingCall ? "Checking..." : "join"}
                 </Button>
               </div>
 
@@ -279,41 +267,6 @@ export const BookingCard = ({
                 )}
               </AnimatePresence>
 
-              {/* Join input appears inline when join button is clicked */}
-              <AnimatePresence>
-                {joinInputState !== undefined && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="pt-2 border-t border-gray-200 mt-2"
-                  >
-                    <div className="flex gap-2 items-center">
-                      <div className="relative flex-1">
-                        <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
-                          <Video className="h-3 w-3 text-gray-500" />
-                        </div>
-                        <input
-                          type="text"
-                          value={joinInputState}
-                          onChange={(e) => onJoinInputChange(e.target.value)}
-                          className="w-full pl-7 pr-2 py-1 text-xs border border-primary/20 focus:border-primary focus:ring-1 focus:ring-primary/30 rounded-full transition-all text-gray-800 outline-none"
-                          placeholder="Enter session code"
-                          autoFocus
-                        />
-                      </div>
-                      <Button
-                        size="sm"
-                        className="h-6 rounded-full bg-gradient-to-r from-primary to-primary/80 hover:opacity-90 text-xs px-3"
-                        onClick={onJoinSession}
-                        disabled={!joinInputState?.trim()}
-                      >
-                        Join Now
-                      </Button>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
             </>
           )}
         </div>

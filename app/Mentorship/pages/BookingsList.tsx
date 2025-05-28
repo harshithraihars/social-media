@@ -1,6 +1,5 @@
 "use client";
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion} from "framer-motion";
 import { Calendar, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -15,25 +14,11 @@ interface BookingsListProps {
   onClose: () => void;
 }
 
-export const BookingsList = ({ bookingsRef, bookings, onClose }: BookingsListProps) => {
-  
-  const [joinInputStates, setJoinInputStates] = useState<Record<string, string>>({});
-
-  
-
-  const handleJoinSession = (bookingId: string) => {
-    // const joinCode = joinInputStates[bookingId];
-    // // Here you would handle the actual joining logic with the joinCode
-    // console.log(`Joining session ${bookingId} with code: ${joinCode}`);
-
-    // // Clear the join input after joining
-    // setJoinInputStates((prev) => {
-    //   const newState = { ...prev };
-    //   delete newState[bookingId];
-    //   return newState;
-    // });
-  };
-
+export const BookingsList = ({
+  bookingsRef,
+  bookings,
+  onClose,
+}: BookingsListProps) => {
   return (
     <motion.div
       ref={bookingsRef}
@@ -69,19 +54,9 @@ export const BookingsList = ({ bookingsRef, bookings, onClose }: BookingsListPro
               key={booking.date}
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.2, delay: 2* 0.05 }}
+              transition={{ duration: 0.2, delay: 2 * 0.05 }}
             >
-              <BookingCard
-                booking={booking}
-                // joinInputState={joinInputStates[booking.id]}
-                onJoinSession={() => handleJoinSession(booking.id)}
-                onJoinInputChange={(value) =>
-                  setJoinInputStates((prev) => ({
-                    ...prev,
-                    [booking.id]: value,
-                  }))
-                }
-              />
+              <BookingCard booking={booking} />
             </motion.div>
           ))
         ) : (
