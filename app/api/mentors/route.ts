@@ -1,6 +1,5 @@
 import connectDB from "@/lib/db";
 import { User } from "@/models/user.model";
-import { useUser } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -15,6 +14,7 @@ export const GET = async (req: NextRequest) => {
     const Role = searchParams.get("Role");
 
     const { userId } = auth();
+    
     const pipeline: any[] = [
       { $match: { MentorshipEnabled: true, userId: { $ne: userId } } },
       {

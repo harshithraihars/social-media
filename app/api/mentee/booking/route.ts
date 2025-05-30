@@ -1,3 +1,4 @@
+import { BookingI } from "@/app/Mentorship/pages/MentorShipHeader";
 import connectDB from "@/lib/db";
 import { Booking } from "@/models/Booking.model";
 import { Profile } from "@/models/profile.model";
@@ -46,12 +47,12 @@ export const POST = async (req: NextRequest) => {
   }
 };
 
-
 export const GET = async () => {
   const { userId } = auth();
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  // await Profile.findOne({});
 
   const user = await User.findOne({ userId }).select("_id");
 
@@ -61,27 +62,38 @@ export const GET = async () => {
       path: "mentorId",
       select: "userId firstName lastName profilePhoto",
       model: "User",
+      populate: {
+        path: "profileId",
+        select: "CompanyName Role Rating",
+        model: "Profile",
+      },
     })
     .lean();
-
-  const today = new Date();
+    
 
   bookingsRaw.sort((a, b) => {
-    const dateA = new Date(a.date);
-    const dateB = new Date(b.date);
+    const now = new Date();
 
-    const isFutureA = dateA >= today;
-    const isFutureB = dateB >= today;
+    const getDateTime = (booking: any) => {
+      const dateStr = new Date(booking.date).toISOString().split("T")[0];
+      return new Date(`${dateStr} ${booking.time}`);
+    };
 
-    if (isFutureA && !isFutureB) return -1;
-    if (!isFutureA && isFutureB) return 1;
+    const dateTimeA = getDateTime(a);
+    const dateTimeB = getDateTime(b);
 
-    return dateA.getTime() - dateB.getTime();
+    const isUpcomingA = dateTimeA >= now;
+    const isUpcomingB = dateTimeB >= now;
+
+    if (isUpcomingA && !isUpcomingB) return -1;
+    if (!isUpcomingA && isUpcomingB) return 1;
+
+    return dateTimeA.getTime() - dateTimeB.getTime();
   });
 
   const bookings = bookingsRaw.slice(0, 5).map((booking) => ({
     id: booking.mentorId?.userId,
-    bookingId:booking._id,
+    bookingId: booking._id,
     date: booking.date,
     time: booking.time,
     Duration: booking.Duration,
@@ -89,8 +101,10 @@ export const GET = async () => {
     firstName: booking.mentorId?.firstName || "",
     lastName: booking.mentorId?.lastName || "",
     profilePhoto: booking.mentorId?.profilePhoto || "",
+    Role:booking.mentorId?.profileId?.Role,
+    CompanyName:booking.mentorId?.profileId?.CompanyName,
+    Rating:booking.mentorId?.profileId?.Rating
   }));
 
   return NextResponse.json({ data: bookings });
 };
-

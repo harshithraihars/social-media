@@ -31,11 +31,8 @@ interface BookingCardProps {
   booking: BookingI;
 }
 
-export const BookingCard = ({
-  booking,
-}: BookingCardProps) => {
-
-  const router=useRouter()
+export const BookingCard = ({ booking }: BookingCardProps) => {
+  const router = useRouter();
   const [callNotStarted, setCallNotStarted] = useState<string | null>(null);
   const [isCheckingCall, setIsCheckingCall] = useState(false);
 
@@ -75,22 +72,27 @@ export const BookingCard = ({
     }
   };
 
-  const bookingcompleted = new Date(booking.date) < new Date();
+  const now = new Date();
+  const combinedDateString=`${booking.date.split("T")[0]}${booking.time}`
+  const bookingDate=new Date(combinedDateString)
+  const bookingcompleted = bookingDate < now;
 
   const handleJoinClick = async () => {
     try {
       setIsCheckingCall(true);
       setCallNotStarted(null);
-      
+
       const res = await axios.get(`api/booking/${booking.bookingId}`);
-      const callId=res.data.data.callId
+      const callId = res.data.data.callId;
       if (!callId) {
-        setCallNotStarted("Session hasn't started yet. Please wait for your mentor to begin the call.");
+        setCallNotStarted(
+          "Session hasn't started yet. Please wait for your mentor to begin the call."
+        );
         setTimeout(() => {
           setCallNotStarted(null);
         }, 5000);
       } else {
-            router.push(`/Mentorship/call/${callId}`)
+        router.push(`/Mentorship/call/${callId}`);
       }
     } catch (error) {
       console.error("Error checking call status:", error);
@@ -103,6 +105,7 @@ export const BookingCard = ({
     }
   };
 
+  
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 group bg-gradient-to-br to-gray-700 border-l-4 border-l-primary/70">
       <CardHeader className="py-3 px-4">
@@ -134,11 +137,11 @@ export const BookingCard = ({
                 {booking.firstName} {booking.lastName}
                 <div className="flex items-center text-amber-500 text-xs ml-1">
                   <Star className="h-3 w-3 fill-amber-500 stroke-amber-500" />
-                  <span className="ml-0.5">4.5</span>
+                  <span className="ml-0.5">{booking.Rating}</span>
                 </div>
               </CardTitle>
               <CardDescription className="text-xs font-medium text-primary/80">
-                Project Management
+                {booking.Role} at {booking.CompanyName}
               </CardDescription>
             </div>
           </div>
@@ -188,8 +191,7 @@ export const BookingCard = ({
 
           {!bookingcompleted && (
             <div className="pt-1">
-              <div className="flex justify-between text-xs mb-1">
-              </div>
+              <div className="flex justify-between text-xs mb-1"></div>
               <Progress
                 value={calculateTimePercentage(booking.date)}
                 className="h-1.5 bg-primary/5"
@@ -266,7 +268,6 @@ export const BookingCard = ({
                   </motion.div>
                 )}
               </AnimatePresence>
-
             </>
           )}
         </div>

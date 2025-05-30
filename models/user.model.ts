@@ -95,8 +95,8 @@ userSchema.virtual("requestsDetails", {
 
 userSchema.virtual("Profile", {
   ref: "Profile",
-  localField: "userId", // This is the string from Clerk
-  foreignField: "userId", // Also a string in Profile
+  localField: "userId", 
+  foreignField: "userId",
   justOne: true,
 });
 

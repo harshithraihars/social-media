@@ -4,8 +4,6 @@ import { AnimatePresence } from "framer-motion";
 import { Calendar, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BookingsList } from "./BookingsList";
-import { useAppSelector } from "@/lib/hooks";
-import { getCurrentUser } from "@/lib/serveractions";
 import axios from "axios";
 export interface BookingI {
     id:string,
@@ -17,10 +15,12 @@ export interface BookingI {
     time: string;
     Duration:string
     sessionAmount:number
+    Role:string
+    CompanyName:string
+    Rating:number
   }
 const MentorshipHeader = () => {
   const [bookings, setBookings] = useState<BookingI[]>();
-  const isMentorView = useAppSelector((state) => state.counter.isMentor);
   const [showBookings, setShowBookings] = useState(false);
   const bookingsRef = useRef<HTMLDivElement>(null);
 
