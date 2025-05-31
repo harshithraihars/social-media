@@ -12,8 +12,6 @@ import MentorshipSettings from "@/app/Mentorship/pages/MentorShipSetting";
 import Sidebar from "@/app/Mentor/pages/SideBar";
 import axios from "axios";
 import { BookingI } from "@/app/Mentorship/pages/MentorShipHeader";
-import { getCurrentUser } from "@/lib/serveractions";
-import { useUser } from "@clerk/nextjs";
 
 const BookingsPage = () => {
   // const [user, setUser] = useState();
@@ -24,11 +22,14 @@ const BookingsPage = () => {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const settingRef = useRef<HTMLDivElement | null>(null); // Correct typing
   const tabs: TabType[] = ["Bookings", "Upcoming", "Past"];
+  const [loading,setLoading]=useState(false)
   useEffect(() => {
     (async () => {
+      setLoading(true)
       const res = await axios.get(`/api/mentor/booking`);
       setBookings(res.data.data);
       setFilteredBookings(res.data.data);
+      setLoading(false)
     })();
   }, []);
 
@@ -116,20 +117,36 @@ const BookingsPage = () => {
 
           {/* Events */}
           <div className="space-y-6">
-            {filteredBookings?.map((booking, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1, duration: 0.5 }}
-              >
-                <EventCard
-                  booking={booking}
-                  index={index}
-                  activeTab={activeTab}
-                />
-              </motion.div>
-            ))}
+           {loading ? (
+  <div className="space-y-4">
+    {[...Array(3)].map((_, idx) => (
+      <motion.div
+        key={idx}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: idx * 0.2 }}
+        className="animate-pulse rounded-xl bg-white dark:bg-gray-800 shadow-md p-4 space-y-4"
+      >
+        <div className="h-4 w-1/3 bg-gray-300 dark:bg-gray-700 rounded" />
+        <div className="h-3 w-1/2 bg-gray-200 dark:bg-gray-600 rounded" />
+        <div className="h-10 bg-gray-100 dark:bg-gray-700 rounded" />
+      </motion.div>
+    ))}
+  </div>
+) : (
+  <div className="space-y-6">
+    {filteredBookings?.map((booking, index) => (
+      <motion.div
+        key={index}
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: index * 0.1, duration: 0.5 }}
+      >
+        <EventCard booking={booking} index={index} activeTab={activeTab} />
+      </motion.div>
+    ))}
+  </div>
+)}
           </div>
         </div>
         <div
