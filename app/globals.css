@@ -101,3 +101,15 @@
     @apply bg-background text-foreground;
     }
 }
+
+.scrollable-container {
+  -webkit-overflow-scrolling: touch !important;
+  overflow-y: auto !important;
+  -ms-overflow-style: auto !important;
+  scrollbar-width: auto !important;
+}
+
+.scrollable-container::-webkit-scrollbar {
+  width: 8px !important;
+  display: block !important;
+}

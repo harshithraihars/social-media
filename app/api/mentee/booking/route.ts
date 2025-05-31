@@ -52,7 +52,7 @@ export const GET = async () => {
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  // await Profile.findOne({});
+  await Profile.findOne({});
 
   const user = await User.findOne({ userId }).select("_id");
 

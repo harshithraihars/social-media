@@ -2,13 +2,11 @@
 import React from "react";
 import { X, Video, PhoneOff } from "lucide-react";
 import { BookingI } from "@/app/Mentorship/pages/MentorShipHeader";
-import { IUser } from "@/models/user.model";
 import { TabType } from "@/app/Mentorship/pages/Booking";
-import { useRouter } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
 
 interface BookingActionPopupProps {
   booking: BookingI;
-  user: IUser;
   activeTab: TabType;
   isOpen: boolean;
   onClose: () => void;
@@ -19,7 +17,6 @@ interface BookingActionPopupProps {
 
 const BookingActionPopup = ({
   booking,
-  user,
   activeTab,
   isOpen,
   onClose,
@@ -27,7 +24,6 @@ const BookingActionPopup = ({
   onCancelBooking,
   isCalling
 }: BookingActionPopupProps) => {
-  const router=useRouter()
   function getDateAndDay(dateStr: string): { day: string; date: number } {
     const dateObj = new Date(dateStr);
     if (isNaN(dateObj.getTime())) {
@@ -49,7 +45,8 @@ const BookingActionPopup = ({
     return { day, date };
   }
 
-  const avatars = [booking?.profilePhoto, user?.profilePhoto];
+  const {user}=useUser()
+  const avatars = [booking?.profilePhoto, user?.imageUrl];
   const isUpcoming = activeTab === "Upcoming" || (activeTab === "Bookings" && new Date(booking.date) > new Date());
 
   if (!isOpen) return null;
@@ -93,7 +90,7 @@ const BookingActionPopup = ({
                 </div>
                 <div>
                   <h4 className="font-medium text-gray-900">
-                    {`${booking.firstName} <> ${user.firstName}`}
+                    {`${booking.firstName} <> ${user?.firstName}`}
                   </h4>
                   <p className="text-sm text-gray-600">
                     {getDateAndDay(booking.date).day}, {getDateAndDay(booking.date).date} • {booking.time}

@@ -73,7 +73,7 @@ export const BookingCard = ({ booking }: BookingCardProps) => {
   };
 
   const now = new Date();
-  const combinedDateString=`${booking.date.split("T")[0]}${booking.time}`
+  const combinedDateString=`${booking.date.split("T")[0]} ${booking.time}`
   const bookingDate=new Date(combinedDateString)
   const bookingcompleted = bookingDate < now;
 

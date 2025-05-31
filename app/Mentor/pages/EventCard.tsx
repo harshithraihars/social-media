@@ -8,19 +8,21 @@ import { useRouter } from "next/navigation";
 import { firestore } from "@/lib/firebase";
 import { collection, doc } from "firebase/firestore";
 import axios from "axios";
+import { useUser } from "@clerk/nextjs";
 
 interface EventCardProps {
   booking: BookingI;
-  user: IUser;
+  // user: IUser;
   index: number;
   activeTab: TabType;
 }
 
-const EventCard = ({ booking, user, index, activeTab }: EventCardProps) => {
+const EventCard = ({ booking,index, activeTab }: EventCardProps) => {
 
   const router=useRouter()
   const [showPopup, setShowPopup] = useState(false);
   const [isCalling,setIscalling]=useState(false)
+  const {user}=useUser()
   function getDateAndDay(dateStr: string): { day: string; date: number } {
     const dateObj = new Date(dateStr);
     if (isNaN(dateObj.getTime())) {
@@ -63,8 +65,7 @@ const EventCard = ({ booking, user, index, activeTab }: EventCardProps) => {
     setShowPopup(false);
   };
 
-  const avatars = [booking?.profilePhoto, user?.profilePhoto];
-
+  const avatars = [booking?.profilePhoto, user?.imageUrl];
   return (
     <>
       <div 
@@ -108,7 +109,7 @@ const EventCard = ({ booking, user, index, activeTab }: EventCardProps) => {
             </div>
             <div className="flex flex-col gap-1 order-2 mb-0">
               <div className="hidden sm:block text-gray-800 font-medium text-base mb-2">
-                {`30min call meeting ${booking.firstName} <> ${user.firstName}`}
+                {`30min call meeting ${booking.firstName} <> ${user?.firstName}`}
                 <span className="text-xs text-gray-500 ml-2">(30 min call)</span>
               </div>
 
@@ -153,7 +154,6 @@ const EventCard = ({ booking, user, index, activeTab }: EventCardProps) => {
       {/* Popup Component */}
       <BookingActionPopup
         booking={booking}
-        user={user}
         activeTab={activeTab}
         isOpen={showPopup}
         onClose={() => setShowPopup(false)}

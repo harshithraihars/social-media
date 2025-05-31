@@ -11,7 +11,7 @@ export const GET = async () => {
  const bookingsRaw = await Booking.find({ mentorId: id })
     .select("_id date time Duration sessionAmount")
     .populate({
-      path: "mentorId",
+      path: "menteeId",
       select: "userId firstName lastName profilePhoto",
       model: "User",
     })
@@ -39,9 +39,9 @@ export const GET = async () => {
     time: booking.time,
     Duration: booking.Duration,
     sessionAmount: booking.sessionAmount,
-    firstName: booking.mentorId?.firstName || "",
-    lastName: booking.mentorId?.lastName || "",
-    profilePhoto: booking.mentorId?.profilePhoto || "",
+    firstName: booking.menteeId?.firstName || "",
+    lastName: booking.menteeId?.lastName || "",
+    profilePhoto: booking.menteeId?.profilePhoto || "",
   }));
 
   return NextResponse.json({ data: bookings });

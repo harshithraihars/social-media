@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { use, useEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { TabType } from "@/app/Mentorship/pages/Booking";
@@ -13,9 +13,10 @@ import Sidebar from "@/app/Mentor/pages/SideBar";
 import axios from "axios";
 import { BookingI } from "@/app/Mentorship/pages/MentorShipHeader";
 import { getCurrentUser } from "@/lib/serveractions";
+import { useUser } from "@clerk/nextjs";
 
 const BookingsPage = () => {
-  const [user, setUser] = useState();
+  // const [user, setUser] = useState();
   const [bookings, setBookings] = useState<BookingI[]>();
   const [filteredBookings, setFilteredBookings] = useState<BookingI[]>();
   const [activeTab, setActiveTab] = useState<TabType>("Bookings");
@@ -23,13 +24,9 @@ const BookingsPage = () => {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const settingRef = useRef<HTMLDivElement | null>(null); // Correct typing
   const tabs: TabType[] = ["Bookings", "Upcoming", "Past"];
-
   useEffect(() => {
     (async () => {
       const res = await axios.get(`/api/mentor/booking`);
-      const user = await getCurrentUser();
-      setUser(user);
-
       setBookings(res.data.data);
       setFilteredBookings(res.data.data);
     })();
@@ -128,7 +125,6 @@ const BookingsPage = () => {
               >
                 <EventCard
                   booking={booking}
-                  user={user!}
                   index={index}
                   activeTab={activeTab}
                 />
