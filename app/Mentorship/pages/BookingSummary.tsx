@@ -98,7 +98,6 @@ export default function BookingSummary({
                 error: "Failed to book the session. Please try again.",
               });
             }}
-            // onClick={}
 
             disabled={!date || !timeSlot || !duration || isProcessing}
           >

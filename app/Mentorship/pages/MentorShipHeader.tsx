@@ -24,7 +24,6 @@ const MentorshipHeader = () => {
   const [showBookings, setShowBookings] = useState(false);
   const bookingsRef = useRef<HTMLDivElement>(null);
 
-  // Close bookings panel when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (

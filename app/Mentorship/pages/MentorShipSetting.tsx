@@ -13,7 +13,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
-import { Toaster } from "@/components/ui/sonner"
+// import { Toaster } from "@/components/ui/sonner"
 interface MentorshipSettingsProps {
   setMentorSettingOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
