@@ -47,10 +47,14 @@ const BookingsPage = () => {
   useEffect(() => {
     (async () => {
       setLoading(true);
+      console.log("fetching");
+      
       const res = await axios.get(`/api/mentor/booking`);
       setBookings(res.data.data);
       setFilteredBookings(res.data.data);
       setLoading(false);
+      console.log("bookings fetched");
+      
     })();
   }, []);
 
