@@ -1,17 +1,17 @@
 import mongoose, { Schema } from "mongoose";
 
 export interface IMentorComment {
-  MentorId: mongoose.Types.ObjectId
-  MenteeId: mongoose.Types.ObjectId
+  mentorId: mongoose.Types.ObjectId
+  menteeId: mongoose.Types.ObjectId
   comment: string;
 }
 
-const MentorComments = new mongoose.Schema<IMentorComment>({
-  MentorId: {
+const MentorCommentsSchema = new mongoose.Schema<IMentorComment>({
+  mentorId: {
     type: Schema.Types.ObjectId,
     required: true,
   },
-  MenteeId:{
+  menteeId:{
     type: Schema.Types.ObjectId,
     required: true
   },
@@ -21,6 +21,6 @@ const MentorComments = new mongoose.Schema<IMentorComment>({
   },
 });
 
-export const Profile =
-  mongoose.models.Mentor ||
-  mongoose.model<IMentorComment>("Profile", MentorComments);
+export const MentorComments =
+  mongoose.models.MentorComments ||
+  mongoose.model<IMentorComment>("MentorComments", MentorCommentsSchema);

@@ -4,45 +4,50 @@ import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 export const GET = async () => {
-  const { userId } = auth();
-  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  try {
+    const { userId } = auth();
+    if (!userId)
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const id=await User.findOne({userId}).select("_id")
- const bookingsRaw = await Booking.find({ mentorId: id })
-    .select("_id date time Duration sessionAmount")
-    .populate({
-      path: "menteeId",
-      select: "userId firstName lastName profilePhoto",
-      model: "User",
-    })
-    .lean();
+    const id = await User.findOne({ userId }).select("_id");
+    const bookingsRaw = await Booking.find({ mentorId: id })
+      .select("_id date time Duration sessionAmount")
+      .populate({
+        path: "menteeId",
+        select: "userId firstName lastName profilePhoto",
+        model: "User",
+      })
+      .lean();
 
-  const today = new Date();
+    const today = new Date();
 
-  bookingsRaw.sort((a, b) => {
-    const dateA = new Date(a.date);
-    const dateB = new Date(b.date);
+    bookingsRaw.sort((a, b) => {
+      const dateA = new Date(a.date);
+      const dateB = new Date(b.date);
 
-    const isFutureA = dateA >= today;
-    const isFutureB = dateB >= today;
+      const isFutureA = dateA >= today;
+      const isFutureB = dateB >= today;
 
-    if (isFutureA && !isFutureB) return -1;
-    if (!isFutureA && isFutureB) return 1;
+      if (isFutureA && !isFutureB) return -1;
+      if (!isFutureA && isFutureB) return 1;
 
-    return dateA.getTime() - dateB.getTime();
-  });
+      return dateA.getTime() - dateB.getTime();
+    });
 
-  const bookings = bookingsRaw.slice(0, 5).map((booking) => ({
-    id: booking.mentorId?.userId,
-    bookingId:booking._id.toString(),
-    date: booking.date,
-    time: booking.time,
-    Duration: booking.Duration,
-    sessionAmount: booking.sessionAmount,
-    firstName: booking.menteeId?.firstName || "",
-    lastName: booking.menteeId?.lastName || "",
-    profilePhoto: booking.menteeId?.profilePhoto || "",
-  }));
+    const bookings = bookingsRaw.slice(0, 5).map((booking) => ({
+      id: booking.mentorId?.userId,
+      bookingId: booking._id.toString(),
+      date: booking.date,
+      time: booking.time,
+      Duration: booking.Duration,
+      sessionAmount: booking.sessionAmount,
+      firstName: booking.menteeId?.firstName || "",
+      lastName: booking.menteeId?.lastName || "",
+      profilePhoto: booking.menteeId?.profilePhoto || "",
+    }));
 
-  return NextResponse.json({ data: bookings });
+    return NextResponse.json({ data: bookings });
+  } catch (error) {
+    return NextResponse.json({ error: error }, { status: 500 });
+  }
 };

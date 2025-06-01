@@ -8,6 +8,7 @@ export interface IProfile extends Document {
   About: string;
   Rate: number;
   Rating: number;
+  bookingsCount:number
 }
 
 const profileSchema = new mongoose.Schema<IProfile>({
@@ -39,6 +40,10 @@ const profileSchema = new mongoose.Schema<IProfile>({
     type: Number,
     default: 0,
   },
+  bookingsCount:{
+    type:Number,
+    default:0
+  }
 });
 
 export const Profile =

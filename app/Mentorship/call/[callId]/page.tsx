@@ -540,7 +540,15 @@
 
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import { PhoneOff, Mic, MicOff, Video, VideoOff, Camera, User } from "lucide-react";
+import {
+  PhoneOff,
+  Mic,
+  MicOff,
+  Video,
+  VideoOff,
+  Camera,
+  User,
+} from "lucide-react";
 import { getCurrentUser } from "@/lib/serveractions";
 import axios from "axios";
 import {
@@ -556,6 +564,7 @@ import {
 } from "firebase/firestore";
 import { firestore } from "@/lib/firebase";
 import CallEndRating from "./Rating";
+import { useRouter } from "next/navigation";
 
 interface PageProps {
   params: { callId: string };
@@ -580,11 +589,15 @@ const VideoCallPage = ({ params }: PageProps) => {
   const [webcamActive, setWebcamActive] = useState(false);
   const [remoteStreamActive, setRemoteStreamActive] = useState(false);
   const [callEnded, setCallEnded] = useState(false);
-
+  const [formData, setFormData] = useState({
+    Role: "",
+    mentorId: "",
+    menteeId: "",
+  });
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const localRef = useRef<HTMLVideoElement | null>(null);
   const remoteRef = useRef<HTMLVideoElement | null>(null);
-
+  const router = useRouter();
   // Move RTCPeerConnection to ref to avoid global state issues
   const pcRef = useRef<RTCPeerConnection | null>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
@@ -641,7 +654,7 @@ const VideoCallPage = ({ params }: PageProps) => {
 
   const handleEndCall = () => {
     setIsCallActive(false);
-    hangUp(true); // Explicitly pass true to reload
+    hangUp(); // Explicitly pass true to reload
   };
 
   const setupSources = async (role: string) => {
@@ -848,18 +861,11 @@ const VideoCallPage = ({ params }: PageProps) => {
   };
 
   const hangUp = async () => {
-   if (localStreamRef.current) {
-    localStreamRef.current.getTracks().forEach((track) => {
-      track.stop(); 
-    });
-
-    if (localRef.current) {
-      localRef.current.srcObject = null;
+    if (formData.Role == "mentor") {
+      router.push("/Mentor");
+    } else {
+      setCallEnded(true);
     }
-
-    localStreamRef.current = null;
-  }
-    setCallEnded(true);
 
     // Close peer connection
     if (pcRef.current) {
@@ -908,7 +914,6 @@ const VideoCallPage = ({ params }: PageProps) => {
         console.error("Error during cleanup:", error);
       }
     }
-
   };
 
   useEffect(() => {
@@ -924,7 +929,11 @@ const VideoCallPage = ({ params }: PageProps) => {
           role = "mentee";
         }
 
-        console.log("User role:", role);
+        setFormData({
+          Role: role,
+          mentorId: res.data.data.mentorId,
+          menteeId: res.data.data.menteeId,
+        });
         await setupSources(role);
       } catch (error) {
         console.error("Error initializing call:", error);
@@ -943,7 +952,7 @@ const VideoCallPage = ({ params }: PageProps) => {
     };
   }, [callId]);
 
- return (
+  return (
     <div>
       <div
         className="video-call-page relative w-full h-screen bg-black overflow-hidden"
@@ -983,8 +992,14 @@ const VideoCallPage = ({ params }: PageProps) => {
                 <div className="mt-4 flex justify-center">
                   <div className="flex space-x-1">
                     <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                    <div
+                      className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"
+                      style={{ animationDelay: "0.1s" }}
+                    ></div>
+                    <div
+                      className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"
+                      style={{ animationDelay: "0.2s" }}
+                    ></div>
                   </div>
                 </div>
               </div>
@@ -1070,10 +1085,7 @@ const VideoCallPage = ({ params }: PageProps) => {
         </div>
 
         {/* Call End Rating Component */}
-        {callEnded && (
-          <CallEndRating
-          />
-        )}
+        {callEnded && <CallEndRating formData={formData} />}
       </div>
     </div>
   );

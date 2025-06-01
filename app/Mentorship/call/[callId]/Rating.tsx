@@ -2,19 +2,34 @@ import React, { useState } from "react";
 import { Star, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
-export default function RatingPage() {
+export default function RatingPage({
+  formData,
+}: {
+  formData: {
+    Role: string;
+    mentorId: string;
+    menteeId: string;
+  };
+}) {
   const router = useRouter();
   const [rating, setRating] = useState(0);
-  const [comments, setComments] = useState("");
+  const [comment, setcomment] = useState("");
   const [hoveredOverall, setHoveredOverall] = useState(0);
 
   const handleStarClick = (rating: number) => {
     setRating(rating);
   };
 
-  const handleSubmit = () => { 
-    router.push("/Mentor");
+  const handleSubmit = async () => {
+    await axios.post("/api/mentor/comments", {
+      mentorId: formData.mentorId,
+      menteeId: formData.menteeId,
+      comment: comment,
+      rating:rating
+    });
+    router.push("/Mentorship");
   };
 
   const StarRating = ({
@@ -118,7 +133,7 @@ export default function RatingPage() {
             </div>
           </div>
 
-          {/* Comments Section */}
+          {/* comment Section */}
           <div className="mb-6 sm:mb-10">
             <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 sm:p-8 shadow-lg border border-white/30">
               <div className="flex items-center gap-3 mb-4 sm:mb-6">
@@ -132,14 +147,14 @@ export default function RatingPage() {
               <textarea
                 className="w-full p-4 sm:p-6 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-300 focus:border-blue-400 resize-none transition-all duration-200 text-gray-700 placeholder-gray-400 text-sm sm:text-base"
                 placeholder="Share your thoughts about the mentoring session..."
-                value={comments}
-                onChange={(e) => setComments(e.target.value)}
+                value={comment}
+                onChange={(e) => setcomment(e.target.value)}
               />
             </div>
           </div>
           <div className="pb-6">
             <button
-              disabled={comments.length == 0}
+              disabled={comment.length == 0 || rating==0}
               onClick={() => {
                 const promise = Promise.resolve(handleSubmit());
                 toast.promise(promise, {
@@ -149,7 +164,7 @@ export default function RatingPage() {
                 });
               }}
               className={`${
-                comments.length == 0
+                comment.length == 0 || rating==0
                   ? "bg-gray-400 cursor-not-allowed"
                   : "bg-gradient-to-r from-blue-600 to-cyan-600"
               } w-full  text-white font-semibold text-base sm:text-lg py-4 sm:py-5 px-6 rounded-lg hover:from-blue-700 hover:to-cyan-700 transform hover:scale-[1.02] transition-all duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-300`}

@@ -66,7 +66,7 @@ export const BookingsList = ({
               <p className="text-center text-muted-foreground">
                 No bookings found
               </p>
-              <Button variant="outline" className="mt-4">
+              <Button variant="outline" className="mt-4" onClick={onClose}>
                 Book Your First Session
               </Button>
             </div>
