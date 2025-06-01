@@ -545,10 +545,10 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { firestore } from "@/lib/firebase";
 import CallEndRating from "./Rating";
-import { useWebRTC } from "./hooks/useWebRtc";
 import VideoDisplay from "./videoDisplay";
 import CallTimer from "./callTimer";
 import CallControls from "./callControls";
+import { useWebRTC } from "./hooks/useWebrtc";
 
 interface PageProps {
   params: { callId: string };
