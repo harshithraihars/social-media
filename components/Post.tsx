@@ -147,6 +147,8 @@ const Post = ({
 
   const { user } = useUser();
   const fullName = post?.user?.firstName + " " + post?.user?.lastName;
+  console.log(fullName.toLowerCase());
+  
   const loggedInUser = user?.id === post?.user?.userId;
   const timeago = formatDistanceToNowStrict(new Date(post.createdAt), {
     addSuffix: true,
@@ -204,7 +206,7 @@ const Post = ({
               }
             </h1>
             <p className="text-xs text-gray-500">
-              @{user ? user?.username : "username"}
+              @{user ? user?.username : "harshithraihars"}
             </p>
 
             <p className="text-xs text-gray-500">{timeago}</p>

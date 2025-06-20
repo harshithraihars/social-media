@@ -25,6 +25,8 @@ export const createPostAction = async (
 ) => {
   await connectDB();
   const user = await currentUser();
+  console.log();
+  
   if (!user) {
     throw new Error("user not Authenticated");
   }
@@ -33,8 +35,8 @@ export const createPostAction = async (
   }
   const image = selectedFile;
   const userDatabase: IUser = {
-    firstName: user.firstName || "harshith",
-    lastName: user.lastName || "rai",
+    firstName: user?.externalAccounts[0].firstName || "harshith",
+    lastName: user?.externalAccounts[0].lastName || "rai",
     userId: user.id,
     profilePhoto: user.imageUrl,
   };
