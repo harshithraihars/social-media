@@ -4,7 +4,6 @@ import { Calendar, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { BookingCard } from "./BookingCard";
-// import { Booking } from "./BookingCard";
 import React from "react";
 import { BookingI } from "./MentorShipHeader";
 

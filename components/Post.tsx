@@ -176,6 +176,7 @@ const Post = ({
     dispatch((setPosts((posts.filter((post)=>post._id!==id)))))
   }
 
+  
   return (
     <div className="bg-white my-2 mx-2 md:mx-0 rounded-lg border border-gray-300">
       {issearching && index===0?(

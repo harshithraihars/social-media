@@ -13,6 +13,7 @@ const MentorCommentsSchema = new mongoose.Schema<IMentorComment>({
   },
   menteeId:{
     type: Schema.Types.ObjectId,
+    ref:"User",
     required: true
   },
   comment: {

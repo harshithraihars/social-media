@@ -1,35 +1,29 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Heart, ChevronLeft, Star } from "lucide-react";
 import "./profile.css";
-import { IMentor } from "./Mentee";
+import { IMentor, MentorComment } from "./Mentee";
 
 type MentorProfileProps = {
+  mentorComments: MentorComment[] | null;
   setMentorProfile: () => void; // Function to close the profile
   OnClick: () => void;
-  selectedMentor: IMentor | null; // Ensure MentorType is correctly defined
+  selectedMentor: IMentor | null;
+  mentorCommentsLoading: boolean;
 };
 
 const MentorProfile = ({
+  mentorComments,
   setMentorProfile,
   OnClick,
   selectedMentor,
+  mentorCommentsLoading,
 }: MentorProfileProps) => {
   const [liked, setLiked] = useState(false);
-  const comments = [
-    {
-      id: 1,
-      author: "Sarah M.",
-      text: "Excellent mentor! Their guidance helped me land my dream job.",
-    },
-    {
-      id: 2,
-      author: "Michael K.",
-      text: "Very patient and explains concepts clearly. Highly recommend!",
-    },
-  ];
-
+  const [showAllComments, setShowAllComments] = useState(false);
+  const visibleComments = showAllComments
+    ? mentorComments || []
+    : (mentorComments || []).slice(0, 2);
   if (!selectedMentor) return null;
-
   return (
     <div className="w-full h-auto bg-gradient-to-br from-indigo-100 via-purple-50 to-blue-100 rounded-xl shadow-lg overflow-hidden animate-fadeIn">
       {/* Profile Image Section with Corner Buttons - Increased height */}
@@ -144,24 +138,36 @@ const MentorProfile = ({
       <div className="px-6 py-3">
         <div className="flex justify-between items-center mb-2">
           <h3 className="font-bold text-lg text-purple-900">Comments</h3>
-          <button className="text-purple-600 text-sm font-medium hover:text-purple-800 transition">
-            View all
+          <button
+            className="text-purple-600 text-sm font-medium hover:text-purple-800 transition"
+            onClick={() => setShowAllComments(!showAllComments)}
+          >
+            {showAllComments ? "Show less" : "View all"}
           </button>
         </div>
 
         {/* Comments list - showing only 2 comments */}
-        <div className="space-y-3">
-          {comments.map((comment) => (
-            <div
-              key={comment.id}
-              className="bg-white p-3 rounded-lg shadow-md border-l-4 border-purple-400"
-            >
-              <p className="text-sm text-purple-700 font-medium mb-1">
-                {comment.author}
-              </p>
-              <p className="text-gray-700 text-sm">{comment.text}</p>
-            </div>
-          ))}
+        <div className="space-y-3 max-h-56 overflow-y-auto pr-2">
+          {mentorCommentsLoading ? (
+            <>
+              <div className="bg-white p-3 rounded-lg shadow-md animate-pulse h-16" />
+              <div className="bg-white p-3 rounded-lg shadow-md animate-pulse h-16" />
+            </>
+          ) : visibleComments?.length > 0 ? (
+            visibleComments.map((comment, index) => (
+              <div
+                key={index}
+                className="bg-white p-3 rounded-lg shadow-md border-l-4 border-purple-400"
+              >
+                <p className="text-sm text-purple-700 font-medium mb-1">
+                  {comment.firstName} {comment.lastName}
+                </p>
+                <p className="text-gray-700 text-sm">{comment.comment}</p>
+              </div>
+            ))
+          ) : (
+            <p className="text-sm text-gray-500">No comments yet.</p>
+          )}
         </div>
       </div>
 

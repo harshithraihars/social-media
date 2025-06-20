@@ -15,12 +15,20 @@ import ConfirmBooking from "./ConfirmBooking";
 import AnimateOnScroll from "../Animation/Animate";
 import { IUser } from "@/models/user.model";
 import { IProfile } from "@/models/profile.model";
+import mongoose from "mongoose";
+import axios from "axios";
 
 // Define a Mentor type that includes the user and profile information
 export interface IMentor extends IUser {
+  _id: mongoose.ObjectId;
   profile: IProfile;
 }
 
+export type MentorComment = {
+  firstName: string;
+  lastName: string;
+  comment: string;
+};
 // Type for the response from the API (list of mentors)
 export type IMentorListResponse = IMentor[];
 
@@ -35,6 +43,8 @@ const Mentee = () => {
   const [hasSearched, setHasSearched] = useState(false);
   const mentorProfileRef = useRef(null);
   const bookingPageRef = useRef(null);
+  const [mentorComments, setMentorComments] = useState<MentorComment[] |null>(null);
+  const [mentorCommentsLoading, setMentorCommentsLoading] = useState(false);
 
   const handleCompanyChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,8 +64,17 @@ const Mentee = () => {
     return mentors.find((mentor) => mentor.userId === selectedMentorId) || null;
   }, [selectedMentorId, mentors]);
 
-  const handleCardClick = (mentorId: string) => {
-    setSelectedMentorId(mentorId);
+  const handleCardClick = async (mentor: IMentor) => {
+    setSelectedMentorId(mentor.userId);
+    setMentorCommentsLoading(true);
+    try {
+      const res = await axios.get(`/api/mentor/comments/${mentor._id}`);
+      setMentorComments(res.data.data || []);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setMentorCommentsLoading(false);
+    }
   };
 
   const handleCloseProfile = () => {
@@ -112,7 +131,7 @@ const Mentee = () => {
         `/api/mentors?CompanyName=${companyName}&Role=${role}`
       );
       const data = await response.json();
-      
+
       setMentors(data);
     } catch (error) {
       console.error("Error fetching mentors:", error);
@@ -138,7 +157,6 @@ const Mentee = () => {
 
     fetchInitialMentors();
   }, []);
-
   return (
     <div>
       {/* Hero Section */}
@@ -319,7 +337,7 @@ const Mentee = () => {
                           <MentorCard
                             mentor={mentor}
                             isSelected={selectedMentorId === mentor.userId}
-                            onClick={() => handleCardClick(mentor.userId)}
+                            onClick={() => handleCardClick(mentor)}
                             isCollapsed={selectedMentorId !== null}
                           />
                         </div>
@@ -347,7 +365,7 @@ const Mentee = () => {
                           <MentorCard
                             mentor={mentor}
                             isSelected={selectedMentorId === mentor.userId}
-                            onClick={() => handleCardClick(mentor.userId)}
+                            onClick={() => handleCardClick(mentor)}
                             isCollapsed={selectedMentorId !== null}
                           />
                         </div>
@@ -364,6 +382,8 @@ const Mentee = () => {
                     setMentorProfile={handleCloseProfile}
                     selectedMentor={selectedMentor}
                     OnClick={() => setBookingPageOpen(true)}
+                    mentorComments={mentorComments}
+                    mentorCommentsLoading={mentorCommentsLoading}
                   />
                 </div>
               )}
@@ -381,21 +401,23 @@ const Mentee = () => {
             setMentorProfile={handleCloseProfile}
             selectedMentor={selectedMentor}
             OnClick={() => setBookingPageOpen(true)}
+            mentorComments={mentorComments}
+            mentorCommentsLoading={mentorCommentsLoading}
           />
         </div>
       </div>
       {/* Booking page overlay - Adjusted to ensure full coverage */}
       <div
-    className="fixed inset-0 z-30 w-full h-full bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200 overflow-y-auto translate-y-full"
-    ref={bookingPageRef}
-  >
-    <div className="w-full min-h-screen pt-4 px-0 md:px-4 pb-16 sm:pb-20">
-      <ConfirmBooking
-        selectedMentor={selectedMentor}
-        setBookingPageOpen={setBookingPageOpen}
-      />
-    </div>
-  </div>
+        className="fixed inset-0 z-30 w-full h-full bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200 overflow-y-auto translate-y-full"
+        ref={bookingPageRef}
+      >
+        <div className="w-full min-h-screen pt-4 px-0 md:px-4 pb-16 sm:pb-20">
+          <ConfirmBooking
+            selectedMentor={selectedMentor}
+            setBookingPageOpen={setBookingPageOpen}
+          />
+        </div>
+      </div>
     </div>
   );
 };
