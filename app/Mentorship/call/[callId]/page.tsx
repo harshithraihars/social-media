@@ -15,6 +15,8 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { firestore } from "@/lib/firebase";
+import { useRouter } from "next/navigation";
+import RatingPage from "./Rating";
 
 interface PageProps {
   params: { callId: string };
@@ -38,11 +40,17 @@ const VideoCallPage = ({ params }: PageProps) => {
   const [roomId, setRoomId] = useState(callId);
   const [webcamActive, setWebcamActive] = useState(false);
   const [remoteStreamActive, setRemoteStreamActive] = useState(false);
-  
+  const [formData, setFormData] = useState({
+    Role: "",
+    mentorId: "",
+    menteeId: "",
+  });
+  const router=useRouter()
+const [callEnded, setCallEnded] = useState(false);
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const localRef = useRef<HTMLVideoElement | null>(null);
   const remoteRef = useRef<HTMLVideoElement | null>(null);
-  
+
   // Move RTCPeerConnection to ref to avoid global state issues
   const pcRef = useRef<RTCPeerConnection | null>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
@@ -53,7 +61,7 @@ const VideoCallPage = ({ params }: PageProps) => {
     if (pcRef.current) {
       pcRef.current.close();
     }
-    
+
     pcRef.current = new RTCPeerConnection(servers);
     return pcRef.current;
   };
@@ -97,18 +105,22 @@ const VideoCallPage = ({ params }: PageProps) => {
     }
   }, [isCallActive]);
 
-  const handleEndCall = () => {
-    setIsCallActive(false);
-    hangUp(true); // Explicitly pass true to reload
+  const handleEndCall = async() => {
+    if (formData.Role === "mentor") {
+      router.push("/Mentor");
+    } else {
+      setCallEnded(true);
+    }
+    await hangUp(); // Explicitly pass true to reload
   };
 
   const setupSources = async (role: string) => {
     try {
       console.log("Setting up sources for role:", role);
-      
+
       // Initialize peer connection
       const pc = initializePeerConnection();
-      
+
       // Get user media
       const localStream = await navigator.mediaDevices.getUserMedia({
         video: true,
@@ -132,13 +144,13 @@ const VideoCallPage = ({ params }: PageProps) => {
       pc.ontrack = (event) => {
         console.log("Received remote track:", event.track.kind, event.track.id);
         console.log("Remote streams:", event.streams);
-        
+
         // Add tracks to remote stream
         event.streams[0].getTracks().forEach((track) => {
           console.log("Adding remote track:", track.kind, track.id);
           remoteStreamRef.current?.addTrack(track);
         });
-        
+
         // Update remote video element
         if (remoteRef.current && remoteStreamRef.current) {
           remoteRef.current.srcObject = remoteStreamRef.current;
@@ -163,7 +175,10 @@ const VideoCallPage = ({ params }: PageProps) => {
       // Connection state monitoring
       pc.onconnectionstatechange = () => {
         console.log("Connection state:", pc.connectionState);
-        if (pc.connectionState === "disconnected" || pc.connectionState === "failed") {
+        if (
+          pc.connectionState === "disconnected" ||
+          pc.connectionState === "failed"
+        ) {
           hangUp(true); // Only reload when connection actually fails
         }
       };
@@ -178,7 +193,6 @@ const VideoCallPage = ({ params }: PageProps) => {
       } else if (role === "mentee") {
         await setupMenteeConnection(pc);
       }
-
     } catch (error) {
       console.error("Error setting up sources:", error);
     }
@@ -186,8 +200,18 @@ const VideoCallPage = ({ params }: PageProps) => {
 
   const setupMentorConnection = async (pc: RTCPeerConnection) => {
     const callDoc = doc(firestore, "calls", callId);
-    const offerCandidates = collection(firestore, "calls", callId, "offerCandidates");
-    const answerCandidates = collection(firestore, "calls", callId, "answerCandidates");
+    const offerCandidates = collection(
+      firestore,
+      "calls",
+      callId,
+      "offerCandidates"
+    );
+    const answerCandidates = collection(
+      firestore,
+      "calls",
+      callId,
+      "answerCandidates"
+    );
 
     setRoomId(callDoc.id);
 
@@ -235,8 +259,18 @@ const VideoCallPage = ({ params }: PageProps) => {
 
   const setupMenteeConnection = async (pc: RTCPeerConnection) => {
     const callDoc = doc(firestore, "calls", callId);
-    const offerCandidates = collection(firestore, "calls", callId, "offerCandidates");
-    const answerCandidates = collection(firestore, "calls", callId, "answerCandidates");
+    const offerCandidates = collection(
+      firestore,
+      "calls",
+      callId,
+      "offerCandidates"
+    );
+    const answerCandidates = collection(
+      firestore,
+      "calls",
+      callId,
+      "answerCandidates"
+    );
 
     // Handle ICE candidates
     pc.onicecandidate = async (event) => {
@@ -283,9 +317,7 @@ const VideoCallPage = ({ params }: PageProps) => {
     });
   };
 
-  const hangUp = async (shouldReload = true) => {
-    console.log("Hanging up call");
-    
+ const hangUp = async () => {
     // Close peer connection
     if (pcRef.current) {
       pcRef.current.close();
@@ -294,7 +326,7 @@ const VideoCallPage = ({ params }: PageProps) => {
 
     // Stop local tracks
     if (localStreamRef.current) {
-      localStreamRef.current.getTracks().forEach(track => track.stop());
+      localStreamRef.current.getTracks().forEach((track) => track.stop());
       localStreamRef.current = null;
     }
 
@@ -303,25 +335,35 @@ const VideoCallPage = ({ params }: PageProps) => {
       try {
         const roomRef = doc(firestore, "calls", roomId);
 
-        const answerCandidatesRef = collection(firestore, "calls", roomId, "answerCandidates");
+        const answerCandidatesRef = collection(
+          firestore,
+          "calls",
+          roomId,
+          "answerCandidates"
+        );
         const answerSnap = await getDocs(answerCandidatesRef);
-        const deleteAnswerPromises = answerSnap.docs.map(docSnap => deleteDoc(docSnap.ref));
+        const deleteAnswerPromises = answerSnap.docs.map((docSnap) =>
+          deleteDoc(docSnap.ref)
+        );
 
-        const offerCandidatesRef = collection(firestore, "calls", roomId, "offerCandidates");
+        const offerCandidatesRef = collection(
+          firestore,
+          "calls",
+          roomId,
+          "offerCandidates"
+        );
         const offerSnap = await getDocs(offerCandidatesRef);
-        const deleteOfferPromises = offerSnap.docs.map(docSnap => deleteDoc(docSnap.ref));
+        const deleteOfferPromises = offerSnap.docs.map((docSnap) =>
+          deleteDoc(docSnap.ref)
+        );
 
         await Promise.all([...deleteAnswerPromises, ...deleteOfferPromises]);
         await deleteDoc(roomRef);
-        
+
         console.log("Firestore cleanup completed");
       } catch (error) {
         console.error("Error during cleanup:", error);
       }
-    }
-
-    if (shouldReload) {
-      window.location.reload();
     }
   };
 
@@ -330,15 +372,19 @@ const VideoCallPage = ({ params }: PageProps) => {
       try {
         const user = await getCurrentUser();
         const res = await axios.get(`/api/booking?callId=${callId}`);
-        
+
         let role: string;
         if (user._id === res.data.data.mentorId) {
           role = "mentor";
         } else {
           role = "mentee";
         }
-        
-        console.log("User role:", role);
+
+        setFormData({
+          Role: role,
+          mentorId: res.data.data.mentorId,
+          menteeId: res.data.data.menteeId,
+        });
         await setupSources(role);
       } catch (error) {
         console.error("Error initializing call:", error);
@@ -465,6 +511,7 @@ const VideoCallPage = ({ params }: PageProps) => {
           <Video size={20} className="sm:w-7 sm:h-7 text-gray-700" />
         </button>
       </div>
+      {callEnded && <RatingPage formData={formData}/>}
     </div>
   );
 };
