@@ -40,13 +40,8 @@ const VideoCallPage = ({ params }: PageProps) => {
   const [roomId, setRoomId] = useState(callId);
   const [webcamActive, setWebcamActive] = useState(false);
   const [remoteStreamActive, setRemoteStreamActive] = useState(false);
-  const [formData, setFormData] = useState({
-    Role: "",
-    mentorId: "",
-    menteeId: "",
-  });
+
   const router=useRouter()
-const [callEnded, setCallEnded] = useState(false);
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const localRef = useRef<HTMLVideoElement | null>(null);
   const remoteRef = useRef<HTMLVideoElement | null>(null);
@@ -55,6 +50,13 @@ const [callEnded, setCallEnded] = useState(false);
   const pcRef = useRef<RTCPeerConnection | null>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
   const remoteStreamRef = useRef<MediaStream | null>(null);
+  const [formData, setFormData] = useState({
+    Role: "",
+    mentorId: "",
+    menteeId: "",
+  });
+const [callEnded, setCallEnded] = useState(false);
+
 
   // Initialize RTCPeerConnection
   const initializePeerConnection = () => {
@@ -106,12 +108,15 @@ const [callEnded, setCallEnded] = useState(false);
   }, [isCallActive]);
 
   const handleEndCall = async() => {
+    // setIsCallActive(false);
     if (formData.Role === "mentor") {
       router.push("/Mentor");
     } else {
       setCallEnded(true);
     }
-    await hangUp(); // Explicitly pass true to reload
+    await hangUp();
+
+    hangUp();
   };
 
   const setupSources = async (role: string) => {
@@ -317,7 +322,9 @@ const [callEnded, setCallEnded] = useState(false);
     });
   };
 
- const hangUp = async () => {
+  const hangUp = async () => {
+    console.log("Hanging up call");
+
     // Close peer connection
     if (pcRef.current) {
       pcRef.current.close();
@@ -365,6 +372,8 @@ const [callEnded, setCallEnded] = useState(false);
         console.error("Error during cleanup:", error);
       }
     }
+
+    
   };
 
   useEffect(() => {
@@ -399,7 +408,7 @@ const [callEnded, setCallEnded] = useState(false);
         clearTimeout(controlsTimeoutRef.current);
       }
       // Don't reload on component unmount - just clean up resources
-      hangUp(false);
+      hangUp();
     };
   }, [callId]);
 
