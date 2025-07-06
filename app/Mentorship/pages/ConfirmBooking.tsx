@@ -143,7 +143,7 @@ export default function ConfirmBooking({
                 </div>
 
                 {/* Step 3: Payment */}
-                <div className="relative">
+                {/* <div className="relative">
                   <div className="flex w-full">
                     <div className="relative z-10 hidden md:block">
                       <div className="w-11 h-11 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center text-white font-medium shadow-md">
@@ -162,7 +162,7 @@ export default function ConfirmBooking({
                       />
                     </div>
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
