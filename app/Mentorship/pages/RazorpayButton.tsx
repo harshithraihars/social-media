@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import { toast } from "sonner";
 
 declare global {
@@ -16,6 +16,8 @@ interface RazorpayButtonProps {
   totalPrice: number;
   isProcessing: boolean;
   handleBooking: () => void;
+  onPaymentSuccess: () => void; // Add this new prop
+  setIsProcessing:Dispatch<SetStateAction<boolean>>
 }
 
 interface window {
@@ -28,6 +30,8 @@ const RazorpayButton = ({
   totalPrice,
   isProcessing,
   handleBooking,
+  onPaymentSuccess,
+  setIsProcessing
 }: RazorpayButtonProps) => {
   const loadRazorpayScript = () => {
     return new Promise((resolve) => {
@@ -39,6 +43,7 @@ const RazorpayButton = ({
     });
   };
   const handlePayment = async () => {
+    setIsProcessing(true)
     const res = await loadRazorpayScript();
     if (!res) {
       alert("failed to load razorpay Script");
@@ -54,12 +59,13 @@ const RazorpayButton = ({
       description: "Test transaction",
       order_id: order.data.id,
       handler: function (response: { razorpay_payment_id: string }) {
+        onPaymentSuccess();
         const promise = Promise.resolve(handleBooking());
-          toast.promise(promise, {
-            loading: "Scheduling your session...",
-            success: "Session booked successfully!",
-            error: "Failed to book the session. Please try again.",
-          });
+        toast.promise(promise, {
+          loading: "Scheduling your session...",
+          success: "Session booked successfully!",
+          error: "Failed to book the session. Please try again.",
+        });
       },
       prefill: {
         name: "Harshith",

@@ -8,7 +8,7 @@ export default function MentorInfo({
   selectedMentor: IMentor|null;
 }) {
   return (
-    <Card className="border-0 shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 dark:shadow-gray-900/30 hidden md:block h-full">
+    <Card className="border-0 shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 dark:shadow-gray-900/30 hidden md:block h-full mt-10">
       <div className="h-2 bg-gradient-to-r from-blue-500 to-purple-600"></div>
       <CardContent className="pt-6 relative bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200 dark:bg-gray-900 h-full flex flex-col">
         <div className="absolute top-0 right-0 bg-gradient-to-br from-yellow-400 to-orange-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg shadow-md">

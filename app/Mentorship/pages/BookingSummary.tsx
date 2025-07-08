@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { CalendarIcon, Clock, CheckCircle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import RazorpayButton from "./RazorpayButton";
+import { Dispatch, SetStateAction } from "react";
 
 interface BookingSummaryProps {
   date: Date | undefined;
@@ -14,8 +15,9 @@ interface BookingSummaryProps {
   discountApplied: boolean;
   isProcessing: boolean;
   handleBooking: () => void;
+  onPaymentSuccess: () => void; // Add this
+  setIsProcessing:Dispatch<SetStateAction<boolean>>
 }
-
 export default function BookingSummary({
   date,
   timeSlot,
@@ -26,6 +28,8 @@ export default function BookingSummary({
   discountApplied,
   isProcessing,
   handleBooking,
+  onPaymentSuccess,
+  setIsProcessing
 }: BookingSummaryProps) {
   return (
     <div className="bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200 dark:bg-gray-900 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
@@ -88,30 +92,16 @@ export default function BookingSummary({
             </div>
           </div>
 
-          {/* Confirm button */}
-          {/* <Button
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 rounded-lg mt-4 transition-all duration-300"
-            onClick={() => {
-              const promise = Promise.resolve(handleBooking());
-              toast.promise(promise, {
-                loading: "Scheduling your session...",
-                success: "Session booked successfully!",
-                error: "Failed to book the session. Please try again.",
-              });
-            }}
-
-            disabled={!date || !timeSlot || !duration || isProcessing}
-          >
-            {isProcessing ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Processing...
-              </>
-            ) : (
-              "Confirm & Pay"
-            )}
-          </Button> */}
-          <RazorpayButton date={date} timeSlot={timeSlot} totalPrice={totalPrice} handleBooking={handleBooking} duration={duration} isProcessing={isProcessing}/>
+          <RazorpayButton
+            date={date}
+            timeSlot={timeSlot}
+            totalPrice={totalPrice}
+            handleBooking={handleBooking}
+            duration={duration}
+            isProcessing={isProcessing}
+            onPaymentSuccess={onPaymentSuccess} // Add this
+            setIsProcessing={setIsProcessing}
+          />
 
           {/* Terms notice */}
           <div className="text-center mt-4">

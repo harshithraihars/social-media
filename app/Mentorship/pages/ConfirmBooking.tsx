@@ -27,7 +27,11 @@ export default function ConfirmBooking({
   const [discountApplied, setDiscountApplied] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isBooked, setIsBooked] = useState(false);
+  const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false);
 
+  const handlePaymentSuccess = () => {
+    setIsPaymentSuccessful(true);
+  };
   const basePrice = duration === "30" ? 50 : 90;
   const discount = discountApplied ? basePrice * 0.1 : 0;
   const totalPrice = basePrice - discount;
@@ -39,7 +43,6 @@ export default function ConfirmBooking({
   };
 
   const handleBooking = async () => {
-    setIsProcessing(true);
     const user = await getCurrentUser();
 
     const res = await axios.post("/api/mentee/booking", {
@@ -90,22 +93,16 @@ export default function ConfirmBooking({
               </div>
 
               <BookingProgress
-                currentStep={!date ? 0 : !timeSlot ? 0 : !duration ? 1 : 2}
-                steps={["Select Date & Time", "Select Duration", "Payment"]}
+                date={date}
+                timeSlot={timeSlot}
+                duration={duration}
+                isPaymentComplete={isPaymentSuccessful || isBooked} // Updated logic
               />
 
               {/* Timeline steps with vertical line connector */}
               <div className="relative">
-                <div className="absolute left-[22px] top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500 via-blue-400 to-blue-300 dark:from-blue-600 dark:via-blue-500 dark:to-blue-400 hidden md:block"></div>
-
-                {/* Step 1: Date & Time */}
                 <div className="mb-8 md:mb-12 relative">
                   <div className="flex w-full">
-                    <div className="relative z-10 hidden md:block">
-                      <div className="w-11 h-11 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center text-white font-medium shadow-md">
-                        1
-                      </div>
-                    </div>
                     <div className="w-full md:ml-6 flex-1">
                       <h3 className="text-lg font-medium text-blue-700 dark:text-blue-400 mb-4">
                         Select Date & Time
@@ -125,11 +122,6 @@ export default function ConfirmBooking({
                 {/* Step 2: Session Duration */}
                 <div className="mb-8 md:mb-12 relative">
                   <div className="flex w-full">
-                    <div className="relative z-10 hidden md:block">
-                      <div className="w-11 h-11 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center text-white font-medium shadow-md">
-                        2
-                      </div>
-                    </div>
                     <div className="w-full md:ml-6 flex-1">
                       <h3 className="text-lg font-medium text-blue-700 dark:text-blue-400 mb-4">
                         Select Session Duration
@@ -141,28 +133,6 @@ export default function ConfirmBooking({
                     </div>
                   </div>
                 </div>
-
-                {/* Step 3: Payment */}
-                {/* <div className="relative">
-                  <div className="flex w-full">
-                    <div className="relative z-10 hidden md:block">
-                      <div className="w-11 h-11 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center text-white font-medium shadow-md">
-                        3
-                      </div>
-                    </div>
-                    <div className="w-full md:ml-6 flex-1">
-                      <h3 className="text-lg font-medium text-blue-700 dark:text-blue-400 mb-4">
-                        Payment
-                      </h3>
-                      <PaymentSection
-                        discountCode={discountCode}
-                        setDiscountCode={setDiscountCode}
-                        discountApplied={discountApplied}
-                        handleApplyDiscount={handleApplyDiscount}
-                      />
-                    </div>
-                  </div>
-                </div> */}
               </div>
             </div>
           </div>
@@ -176,8 +146,10 @@ export default function ConfirmBooking({
             totalPrice={totalPrice}
             discountApplied={discountApplied}
             isProcessing={isProcessing}
+            setIsProcessing={setIsProcessing}
             handleBooking={handleBooking}
             timeSlot={timeSlot}
+            onPaymentSuccess={handlePaymentSuccess} // Add this
           />
         </div>
       </div>
