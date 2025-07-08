@@ -32,11 +32,24 @@ export const POST = async (req: NextRequest) => {
       sessionAmount,
     });
 
+    const {profileId} = await User.findById(mentorId).select("profileId");
+    const updatedProfile=await Profile.findByIdAndUpdate(
+      profileId,
+      {
+        $inc: {
+          Earning: sessionAmount,
+        },
+      }
+    );
+    console.log(updatedProfile);
+    
     return NextResponse.json(
       { message: "Booking successful." },
       { status: 201 }
     );
   } catch (error) {
+    console.log(error.message);
+    
     return NextResponse.json(
       {
         error: "Something went wrong.",
