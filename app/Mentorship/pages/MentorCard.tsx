@@ -3,24 +3,24 @@ import { Star, ChevronRight, Clock, DollarSign } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { IMentor } from "./Mentee";
+import { IProfile } from "@/models/profile.model";
 
-// Types
-export type mentortype = {
-  id: number;
-  name: string;
-  role: string;
-  company: string;
-  about: string;
-  rating: number;
-  image: String;
-  hourlyRate: number;
-  availability: string;
-  expertise: string[];
-};
+// export type mentortype = {
+//   _id: string;
+//   userId: string;
+//   firstName: string;
+//   lastName: string;
+//   profilePhoto?: string;
+//   CompanyName: string;
+//   Role: string;
+//   Skills: string[];
+//   Rate: number;
+//   Rating: number;
+//   bookingsCount: number;
+// };
 
 export type MentorCardProps = {
-  mentor: IMentor;
+  mentor: IProfile;
   isSelected: boolean;
   onClick: () => void;
   isCollapsed: boolean;
@@ -79,15 +79,15 @@ export const MentorCard = React.memo(
               {mentor.firstName} {mentor.lastName}
             </h3>
             <p className="text-sm md:text-sm font-medium text-gray-600">
-              {mentor.profile.Role}
+              {mentor.Role}
             </p>
-            <p className="text-sm md:text-sm text-gray-500">{mentor.profile.CompanyName}</p>
+            <p className="text-sm md:text-sm text-gray-500">{mentor.CompanyName}</p>
           </div>
         </div>
 
         {/* Expertise tags */}
         <div className="flex flex-wrap gap-1.5 mb-2 md:mb-3">
-          {mentor.profile.Skills.slice(0, 3).map((skill, index) => (
+          {mentor.Skills.slice(0, 3).map((skill, index) => (
             <Badge
               variant="secondary"
               key={index}
@@ -100,16 +100,16 @@ export const MentorCard = React.memo(
 
         {/* Rating stars with animation */}
         <div className="flex items-center space-x-1 mb-2 md:mb-3">
-          <RatingStars rating={mentor.profile.Rating} />
+          <RatingStars rating={mentor.Rating} />
           <span className="text-sm md:text-sm text-gray-600 ml-1 font-medium">
-            {mentor.profile.Rating.toFixed(1)}
+            {mentor.Rating.toFixed(1)}
           </span>
         </div>
 
         {/* About section - fixed height */}
         <div className="h-16 sm:h-18 md:h-20 mb-3 md:mb-4">
           <p className="text-sm md:text-sm text-gray-700 line-clamp-2 md:line-clamp-3 group-hover:text-gray-900 transition-colors duration-300">
-            {mentor.profile.About || ""}
+            {mentor.About || ""}
           </p>
         </div>
 
@@ -118,7 +118,7 @@ export const MentorCard = React.memo(
           <div className="flex items-center text-gray-700 bg-white/70 backdrop-blur-sm p-2 rounded-lg group-hover:bg-white/90 transition-all duration-300 shadow-sm">
             <DollarSign className="w-4 h-4 mr-2 text-indigo-500" />
             <span className="text-sm font-medium">
-              ${mentor.profile.Rate}/hour
+              ${mentor.Rate}/hour
             </span>
           </div>
           <div className="flex items-center text-gray-700 bg-white/70 backdrop-blur-sm p-2 rounded-lg group-hover:bg-white/90 transition-all duration-300 shadow-sm">

@@ -10,10 +10,10 @@ export const POST = async (req: NextRequest) => {
   try {
     await connectDB();
 
+    // mentorid is profileID not User id
     const { mentorId, menteeId, date, time, Duration, sessionAmount } =
       await req.json();
 
-    // menteeid is the unique id of the model while the mwntorid is the id from the clerkid
     if (
       ![mentorId, menteeId, date, time, Duration, sessionAmount].every(Boolean)
     ) {
@@ -31,25 +31,21 @@ export const POST = async (req: NextRequest) => {
       Duration,
       sessionAmount,
     });
-
-    const {profileId} = await User.findById(mentorId).select("profileId");
+    
     const updatedProfile=await Profile.findByIdAndUpdate(
-      profileId,
+      mentorId,
       {
         $inc: {
           Earning: sessionAmount,
         },
       }
     );
-    console.log(updatedProfile);
     
     return NextResponse.json(
       { message: "Booking successful." },
       { status: 201 }
     );
-  } catch (error) {
-    console.log(error.message);
-    
+  } catch (error) {    
     return NextResponse.json(
       {
         error: "Something went wrong.",

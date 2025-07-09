@@ -1,3 +1,4 @@
+import ClientDataLoader from "@/components/ClientDataLoader";
 import Feed from "@/components/Feed";
 import News from "@/components/News";
 import Sidebar from "@/components/Sidebar";
@@ -15,6 +16,7 @@ export default async function Home() {
         <Sidebar user={user}/>
         <Feed user={user!} userInfo={userInfo}/>
         <News/>
+        <ClientDataLoader/>
       </div>
     </div>
   );

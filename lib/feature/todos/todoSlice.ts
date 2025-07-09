@@ -1,4 +1,5 @@
 import { IPostDocument } from '@/models/post.model'
+import { IProfile } from '@/models/profile.model'
 import { IUserDocument } from '@/models/user.model'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import mongoose, { Connection } from 'mongoose'
@@ -13,6 +14,7 @@ interface CounterState {
   input:string,
   ConnectionRequest:ConnectionRequest[];
   isMentor:boolean
+  userProfile:IProfile|null
   
 }
 export interface UserResult {
@@ -35,7 +37,8 @@ const initialState: CounterState = {
   isLoading:false,
   input:"",
   ConnectionRequest:[],
-  isMentor:true
+  isMentor:true,
+  userProfile:null
 }
 
 // Creating the slice
@@ -68,12 +71,15 @@ const counterSlice = createSlice({
     },
     setMentee: (state, action: PayloadAction<any>) => {
       state.isMentor= action.payload
+    },
+    setUserProfile: (state, action: PayloadAction<any>) => {
+      state.userProfile= action.payload
     }
   }
 })
 
 // Export the actions
-export const {setSearching,setPosts,setSearchUsers,setUser,setisLoading,setisInput,setRequest,setMentee } = counterSlice.actions
+export const {setSearching,setPosts,setSearchUsers,setUser,setisLoading,setisInput,setRequest,setMentee,setUserProfile } = counterSlice.actions
 
 // Export the reducer
 export default counterSlice.reducer // This is where we export the counterReducer

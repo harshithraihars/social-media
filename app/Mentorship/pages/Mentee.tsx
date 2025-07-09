@@ -10,7 +10,7 @@ import { Search, Users, Briefcase, ChevronRight, Loader2 } from "lucide-react";
 import MentorProfile from "./MentorProfile";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import { MentorCard } from "./MentorCard";
+import { MentorCard} from "./MentorCard";
 import ConfirmBooking from "./ConfirmBooking";
 import AnimateOnScroll from "../Animation/Animate";
 import { IUser } from "@/models/user.model";
@@ -33,8 +33,8 @@ export type MentorComment = {
 export type IMentorListResponse = IMentor[];
 
 const Mentee = () => {
-  const [mentors, setMentors] = useState<IMentor[]>([]);
-  const [RecommendedMentors, setRecommendedMentors] = useState<IMentor[]>([]);
+  const [mentors, setMentors] = useState<IProfile[]>([]);
+  const [RecommendedMentors, setRecommendedMentors] = useState<IProfile[]>([]);
   const [companyName, setCompanyName] = useState("");
   const [role, setRole] = useState("");
   const [selectedMentorId, setSelectedMentorId] = useState<String | null>(null);
@@ -64,7 +64,7 @@ const Mentee = () => {
     return mentors.find((mentor) => mentor.userId === selectedMentorId) || null;
   }, [selectedMentorId, mentors]);
 
-  const handleCardClick = async (mentor: IMentor) => {
+  const handleCardClick = async (mentor: IProfile) => {
     setSelectedMentorId(mentor.userId);
     setMentorCommentsLoading(true);
     try {

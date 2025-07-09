@@ -147,14 +147,20 @@ export default function ProfileEdit({ onClose }: ProfileEditProps) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ formData, userId: user?.id }),
+        body: JSON.stringify({
+          formData,
+          userId: user?.id,
+          firstName: user?.firstName,
+          lastName: user?.lastName,
+          profilePhoto: user?.imageUrl,
+        }),
       });
 
       const data = await res.json();
-      if(window.location.pathname=="/Mentor"){
-        window.location.reload()
+      if (window.location.pathname == "/Mentor") {
+        window.location.reload();
       }
-      
+
       if (res.ok) {
         if (onClose) {
           onClose();
@@ -176,7 +182,7 @@ export default function ProfileEdit({ onClose }: ProfileEditProps) {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            const promise = handleSubmit(e); 
+            const promise = handleSubmit(e);
             toast.promise(promise, {
               loading: "Updating Profile...",
               success: "Profile Updated",

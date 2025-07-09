@@ -1,4 +1,5 @@
 import connectDB from "@/lib/db";
+import { Profile } from "@/models/profile.model";
 import { User } from "@/models/user.model";
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
@@ -14,44 +15,18 @@ export const GET = async (req: NextRequest) => {
     const Role = searchParams.get("Role");
 
     const { userId } = auth();
+
+    const query: Record<string, any> = {
+      userId: { $ne: userId },
+    };
+    if (CompanyName) query.CompanyName = { $regex: CompanyName, $options: "i" };
+
+    if (Role) query.Role = { $regex: Role, $options: "i" };
+
+    const mentors = await Profile.find(query).select(
+      "_id userId firstName lastName profilePhoto About CompanyName Role Skills Rate Rating"
+    ).lean()
     
-    const pipeline: any[] = [
-      { $match: { MentorshipEnabled: true, userId: { $ne: userId } } },
-      {
-        $lookup: {
-          from: "profiles",
-          localField: "userId",
-          foreignField: "userId",
-          as: "profile",
-        },
-      },
-      { $unwind: "$profile" },
-    ];
-
-    if (CompanyName) {
-      pipeline.push({
-        $match: {
-          "profile.CompanyName": {
-            $regex: CompanyName,
-            $options: "i", // case-insensitive match
-          },
-        },
-      });
-    }
-
-    if (Role) {
-      pipeline.push({
-        $match: {
-          "profile.Role": {
-            $regex: Role,
-            $options: "i", // case-insensitive match
-          },
-        },
-      });
-    }
-
-    const mentors = await User.aggregate(pipeline);
-
     return NextResponse.json(mentors, { status: 200 });
   } catch (error) {
     console.error("Error fetching mentors:", error);

@@ -12,11 +12,12 @@ import { ArrowRight, X, XCircle } from "lucide-react";
 import Mentee, { IMentor } from "./Mentee";
 import { getCurrentUser } from "@/lib/serveractions";
 import axios from "axios";
+import { IProfile } from "@/models/profile.model";
 export default function ConfirmBooking({
   selectedMentor,
   setBookingPageOpen,
 }: {
-  selectedMentor: IMentor | null;
+  selectedMentor: IProfile | null;
   setBookingPageOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [date, setDate] = useState<Date | undefined>(new Date());
@@ -35,12 +36,6 @@ export default function ConfirmBooking({
   const basePrice = duration === "30" ? 50 : 90;
   const discount = discountApplied ? basePrice * 0.1 : 0;
   const totalPrice = basePrice - discount;
-
-  const handleApplyDiscount = () => {
-    if (discountCode.toLowerCase() === "mentor10") {
-      setDiscountApplied(true);
-    }
-  };
 
   const handleBooking = async () => {
     const user = await getCurrentUser();

@@ -1,7 +1,7 @@
 "use client"
 import "./pages/Loader.css"
 
-const ProfileFormSkeleton = () => {
+const Loader = () => {
   return (
     <div className="fixed inset-0 flex items-center justify-center">
       <div className="flex flex-col items-center justify-center">
@@ -22,4 +22,4 @@ const ProfileFormSkeleton = () => {
   );
 };
 
-export default ProfileFormSkeleton;
+export default Loader;

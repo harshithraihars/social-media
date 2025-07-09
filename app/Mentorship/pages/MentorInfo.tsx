@@ -1,11 +1,12 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Users, Award, Sparkles, Star } from "lucide-react";
 import { IMentor } from "./Mentee";
+import { IProfile } from "@/models/profile.model";
 
 export default function MentorInfo({
   selectedMentor,
 }: {
-  selectedMentor: IMentor|null;
+  selectedMentor: IProfile|null;
 }) {
   return (
     <Card className="border-0 shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 dark:shadow-gray-900/30 hidden md:block h-full mt-10">
@@ -27,8 +28,8 @@ export default function MentorInfo({
             {selectedMentor?.firstName} {selectedMentor?.lastName}
           </h2>
           <p className="text-sm text-muted-foreground text-gray-800 font-semibold">
-            {selectedMentor?.profile.Role} at{" "}
-            {selectedMentor?.profile.CompanyName}
+            {selectedMentor?.Role} at{" "}
+            {selectedMentor?.CompanyName}
           </p>
           <div className="flex gap-2 mt-3">
             <span className="bg-gradient-to-r from-blue-100 to-blue-200 dark:from-blue-900/50 dark:to-blue-800/50 text-blue-800 dark:text-blue-300 text-xs px-3 py-1 rounded-full font-medium shadow-sm transform hover:scale-105 transition-transform duration-200">
@@ -45,7 +46,7 @@ export default function MentorInfo({
                 <Star key={i} className="h-4 w-4 fill-current" />
               ))}
             <span className="ml-1 text-xs text-gray-600 dark:text-gray-400">
-              ({selectedMentor?.profile.Rating} rating)
+              ({selectedMentor?.Rating} rating)
             </span>
           </div>
         </div>
@@ -56,7 +57,7 @@ export default function MentorInfo({
               About
             </h3>
             <p className="text-sm text-muted-foreground mt-2">
-              {selectedMentor?.profile.About}
+              {selectedMentor?.About}
             </p>
           </div>
           <div>
@@ -65,7 +66,7 @@ export default function MentorInfo({
               Expertise
             </h3>
             <ul className="text-sm text-muted-foreground space-y-2 mt-2">
-              {selectedMentor?.profile.Skills?.map((expertice, index) => (
+              {selectedMentor?.Skills?.map((expertice, index) => (
                 <li key={index} className="flex items-center transform hover:translate-x-1 transition-transform duration-200">
                   <Sparkles className="h-3 w-3 text-blue-500 dark:text-blue-400 mr-2" />
                   {expertice}

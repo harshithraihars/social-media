@@ -7,7 +7,7 @@ export const PUT = async (req: NextRequest) => {
   try {
     await connectDB();
     const body = await req.json();
-    const { formData, userId } = body;
+    const { formData, userId,firstName,lastName,profilePhoto } = body;
     const { CompanyName, Role, Skills, About, Rate } = formData;
     if (!CompanyName || !Role || !Skills || !About || !Rate) {
       return NextResponse.json(
@@ -18,9 +18,10 @@ export const PUT = async (req: NextRequest) => {
 
     const updatedProfile = await Profile.findOneAndUpdate(
       { userId: userId },
-      { CompanyName, Role, Skills, About, Rate, user: userId },
+      { CompanyName, Role, Skills, About, Rate, user: userId,firstName,lastName,profilePhoto},
       { upsert: true, new: true, runValidators: true }
-    );
+    );    
+    
     await User.findOneAndUpdate(
       { userId },
       {

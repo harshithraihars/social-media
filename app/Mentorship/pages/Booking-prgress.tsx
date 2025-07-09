@@ -44,13 +44,6 @@ export default function BookingProgress({
     return Math.min(progressPercentage, 100)
   }
 
-  // Get status of each step
-  const getStepStatus = (stepIndex: number) => {
-    if (stepIndex < currentStep) return 'completed'
-    if (stepIndex === currentStep && currentStep > 0) return 'completed'
-    if (stepIndex === currentStep) return 'current'
-    return 'pending'
-  }
 
   // Check if step is completed
   const isStepCompleted = (stepIndex: number) => {

@@ -1,36 +1,76 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Check, CreditCard, DollarSign, HelpCircle, Save, TrendingUp, Users, X } from "lucide-react"
+import { useState } from "react";
+import {
+  Check,
+  CreditCard,
+  DollarSign,
+  HelpCircle,
+  IndianRupee,
+  Save,
+  TrendingUp,
+  Users,
+  X,
+} from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Progress } from "@/components/ui/progress"
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
+import { useAppSelector } from "@/lib/hooks";
 // import { Toaster } from "@/components/ui/sonner"
 interface MentorshipSettingsProps {
   setMentorSettingOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
-export default function MentorshipSettings({setMentorSettingOpen}:MentorshipSettingsProps) {
-  const [isAcceptingMentees, setIsAcceptingMentees] = useState(true)
-  const [isPaidMentorship, setIsPaidMentorship] = useState(true)
-  const [hourlyRate, setHourlyRate] = useState("75")
-  const [paymentMethod, setPaymentMethod] = useState("stripe")
-  const [autoAcceptMentees, setAutoAcceptMentees] = useState(false)
-  const [showReviews, setShowReviews] = useState(true)
-  const [isSaving, setIsSaving] = useState(false)
+export default function MentorshipSettings({
+  setMentorSettingOpen,
+}: MentorshipSettingsProps) {
+  const userprofile = useAppSelector((state) => state.counter.userProfile);
+  const [Earning, setEarning] = useState<Number>(0);
+  const [isAcceptingMentees, setIsAcceptingMentees] = useState(true);
+  const [isPaidMentorship, setIsPaidMentorship] = useState(true);
+  const [hourlyRate, setHourlyRate] = useState("75");
+  const [paymentMethod, setPaymentMethod] = useState("stripe");
+  const [autoAcceptMentees, setAutoAcceptMentees] = useState(false);
+  const [showReviews, setShowReviews] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Days of the week for availability
-  const daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+  const daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
   // Time slots for availability
-  const timeSlots = ["9:00 AM", "11:00 AM", "1:00 PM", "3:00 PM", "5:00 PM", "7:00 PM"]
+  const timeSlots = [
+    "9:00 AM",
+    "11:00 AM",
+    "1:00 PM",
+    "3:00 PM",
+    "5:00 PM",
+    "7:00 PM",
+  ];
 
   // Initial availability state (example data)
   const [availability, setAvailability] = useState<Record<string, string[]>>({
@@ -52,52 +92,52 @@ export default function MentorshipSettings({setMentorSettingOpen}:MentorshipSett
       { date: "Oct 8", amount: 225 },
       { date: "Oct 5", amount: 150 },
     ],
-  }
+  };
 
   // Monthly earnings for mini chart
-  const monthlyEarnings = [650, 820, 950, 1250]
+  const monthlyEarnings = [650, 820, 950, 1250];
 
   // Toggle time slot availability
   const toggleTimeSlot = (day: string, time: string) => {
     setAvailability((prev) => {
-      const newAvailability = { ...prev }
+      const newAvailability = { ...prev };
 
       if (!newAvailability[day]) {
-        newAvailability[day] = [time]
-        return newAvailability
+        newAvailability[day] = [time];
+        return newAvailability;
       }
 
       if (newAvailability[day].includes(time)) {
-        newAvailability[day] = newAvailability[day].filter((t) => t !== time)
+        newAvailability[day] = newAvailability[day].filter((t) => t !== time);
         if (newAvailability[day].length === 0) {
-          delete newAvailability[day]
+          delete newAvailability[day];
         }
       } else {
-        newAvailability[day] = [...newAvailability[day], time]
+        newAvailability[day] = [...newAvailability[day], time];
       }
 
-      return newAvailability
-    })
-  }
+      return newAvailability;
+    });
+  };
 
   // Check if a time slot is selected
   const isTimeSlotSelected = (day: string, time: string) => {
-    return availability[day]?.includes(time) || false
-  }
+    return availability[day]?.includes(time) || false;
+  };
 
   // Handle save settings
   const handleSave = () => {
-    setIsSaving(true)
+    setIsSaving(true);
 
     // Simulate API call
     setTimeout(() => {
-      setIsSaving(false)
+      setIsSaving(false);
       // toast("Settings saved", {
       //   description: "Your mentorship settings have been updated successfully.",
       // });
       setMentorSettingOpen(false);
-    }, 1000)
-  }
+    }, 1000);
+  };
 
   return (
     <div className="w-full max-w-md mx-auto">
@@ -107,10 +147,13 @@ export default function MentorshipSettings({setMentorSettingOpen}:MentorshipSett
         <CardHeader className="pb-2">
           <div className="flex justify-between items-center">
             <CardTitle className="text-xl font-semibold flex items-center gap-2">
-              <DollarSign className="h-5 w-5 text-primary" />
+              <IndianRupee className="h-5 w-5 text-primary" />
               Earnings
             </CardTitle>
-            <Badge variant="outline" className="bg-primary/10 hover:bg-primary/20 transition-colors">
+            <Badge
+              variant="outline"
+              className="bg-primary/10 hover:bg-primary/20 transition-colors"
+            >
               <TrendingUp className="h-3 w-3 mr-1 text-green-500" />
               +31.5%
             </Badge>
@@ -121,7 +164,7 @@ export default function MentorshipSettings({setMentorSettingOpen}:MentorshipSett
           <div className="flex items-end justify-between mb-2">
             <div>
               <p className="text-sm text-muted-foreground">Total Earned</p>
-              <h3 className="text-3xl font-bold">${earningsData.total}</h3>
+              <h3 className="text-3xl font-bold">₹{earningsData.total}</h3>
             </div>
             <div className="flex h-12 items-end gap-1">
               {monthlyEarnings.map((value, i) => (
@@ -140,12 +183,14 @@ export default function MentorshipSettings({setMentorSettingOpen}:MentorshipSett
           <div className="grid grid-cols-2 gap-3 mt-4">
             <div className="bg-muted/50 rounded-lg p-2 backdrop-blur-sm">
               <p className="text-xs text-muted-foreground">This Month</p>
-              <p className="text-lg font-semibold">${earningsData.thisMonth}</p>
+              <p className="text-lg font-semibold">
+                ₹{userprofile?.Earning || 0}
+              </p>
             </div>
-            <div className="bg-muted/50 rounded-lg p-2 backdrop-blur-sm">
+            {/* <div className="bg-muted/50 rounded-lg p-2 backdrop-blur-sm">
               <p className="text-xs text-muted-foreground">Pending</p>
               <p className="text-lg font-semibold">${earningsData.pendingPayouts}</p>
-            </div>
+            </div> */}
           </div>
 
           <div className="mt-3">
@@ -153,7 +198,10 @@ export default function MentorshipSettings({setMentorSettingOpen}:MentorshipSett
               <span>Monthly Goal</span>
               <span>$1,500</span>
             </div>
-            <Progress value={(earningsData.thisMonth / 1500) * 100} className="h-1.5" />
+            <Progress
+              value={(earningsData.thisMonth / 1500) * 100}
+              className="h-1.5"
+            />
           </div>
         </CardContent>
       </Card>
@@ -163,16 +211,25 @@ export default function MentorshipSettings({setMentorSettingOpen}:MentorshipSett
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-50 pointer-events-none"></div>
         <CardHeader className="pb-2">
           <div className="flex justify-between items-center">
-            <CardTitle className="text-xl font-semibold">Mentorship Settings</CardTitle>
+            <CardTitle className="text-xl font-semibold">
+              Mentorship Settings
+            </CardTitle>
             {isAcceptingMentees ? (
-              <Badge className="bg-green-500/20 text-green-500 hover:bg-green-500/30 transition-colors">Active</Badge>
+              <Badge className="bg-green-500/20 text-green-500 hover:bg-green-500/30 transition-colors">
+                Active
+              </Badge>
             ) : (
-              <Badge variant="outline" className="bg-muted/50 hover:bg-muted/80 transition-colors">
+              <Badge
+                variant="outline"
+                className="bg-muted/50 hover:bg-muted/80 transition-colors"
+              >
                 Inactive
               </Badge>
             )}
           </div>
-          <CardDescription>Configure your mentorship preferences and availability</CardDescription>
+          <CardDescription>
+            Configure your mentorship preferences and availability
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Mentorship Availability */}
@@ -183,7 +240,9 @@ export default function MentorshipSettings({setMentorSettingOpen}:MentorshipSett
                   <Users className="h-4 w-4 text-primary/80" />
                   Mentorship Status
                 </h3>
-                <p className="text-xs text-muted-foreground">Are you currently accepting new mentees?</p>
+                <p className="text-xs text-muted-foreground">
+                  Are you currently accepting new mentees?
+                </p>
               </div>
               <Switch
                 checked={isAcceptingMentees}
@@ -229,7 +288,9 @@ export default function MentorshipSettings({setMentorSettingOpen}:MentorshipSett
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent side="left">
-                      <p className="text-xs">Click on time slots to toggle your availability</p>
+                      <p className="text-xs">
+                        Click on time slots to toggle your availability
+                      </p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -271,7 +332,9 @@ export default function MentorshipSettings({setMentorSettingOpen}:MentorshipSett
                             }`}
                             onClick={() => toggleTimeSlot(day, time)}
                           >
-                            {isTimeSlotSelected(day, time) && <Check className="h-3 w-3" />}
+                            {isTimeSlotSelected(day, time) && (
+                              <Check className="h-3 w-3" />
+                            )}
                           </div>
                         ))}
                       </>
@@ -281,7 +344,10 @@ export default function MentorshipSettings({setMentorSettingOpen}:MentorshipSett
                 <TabsContent value="list" className="mt-0">
                   <div className="space-y-2">
                     {daysOfWeek.map((day) => (
-                      <div key={`list-${day}`} className="flex items-center gap-2">
+                      <div
+                        key={`list-${day}`}
+                        className="flex items-center gap-2"
+                      >
                         <div className="w-10 font-medium">{day}</div>
                         <div className="flex flex-wrap gap-1 flex-1">
                           {timeSlots.map((time) => (
@@ -314,7 +380,9 @@ export default function MentorshipSettings({setMentorSettingOpen}:MentorshipSett
                   <DollarSign className="h-4 w-4 text-primary/80" />
                   Paid Mentorship
                 </h3>
-                <p className="text-xs text-muted-foreground">Do you charge for mentorship sessions?</p>
+                <p className="text-xs text-muted-foreground">
+                  Do you charge for mentorship sessions?
+                </p>
               </div>
               <Switch
                 checked={isPaidMentorship}
@@ -326,7 +394,10 @@ export default function MentorshipSettings({setMentorSettingOpen}:MentorshipSett
             {isPaidMentorship && (
               <div className="space-y-3 bg-muted/20 p-3 rounded-lg">
                 <div className="space-y-1.5">
-                  <Label htmlFor="hourlyRate" className="text-xs flex items-center gap-1.5">
+                  <Label
+                    htmlFor="hourlyRate"
+                    className="text-xs flex items-center gap-1.5"
+                  >
                     <CreditCard className="h-3.5 w-3.5 text-primary/80" />
                     Hourly Rate ($)
                   </Label>
@@ -346,7 +417,10 @@ export default function MentorshipSettings({setMentorSettingOpen}:MentorshipSett
                   <Label htmlFor="paymentMethod" className="text-xs">
                     Payment Method
                   </Label>
-                  <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+                  <Select
+                    value={paymentMethod}
+                    onValueChange={setPaymentMethod}
+                  >
                     <SelectTrigger
                       id="paymentMethod"
                       className="bg-background/50 focus:bg-background/80 transition-colors"
@@ -422,7 +496,9 @@ export default function MentorshipSettings({setMentorSettingOpen}:MentorshipSett
                   <div className="space-y-1">
                     {earningsData.recentEarnings.map((earning, index) => (
                       <div key={index} className="flex justify-between text-xs">
-                        <span className="text-muted-foreground">{earning.date}</span>
+                        <span className="text-muted-foreground">
+                          {earning.date}
+                        </span>
                         <span>${earning.amount}</span>
                       </div>
                     ))}
@@ -456,7 +532,9 @@ export default function MentorshipSettings({setMentorSettingOpen}:MentorshipSett
                   </svg>
                   Auto-Accept Mentees
                 </h3>
-                <p className="text-xs text-muted-foreground">Automatically accept mentee requests</p>
+                <p className="text-xs text-muted-foreground">
+                  Automatically accept mentee requests
+                </p>
               </div>
               <Switch
                 checked={autoAcceptMentees}
@@ -485,7 +563,9 @@ export default function MentorshipSettings({setMentorSettingOpen}:MentorshipSett
                   </svg>
                   Show Reviews
                 </h3>
-                <p className="text-xs text-muted-foreground">Display reviews on your public profile</p>
+                <p className="text-xs text-muted-foreground">
+                  Display reviews on your public profile
+                </p>
               </div>
               <Switch
                 checked={showReviews}
@@ -509,7 +589,14 @@ export default function MentorshipSettings({setMentorSettingOpen}:MentorshipSett
                   fill="none"
                   viewBox="0 0 24 24"
                 >
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
                   <path
                     className="opacity-75"
                     fill="currentColor"
@@ -528,5 +615,5 @@ export default function MentorshipSettings({setMentorSettingOpen}:MentorshipSett
         </CardFooter>
       </Card>
     </div>
-  )
+  );
 }
