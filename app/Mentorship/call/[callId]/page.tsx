@@ -41,7 +41,7 @@ const VideoCallPage = ({ params }: PageProps) => {
   const [webcamActive, setWebcamActive] = useState(false);
   const [remoteStreamActive, setRemoteStreamActive] = useState(false);
 
-  const router=useRouter()
+  const router = useRouter();
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const localRef = useRef<HTMLVideoElement | null>(null);
   const remoteRef = useRef<HTMLVideoElement | null>(null);
@@ -55,8 +55,7 @@ const VideoCallPage = ({ params }: PageProps) => {
     mentorId: "",
     menteeId: "",
   });
-const [callEnded, setCallEnded] = useState(false);
-
+  const [callEnded, setCallEnded] = useState(false);
 
   // Initialize RTCPeerConnection
   const initializePeerConnection = () => {
@@ -107,7 +106,7 @@ const [callEnded, setCallEnded] = useState(false);
     }
   }, [isCallActive]);
 
-  const handleEndCall = async() => {
+  const handleEndCall = async () => {
     // setIsCallActive(false);
     if (formData.Role === "mentor") {
       router.push("/Mentor");
@@ -372,8 +371,6 @@ const [callEnded, setCallEnded] = useState(false);
         console.error("Error during cleanup:", error);
       }
     }
-
-    
   };
 
   useEffect(() => {
@@ -414,7 +411,7 @@ const [callEnded, setCallEnded] = useState(false);
 
   return (
     <div
-      className="video-call-page relative w-full h-screen bg-black overflow-hidden"
+      className="video-call-page relative w-full h-screen bg-black overflow-hidden pb-[88px] sm:pb-0"
       onMouseMove={handleMouseMove}
       style={{
         cursor: showControls ? "default" : "none",
@@ -435,7 +432,6 @@ const [callEnded, setCallEnded] = useState(false);
           playsInline
           muted={false}
         />
-        {/* Placeholder for remote video when no stream */}
         {!remoteStreamActive && (
           <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100 flex items-center justify-center">
             <div className="text-center text-gray-700">
@@ -453,8 +449,8 @@ const [callEnded, setCallEnded] = useState(false);
         )}
       </div>
 
-      {/* Local Video - Picture in Picture - Moved higher up on small screens */}
-      <div className="absolute bottom-20 right-4 sm:bottom-6 sm:right-6 w-32 h-24 sm:w-64 sm:h-48 md:w-80 md:h-60 bg-white rounded-lg overflow-hidden border-2 border-gray-200 shadow-xl">
+      {/* Local Video - Raised on small screens */}
+      <div className="absolute bottom-40 right-4 sm:bottom-6 sm:right-6 w-32 h-24 sm:w-64 sm:h-48 md:w-80 md:h-60 bg-white rounded-lg overflow-hidden border-2 border-gray-200 shadow-xl">
         <video
           ref={localRef}
           className="w-full h-full object-cover"
@@ -485,13 +481,12 @@ const [callEnded, setCallEnded] = useState(false);
         {formatTime(callDuration)}
       </div>
 
-      {/* Call Controls - Moved higher up on small screens to avoid overlap */}
+      {/* Call Controls - Lifted on small screens */}
       <div
-        className={`absolute bottom-2 sm:bottom-8 left-1/2 transform -translate-x-1/2 flex items-center space-x-3 sm:space-x-6 transition-all duration-300 ${
+        className={`absolute bottom-28 sm:bottom-8 left-1/2 transform -translate-x-1/2 flex items-center space-x-3 sm:space-x-6 transition-all duration-300 ${
           showControls ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
         }`}
       >
-        {/* Mute Button */}
         <button
           onClick={() => setIsMuted(!isMuted)}
           className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center transition-all duration-200 shadow-lg backdrop-blur-md border-2 ${
@@ -507,7 +502,6 @@ const [callEnded, setCallEnded] = useState(false);
           )}
         </button>
 
-        {/* End Call Button */}
         <button
           onClick={handleEndCall}
           className="w-16 h-16 sm:w-20 sm:h-20 bg-red-500/90 hover:bg-red-600/90 rounded-full flex items-center justify-center transition-all duration-200 transform hover:scale-105 shadow-xl backdrop-blur-md border-2 border-red-400/50"
@@ -515,12 +509,12 @@ const [callEnded, setCallEnded] = useState(false);
           <PhoneOff size={24} className="sm:w-8 sm:h-8 text-white" />
         </button>
 
-        {/* Video Toggle Button */}
         <button className="w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center transition-all duration-200 shadow-lg backdrop-blur-md border-2 bg-white/80 hover:bg-white/90 border-gray-200/50">
           <Video size={20} className="sm:w-7 sm:h-7 text-gray-700" />
         </button>
       </div>
-      {callEnded && <RatingPage formData={formData}/>}
+
+      {callEnded && <RatingPage formData={formData} />}
     </div>
   );
 };
