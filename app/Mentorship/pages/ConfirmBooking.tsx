@@ -4,15 +4,14 @@ import { useState } from "react";
 import BookingProgress from "./Booking-prgress";
 import DateTimeSelector from "./DateTimeSelector";
 import DurationSelector from "./DurationSelector";
-import PaymentSection from "./PaymentSection";
 import BookingSummary from "./BookingSummary";
 import BookingConfirmation from "./BookingConfirmation";
 import MentorInfo from "./MentorInfo";
 import { ArrowRight, X, XCircle } from "lucide-react";
-import Mentee, { IMentor } from "./Mentee";
 import { getCurrentUser } from "@/lib/serveractions";
 import axios from "axios";
 import { IProfile } from "@/models/profile.model";
+import { useUser } from "@clerk/nextjs";
 export default function ConfirmBooking({
   selectedMentor,
   setBookingPageOpen,
@@ -36,20 +35,25 @@ export default function ConfirmBooking({
   const basePrice = duration === "30" ? 50 : 90;
   const discount = discountApplied ? basePrice * 0.1 : 0;
   const totalPrice = basePrice - discount;
-
+  const menteeEmail = useUser().user?.primaryEmailAddress?.emailAddress;
   const handleBooking = async () => {
-    const user = await getCurrentUser();
-
-    const res = await axios.post("/api/mentee/booking", {
-      mentorId: selectedMentor?._id,
-      menteeId: user._id,
-      date,
-      time: timeSlot,
-      Duration: duration,
-      sessionAmount: totalPrice,
-    });
-    setIsProcessing(false);
-    setIsBooked(true);
+    try {
+      const user = await getCurrentUser();
+      
+      const res = await axios.post("/api/mentee/booking", {
+        mentorId: selectedMentor?._id,
+        menteeId: user._id,
+        menteeEmail: menteeEmail,
+        date,
+        time: timeSlot,
+        Duration: duration,
+        sessionAmount: totalPrice,
+      });
+      setIsProcessing(false);
+      setIsBooked(true);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   if (isBooked) {

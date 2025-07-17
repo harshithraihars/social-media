@@ -34,6 +34,7 @@
     "mongoose": "^8.3.4",
     "next": "14.2.3",
     "next-themes": "^0.3.0",
+    "nodemailer": "^7.0.5",
     "phosphor-react": "^1.4.1",
     "razorpay": "^2.9.6",
     "react": "^18",
@@ -49,6 +50,7 @@
   },
   "devDependencies": {
     "@types/node": "^20",
+    "@types/nodemailer": "^6.4.17",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/react-timeago": "^4.1.7",

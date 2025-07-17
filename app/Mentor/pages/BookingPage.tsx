@@ -22,7 +22,7 @@ const BookingsPage = () => {
   const settingRef = useRef<HTMLDivElement | null>(null); // Correct typing
   const tabs: TabType[] = ["Bookings", "Upcoming", "Past"];
   const [loading, setLoading] = useState(false);
-  
+
   const filterBookings = (type: "Bookings" | "Upcoming" | "Past"): void => {
     if (type == "Bookings") {
       setFilteredBookings(bookings);
@@ -46,15 +46,16 @@ const BookingsPage = () => {
 
   useEffect(() => {
     (async () => {
-      setLoading(true);
-      console.log("fetching");
-      
-      const res = await axios.get(`/api/mentor/booking`);
-      setBookings(res.data.data);
-      setFilteredBookings(res.data.data);
-      setLoading(false);
-      console.log("bookings fetched");
-      
+      try {
+        setLoading(true);
+        const res = await axios.get(`/api/mentor/booking`);
+        setBookings(res.data.data);
+        setFilteredBookings(res.data.data);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
     })();
   }, []);
 

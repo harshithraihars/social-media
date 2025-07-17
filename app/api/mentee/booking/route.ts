@@ -10,12 +10,15 @@ export const POST = async (req: NextRequest) => {
   try {
     await connectDB();
 
+    
     // mentorid is profileID not User id
-    const { mentorId, menteeId, date, time, Duration, sessionAmount } =
+    const { mentorId, menteeId,menteeEmail, date, time, Duration, sessionAmount } =
       await req.json();
 
+      console.log(menteeEmail);
+      
     if (
-      ![mentorId, menteeId, date, time, Duration, sessionAmount].every(Boolean)
+      ![mentorId, menteeId,menteeEmail, date, time, Duration, sessionAmount].every(Boolean)
     ) {
       return NextResponse.json(
         { error: "All fields are required." },
@@ -23,14 +26,16 @@ export const POST = async (req: NextRequest) => {
       );
     }
 
-    await Booking.create({
+    const booking=await Booking.create({
       mentorId,
       menteeId,
+      menteeEmail,
       date,
       time,
       Duration,
       sessionAmount,
     });
+    console.log(booking);
     
     const updatedProfile=await Profile.findByIdAndUpdate(
       mentorId,
@@ -70,16 +75,13 @@ export const GET = async () => {
       .select("_id date time Duration sessionAmount")
       .populate({
         path: "mentorId",
-        select: "userId firstName lastName profilePhoto",
-        model: "User",
-        populate: {
-          path: "profileId",
-          select: "CompanyName Role Rating",
-          model: "Profile",
-        },
+        select: "userId firstName lastName profilePhoto CompanyName Role Rating",
+        model: "Profile",
       })
       .lean();
 
+      console.log(bookingsRaw);
+      
     bookingsRaw.sort((a, b) => {
       const now = new Date();
 
@@ -110,9 +112,9 @@ export const GET = async () => {
       firstName: booking.mentorId?.firstName || "",
       lastName: booking.mentorId?.lastName || "",
       profilePhoto: booking.mentorId?.profilePhoto || "",
-      Role: booking.mentorId?.profileId?.Role,
-      CompanyName: booking.mentorId?.profileId?.CompanyName,
-      Rating: booking.mentorId?.profileId?.Rating,
+      Role: booking.mentorId?.Role,
+      CompanyName: booking.mentorId?.CompanyName,
+      Rating: booking.mentorId?.Rating,
     }));
 
     return NextResponse.json({ data: bookings });

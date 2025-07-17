@@ -26,22 +26,16 @@ export const POST = async (req: NextRequest) => {
       menteeId,
       comment,
     });
-    const res = await User.findById(mentorId)
-      .select("profileId")
-      .populate({
-        path: "profileId",
-        select: "bookingCount rating",
-      })
-      .lean();
 
-    const profile = res?.profileId as unknown as IProfile;
-    const profileId = res?.profileId?._id;
+    // mentorId itself is the profileId
+    const profile = await Profile.findById(mentorId)
+
     const oldRating = profile.Rating ?? 0
     const bookingsCount = profile.bookingsCount ?? 0;
     const newRating =
       ((bookingsCount * oldRating) + rating) / (bookingsCount + 1);
 
-    const upgradedProfile = await Profile.findByIdAndUpdate(profileId, {
+    const upgradedProfile = await Profile.findByIdAndUpdate(mentorId, {
       $set: { Rating: newRating },
       $inc: { bookingsCount: 1 },
     });

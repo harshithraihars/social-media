@@ -17,7 +17,7 @@ interface RazorpayButtonProps {
   isProcessing: boolean;
   handleBooking: () => void;
   onPaymentSuccess: () => void; // Add this new prop
-  setIsProcessing:Dispatch<SetStateAction<boolean>>
+  setIsProcessing: Dispatch<SetStateAction<boolean>>;
 }
 
 interface window {
@@ -31,7 +31,7 @@ const RazorpayButton = ({
   isProcessing,
   handleBooking,
   onPaymentSuccess,
-  setIsProcessing
+  setIsProcessing,
 }: RazorpayButtonProps) => {
   const loadRazorpayScript = () => {
     return new Promise((resolve) => {
@@ -43,43 +43,51 @@ const RazorpayButton = ({
     });
   };
   const handlePayment = async () => {
-    setIsProcessing(true)
-    const res = await loadRazorpayScript();
-    if (!res) {
-      alert("failed to load razorpay Script");
+    setIsProcessing(true);
+    try {
+      const res = await loadRazorpayScript();
+      if (!res) {
+        alert("failed to load razorpay Script");
+      }
+
+      const order = await axios.post("/api/payment", { amount: totalPrice });
+
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: order.data.amount,
+        currency: order.data.currency,
+        name: "Mentee Connect",
+        description: "Test transaction",
+        order_id: order.data.id,
+        handler: function (response: { razorpay_payment_id: string }) {
+          console.log("payment us suuccefull");
+          
+          onPaymentSuccess();
+          const promise = Promise.resolve(handleBooking());
+          toast.promise(promise, {
+            loading: "Scheduling your session...",
+            success: "Session booked successfully!",
+            error: "Failed to book the session. Please try again.",
+          });
+        },
+        prefill: {
+          name: "Harshith",
+          email: "harshithraiharsu@gmail.com",
+          contact: "9567269803",
+        },
+        theme: {
+          color: "#0A2540",
+        },
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+
+      rzp.open();
+    } catch (error:unknown) {
+      console.log(error);
+    }finally{
+      setIsProcessing(false)
     }
-
-    const order = await axios.post("/api/payment", { amount: totalPrice });
-
-    const options = {
-      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-      amount: order.data.amount,
-      currency: order.data.currency,
-      name: "Mentee Connect",
-      description: "Test transaction",
-      order_id: order.data.id,
-      handler: function (response: { razorpay_payment_id: string }) {
-        onPaymentSuccess();
-        const promise = Promise.resolve(handleBooking());
-        toast.promise(promise, {
-          loading: "Scheduling your session...",
-          success: "Session booked successfully!",
-          error: "Failed to book the session. Please try again.",
-        });
-      },
-      prefill: {
-        name: "Harshith",
-        email: "harshithraiharsu@gmail.com",
-        contact: "9567269803",
-      },
-      theme: {
-        color: "#0A2540",
-      },
-    };
-
-    const rzp = new (window as any).Razorpay(options);
-
-    rzp.open();
   };
   return (
     <div>

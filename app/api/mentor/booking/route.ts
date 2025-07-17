@@ -9,8 +9,10 @@ export const GET = async () => {
     if (!userId)
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const id = await User.findOne({ userId }).select("_id");
-    const bookingsRaw = await Booking.find({ mentorId: id })
+    const mentorData = await User.findOne({ userId }).select("profileId");
+    
+    // the mentorId is the profileId
+    const bookingsRaw = await Booking.find({ mentorId: mentorData?.profileId })
       .select("_id date time Duration sessionAmount")
       .populate({
         path: "menteeId",
@@ -19,6 +21,7 @@ export const GET = async () => {
       })
       .lean();
 
+      
     const today = new Date();
 
     bookingsRaw.sort((a, b) => {

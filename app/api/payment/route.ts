@@ -10,7 +10,8 @@ const razorpay = new Razorpay({
 export const POST = async (req: NextRequest) => {
   try {
     const { amount } = await req.json();
-
+    console.log("getting here what the hell is wrong");
+    
     const options = {
       amount: amount * 100,
       currency: "INR",

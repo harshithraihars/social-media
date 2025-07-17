@@ -107,11 +107,13 @@ const VideoCallPage = ({ params }: PageProps) => {
   }, [isCallActive]);
 
   const handleEndCall = async () => {
+    console.log(formData.Role);
+
     // setIsCallActive(false);
-    if (formData.Role === "mentor") {
-      router.push("/Mentor");
-    } else {
+    if (formData.Role === "mentee") {
       setCallEnded(true);
+    } else {
+      router.push("/Mentor");
     }
     await hangUp();
 
@@ -320,10 +322,9 @@ const VideoCallPage = ({ params }: PageProps) => {
       });
     });
   };
-
   const hangUp = async () => {
     console.log("Hanging up call");
-
+    console.log(formData);
     // Close peer connection
     if (pcRef.current) {
       pcRef.current.close();

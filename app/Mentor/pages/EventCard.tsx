@@ -18,7 +18,8 @@ interface EventCardProps {
 }
 
 const EventCard = ({ booking,index, activeTab }: EventCardProps) => {
-
+  
+  
   const router=useRouter()
   const [showPopup, setShowPopup] = useState(false);
   const [isCalling,setIscalling]=useState(false)

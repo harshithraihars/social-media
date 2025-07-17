@@ -11,7 +11,6 @@ export const GET = async (req: NextRequest) => {
     const url = new URL(req.url);
     const params = url.searchParams;
     const callId = params.get("callId");
-    console.log(callId);
 
     if (!callId)
       return NextResponse.json(
