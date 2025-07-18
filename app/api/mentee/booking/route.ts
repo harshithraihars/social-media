@@ -1,6 +1,7 @@
 import { BookingI } from "@/app/Mentorship/pages/MentorShipHeader";
 import connectDB from "@/lib/db";
 import { Booking } from "@/models/Booking.model";
+import { Payment } from "@/models/Payment.model";
 import { Profile } from "@/models/profile.model";
 import { User } from "@/models/user.model";
 import { auth } from "@clerk/nextjs/server";
@@ -35,7 +36,14 @@ export const POST = async (req: NextRequest) => {
       Duration,
       sessionAmount,
     });
-    console.log(booking);
+
+    const payment=await Payment.create({
+      mentorId,
+      menteeId,
+      Amount:sessionAmount
+    })
+
+    console.log(payment,"was succesfull");
     
     const updatedProfile=await Profile.findByIdAndUpdate(
       mentorId,

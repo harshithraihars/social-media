@@ -1,9 +1,13 @@
+import { IPayment } from '@/models/Payment.model'
 import { IPostDocument } from '@/models/post.model'
 import { IProfile } from '@/models/profile.model'
 import { IUserDocument } from '@/models/user.model'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import mongoose, { Connection } from 'mongoose'
 
+export interface IProfileWithPayments extends IProfile {
+  transactions: IPayment[]
+}
 // Define the shape of the state
 interface CounterState {
   isSearching:boolean
@@ -14,7 +18,7 @@ interface CounterState {
   input:string,
   ConnectionRequest:ConnectionRequest[];
   isMentor:boolean
-  userProfile:IProfile|null
+  userProfile:IProfileWithPayments|null
   
 }
 export interface UserResult {

@@ -139,6 +139,15 @@ export default function MentorshipSettings({
     }, 1000);
   };
 
+  const getDate = (date: Date) => {
+    return new Date(date).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  console.log(userprofile?.transactions);
+
   return (
     <div className="w-full max-w-md mx-auto">
       {/* Earnings Card */}
@@ -164,7 +173,9 @@ export default function MentorshipSettings({
           <div className="flex items-end justify-between mb-2">
             <div>
               <p className="text-sm text-muted-foreground">Total Earned</p>
-              <h3 className="text-3xl font-bold">₹{earningsData.total}</h3>
+              <h3 className="text-3xl font-bold">
+                ₹{userprofile?.Earning || 0.0}
+              </h3>
             </div>
             <div className="flex h-12 items-end gap-1">
               {monthlyEarnings.map((value, i) => (
@@ -405,7 +416,7 @@ export default function MentorshipSettings({
                     <DollarSign className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input
                       id="hourlyRate"
-                      value={hourlyRate}
+                      value={userprofile?.Rate}
                       onChange={(e) => setHourlyRate(e.target.value)}
                       className="pl-9 bg-background/50 focus:bg-background/80 transition-colors"
                       type="number"
@@ -413,7 +424,7 @@ export default function MentorshipSettings({
                   </div>
                 </div>
 
-                <div className="space-y-1.5">
+                {/* <div className="space-y-1.5">
                   <Label htmlFor="paymentMethod" className="text-xs">
                     Payment Method
                   </Label>
@@ -489,19 +500,28 @@ export default function MentorshipSettings({
                       </SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
+                </div> */}
 
                 <div className="mt-2 bg-primary/5 rounded-md p-2 border border-primary/10">
                   <h4 className="text-xs font-medium mb-1">Recent Earnings</h4>
                   <div className="space-y-1">
-                    {earningsData.recentEarnings.map((earning, index) => (
-                      <div key={index} className="flex justify-between text-xs">
-                        <span className="text-muted-foreground">
-                          {earning.date}
-                        </span>
-                        <span>${earning.amount}</span>
-                      </div>
-                    ))}
+                    {userprofile?.transactions.length === 0 ? (
+                      <p className="text-muted-foreground text-sm">
+                        No recent Payments
+                      </p>
+                    ) : (
+                      userprofile?.transactions.map((transaction, index) => (
+                        <div
+                          key={index}
+                          className="flex justify-between text-xs"
+                        >
+                          <span className="text-muted-foreground">
+                            {getDate(transaction.CreatedAt)}
+                          </span>
+                          <span>₹{transaction.Amount}</span>
+                        </div>
+                      ))
+                    )}
                   </div>
                 </div>
               </div>

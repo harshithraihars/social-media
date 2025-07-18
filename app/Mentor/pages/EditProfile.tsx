@@ -222,6 +222,7 @@ export default function ProfileEdit({ onClose }: ProfileEditProps) {
               handleBlur={handleBlur}
               errors={errors}
               touched={touched}
+              p
             />
           </CardContent>
 
