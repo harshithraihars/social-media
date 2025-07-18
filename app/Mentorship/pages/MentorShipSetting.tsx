@@ -42,6 +42,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { useAppSelector } from "@/lib/hooks";
+import axios from "axios";
 // import { Toaster } from "@/components/ui/sonner"
 interface MentorshipSettingsProps {
   setMentorSettingOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -50,7 +51,6 @@ export default function MentorshipSettings({
   setMentorSettingOpen,
 }: MentorshipSettingsProps) {
   const userprofile = useAppSelector((state) => state.counter.userProfile);
-  const [Earning, setEarning] = useState<Number>(0);
   const [isAcceptingMentees, setIsAcceptingMentees] = useState(true);
   const [isPaidMentorship, setIsPaidMentorship] = useState(true);
   const [hourlyRate, setHourlyRate] = useState("75");
@@ -58,9 +58,16 @@ export default function MentorshipSettings({
   const [autoAcceptMentees, setAutoAcceptMentees] = useState(false);
   const [showReviews, setShowReviews] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [availability, setAvailability] = useState<Record<string, string[]>>({
+    Mon: [],
+    Tue: [],
+    Wed: [],
+    Thu: [],
+    Fri: [],
+  });
 
   // Days of the week for availability
-  const daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri"];
 
   // Time slots for availability
   const timeSlots = [
@@ -71,13 +78,6 @@ export default function MentorshipSettings({
     "5:00 PM",
     "7:00 PM",
   ];
-
-  // Initial availability state (example data)
-  const [availability, setAvailability] = useState<Record<string, string[]>>({
-    Mon: ["9:00 AM", "11:00 AM"],
-    Wed: ["1:00 PM", "3:00 PM"],
-    Fri: ["5:00 PM"],
-  });
 
   // Earnings data
   const earningsData = {
@@ -100,23 +100,17 @@ export default function MentorshipSettings({
   // Toggle time slot availability
   const toggleTimeSlot = (day: string, time: string) => {
     setAvailability((prev) => {
-      const newAvailability = { ...prev };
+      const currentDaySlots = prev[day] || [];
+      const isSelected = currentDaySlots.includes(time);
 
-      if (!newAvailability[day]) {
-        newAvailability[day] = [time];
-        return newAvailability;
-      }
+      const updatedSlots = isSelected
+        ? currentDaySlots.filter((t) => t !== time)
+        : [...currentDaySlots, time];
 
-      if (newAvailability[day].includes(time)) {
-        newAvailability[day] = newAvailability[day].filter((t) => t !== time);
-        if (newAvailability[day].length === 0) {
-          delete newAvailability[day];
-        }
-      } else {
-        newAvailability[day] = [...newAvailability[day], time];
-      }
-
-      return newAvailability;
+      return {
+        ...prev,
+        [day]: updatedSlots,
+      };
     });
   };
 
@@ -126,17 +120,20 @@ export default function MentorshipSettings({
   };
 
   // Handle save settings
-  const handleSave = () => {
-    setIsSaving(true);
-
-    // Simulate API call
-    setTimeout(() => {
+  const handleSave = async () => {
+    try {
+      setIsSaving(true);
+      if(!userprofile?._id) return
+      const response=await axios.put(`/api/mentor/${userprofile?._id}/availability`,{
+        availability:availability
+      });      
+      console.log(response.data);
+      
+    } catch (error) {
+      console.log(error);
+    }finally{
       setIsSaving(false);
-      // toast("Settings saved", {
-      //   description: "Your mentorship settings have been updated successfully.",
-      // });
-      setMentorSettingOpen(false);
-    }, 1000);
+    }
   };
 
   const getDate = (date: Date) => {
@@ -145,9 +142,7 @@ export default function MentorshipSettings({
       day: "numeric",
     });
   };
-
-  console.log(userprofile?.transactions);
-
+  
   return (
     <div className="w-full max-w-md mx-auto">
       {/* Earnings Card */}
@@ -317,7 +312,7 @@ export default function MentorshipSettings({
                   </TabsTrigger>
                 </TabsList>
                 <TabsContent value="grid" className="mt-0">
-                  <div className="grid grid-cols-8 gap-1 text-center text-xs">
+                  <div className="grid grid-cols-6 gap-1 text-center text-xs">
                     <div className="col-span-1"></div>
                     {daysOfWeek.map((day) => (
                       <div key={day} className="col-span-1 font-medium">
@@ -423,85 +418,6 @@ export default function MentorshipSettings({
                     />
                   </div>
                 </div>
-
-                {/* <div className="space-y-1.5">
-                  <Label htmlFor="paymentMethod" className="text-xs">
-                    Payment Method
-                  </Label>
-                  <Select
-                    value={paymentMethod}
-                    onValueChange={setPaymentMethod}
-                  >
-                    <SelectTrigger
-                      id="paymentMethod"
-                      className="bg-background/50 focus:bg-background/80 transition-colors"
-                    >
-                      <SelectValue placeholder="Select payment method" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="stripe">
-                        <div className="flex items-center gap-2">
-                          <svg
-                            viewBox="0 0 60 25"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="60"
-                            height="25"
-                            className="h-4 w-8"
-                          >
-                            <path
-                              fill="currentColor"
-                              d="M59.64 14.28h-8.06c.19 1.93 1.6 2.55 3.2 2.55 1.64 0 2.96-.37 4.05-.95v3.32a8.33 8.33 0 0 1-4.56 1.1c-4.01 0-6.83-2.5-6.83-7.48 0-4.19 2.39-7.52 6.3-7.52 3.92 0 5.96 3.28 5.96 7.5 0 .4-.04 1.26-.06 1.48zm-5.92-5.62c-1.03 0-2.17.73-2.17 2.58h4.25c0-1.85-1.07-2.58-2.08-2.58zM40.95 20.3c-1.44 0-2.32-.6-2.9-1.04l-.02 4.63-4.12.87V5.57h3.76l.08 1.02a4.7 4.7 0 0 1 3.23-1.29c2.9 0 5.62 2.6 5.62 7.4 0 5.23-2.7 7.6-5.65 7.6zM40 8.95c-.95 0-1.54.34-1.97.81l.02 6.12c.4.44.98.78 1.95.78 1.52 0 2.54-1.65 2.54-3.87 0-2.15-1.04-3.84-2.54-3.84zM28.24 5.57h4.13v14.44h-4.13V5.57zm0-4.7L32.37 0v3.36l-4.13.88V.88zm-4.32 9.35v9.79H19.8V5.57h3.7l.12 1.22c1-1.77 3.07-1.41 3.62-1.22v3.79c-.52-.17-2.29-.43-3.32.86zm-8.55 4.72c0 2.43 2.6 1.68 3.12 1.46v3.36c-.55.3-1.54.54-2.89.54a4.15 4.15 0 0 1-4.27-4.24l.02-13.17 4.02-.86v3.54h3.14V9.1h-3.14v5.85zm-4.91.7c0 2.97-2.31 4.66-5.73 4.66a11.2 11.2 0 0 1-4.46-.93v-3.93c1.38.75 3.1 1.31 4.46 1.31.92 0 1.53-.24 1.53-1C6.26 13.77 0 14.51 0 9.95 0 7.04 2.28 5.3 5.62 5.3c1.36 0 2.72.2 4.09.75v3.88a9.23 9.23 0 0 0-4.1-1.06c-.86 0-1.44.25-1.44.9 0 1.85 6.29.97 6.29 5.88z"
-                              fillRule="evenodd"
-                            ></path>
-                          </svg>
-                          Stripe
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="paypal">
-                        <div className="flex items-center gap-2">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="h-4 w-4"
-                          >
-                            <path d="M7 11c.33-.47.6-.93.77-1.4A3.6 3.6 0 0 0 8 8V7c0-1.1.9-2 2-2h4a2 2 0 0 1 2 2v1c0 1.1-.9 2-2 2h-4a2 2 0 0 0-2 2v1c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2v-1" />
-                            <path d="M17 22h-9a2 2 0 0 1-2-2v-7" />
-                            <path d="M17 13v9" />
-                          </svg>
-                          PayPal
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="upi">
-                        <div className="flex items-center gap-2">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="h-4 w-4"
-                          >
-                            <path d="M10.5 20H4a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2h16a2 2 0 0 1 2 2v13c0 1.1-.9 2-2 2h-3.5" />
-                            <path d="M2 10h20" />
-                          </svg>
-                          UPI
-                        </div>
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div> */}
-
                 <div className="mt-2 bg-primary/5 rounded-md p-2 border border-primary/10">
                   <h4 className="text-xs font-medium mb-1">Recent Earnings</h4>
                   <div className="space-y-1">

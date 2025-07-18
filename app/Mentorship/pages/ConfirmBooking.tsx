@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import BookingProgress from "./Booking-prgress";
 import DateTimeSelector from "./DateTimeSelector";
 import DurationSelector from "./DurationSelector";
@@ -28,7 +28,7 @@ export default function ConfirmBooking({
   const [isProcessing, setIsProcessing] = useState(false);
   const [isBooked, setIsBooked] = useState(false);
   const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false);
-
+  const [mentorAvailability, setMentorAvailability] = useState(null);
   const handlePaymentSuccess = () => {
     setIsPaymentSuccessful(true);
   };
@@ -39,7 +39,7 @@ export default function ConfirmBooking({
   const handleBooking = async () => {
     try {
       const user = await getCurrentUser();
-      
+
       const res = await axios.post("/api/mentee/booking", {
         mentorId: selectedMentor?._id,
         menteeId: user._id,
@@ -67,6 +67,21 @@ export default function ConfirmBooking({
     );
   }
 
+  useEffect(() => {
+    if (selectedMentor) {
+      const mentorAvailability = async () => {
+
+        const response = await axios.get(
+          `/api/mentor/${selectedMentor?._id}/availability`
+        );
+        const {availability} = response.data.availability;        
+        setMentorAvailability(availability);
+      };
+      mentorAvailability();
+    }
+  }, [selectedMentor]);
+
+  
   return (
     <div className="container mx-auto py-8 px-0 md:px-8 bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 min-h-screen w-full">
       <div className="grid md:grid-cols-3 gap-4 md:gap-8 w-full">
