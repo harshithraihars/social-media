@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import {
+  CalendarIcon,
   Check,
   CreditCard,
   DollarSign,
@@ -43,16 +44,29 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { useAppSelector } from "@/lib/hooks";
 import axios from "axios";
+import { Calendar } from "@/components/ui/calendar";
+import TimeSlots from "./TimeSlot";
 // import { Toaster } from "@/components/ui/sonner"
 interface MentorshipSettingsProps {
   setMentorSettingOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
+
+export const timeSlots = [
+  "9:00 AM",
+  "11:00 AM",
+  "1:00 PM",
+  "3:00 PM",
+  "5:00 PM",
+  "7:00 PM",
+];
+
 export default function MentorshipSettings({
   setMentorSettingOpen,
 }: MentorshipSettingsProps) {
   const userprofile = useAppSelector((state) => state.counter.userProfile);
   const [isAcceptingMentees, setIsAcceptingMentees] = useState(true);
   const [isPaidMentorship, setIsPaidMentorship] = useState(true);
+  const [timeSlot, setTimeSlot] = useState<string | null>(null);
   const [hourlyRate, setHourlyRate] = useState("75");
   const [paymentMethod, setPaymentMethod] = useState("stripe");
   const [autoAcceptMentees, setAutoAcceptMentees] = useState(false);
@@ -65,19 +79,15 @@ export default function MentorshipSettings({
     Thu: [],
     Fri: [],
   });
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
+    new Date()
+  );
+  const [selectedTimezone, setSelectedTimezone] = useState("IST");
 
   // Days of the week for availability
   const daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri"];
 
   // Time slots for availability
-  const timeSlots = [
-    "9:00 AM",
-    "11:00 AM",
-    "1:00 PM",
-    "3:00 PM",
-    "5:00 PM",
-    "7:00 PM",
-  ];
 
   // Earnings data
   const earningsData = {
@@ -123,15 +133,17 @@ export default function MentorshipSettings({
   const handleSave = async () => {
     try {
       setIsSaving(true);
-      if(!userprofile?._id) return
-      const response=await axios.put(`/api/mentor/${userprofile?._id}/availability`,{
-        availability:availability
-      });      
+      if (!userprofile?._id) return;
+      const response = await axios.put(
+        `/api/mentor/${userprofile?._id}/availability`,
+        {
+          availability: availability,
+        }
+      );
       console.log(response.data);
-      
     } catch (error) {
       console.log(error);
-    }finally{
+    } finally {
       setIsSaving(false);
     }
   };
@@ -142,7 +154,7 @@ export default function MentorshipSettings({
       day: "numeric",
     });
   };
-  
+
   return (
     <div className="w-full max-w-md mx-auto">
       {/* Earnings Card */}
@@ -302,79 +314,28 @@ export default function MentorshipSettings({
                 </TooltipProvider>
               </div>
 
-              <Tabs defaultValue="grid" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 h-8 mb-2">
-                  <TabsTrigger value="grid" className="text-xs">
-                    Grid View
-                  </TabsTrigger>
-                  <TabsTrigger value="list" className="text-xs">
-                    List View
-                  </TabsTrigger>
-                </TabsList>
-                <TabsContent value="grid" className="mt-0">
-                  <div className="grid grid-cols-6 gap-1 text-center text-xs">
-                    <div className="col-span-1"></div>
-                    {daysOfWeek.map((day) => (
-                      <div key={day} className="col-span-1 font-medium">
-                        {day}
-                      </div>
-                    ))}
-
-                    {timeSlots.map((time) => (
-                      <>
-                        <div
-                          key={`label-${time}`}
-                          className="col-span-1 flex items-center justify-end pr-1 text-muted-foreground"
-                        >
-                          {time}
-                        </div>
-                        {daysOfWeek.map((day) => (
-                          <div
-                            key={`${day}-${time}`}
-                            className={`col-span-1 aspect-square rounded-md cursor-pointer flex items-center justify-center transition-all ${
-                              isTimeSlotSelected(day, time)
-                                ? "bg-primary text-primary-foreground shadow-md scale-105"
-                                : "bg-secondary/50 hover:bg-secondary/80"
-                            }`}
-                            onClick={() => toggleTimeSlot(day, time)}
-                          >
-                            {isTimeSlotSelected(day, time) && (
-                              <Check className="h-3 w-3" />
-                            )}
-                          </div>
-                        ))}
-                      </>
-                    ))}
-                  </div>
-                </TabsContent>
-                <TabsContent value="list" className="mt-0">
-                  <div className="space-y-2">
-                    {daysOfWeek.map((day) => (
-                      <div
-                        key={`list-${day}`}
-                        className="flex items-center gap-2"
-                      >
-                        <div className="w-10 font-medium">{day}</div>
-                        <div className="flex flex-wrap gap-1 flex-1">
-                          {timeSlots.map((time) => (
-                            <div
-                              key={`list-${day}-${time}`}
-                              className={`px-2 py-1 rounded-md text-xs cursor-pointer transition-all ${
-                                isTimeSlotSelected(day, time)
-                                  ? "bg-primary text-primary-foreground"
-                                  : "bg-secondary/50 hover:bg-secondary/80"
-                              }`}
-                              onClick={() => toggleTimeSlot(day, time)}
-                            >
-                              {time}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </TabsContent>
-              </Tabs>
+              <div className="bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 rounded-lg  shadow-sm hover:shadow-md transition-all duration-300 w-fit md:-ml-7 ">
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={setSelectedDate}
+                  className="rounded-md border-0 bg-transparent"
+                  disabled={(date) => {
+                    return (
+                      date < new Date(new Date().setHours(0, 0, 0, 0)) ||
+                      date.getDay() === 0 ||
+                      date.getDay() === 6
+                    );
+                  }}
+                />
+              </div>
+              <div className="md:w-64 md:-ml-8">
+                <TimeSlots
+                  selectedDate={selectedDate}
+                  selectedSlot={timeSlot}
+                  onSelectTimeSlot={setTimeSlot}
+                />
+              </div>
             </div>
           </div>
 
