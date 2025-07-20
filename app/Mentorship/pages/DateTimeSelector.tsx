@@ -1,13 +1,6 @@
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import TimeSlots, { timeSlots } from "./TimeSlot";
 
 interface DateTimeSelectorProps {
@@ -30,6 +23,25 @@ export default function DateTimeSelector({
     const dateKey = date.toISOString().split("T")[0];
     return mentorAvailability?.[dateKey]?.includes(time) || false;
   };
+
+  // check wheather the the time has alreasy passed
+  const isPastTimeSlot = (time: string) => {
+    if (!date) return false;
+
+    const today = new Date();
+    const isToday = date.toDateString() === today.toDateString();
+
+    if (!isToday) return false; 
+
+    const [h, m, period] = time.match(/\d+|AM|PM/g)!;
+    const hours = (parseInt(h) % 12) + (period === "PM" ? 12 : 0);
+
+    const slot = new Date(date);
+    slot.setHours(hours, parseInt(m), 0, 0);
+
+    return slot < today;
+  };
+
   return (
     <div className="bg-blue-50/50 dark:bg-blue-900/10 rounded-lg p-4 shadow-sm w-full">
       <div className="grid md:grid-cols-2 gap-6">
@@ -72,79 +84,86 @@ export default function DateTimeSelector({
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-2 mt-2">
-                {timeSlots.map((slot, index) => (
-                  <div
-                    key={index}
-                    className={`
+                {timeSlots.map((slot, index) => {
+                  if (isPastTimeSlot(slot)) return null;
+                  return (
+                    <div
+                      key={index}
+                      className={`
                           text-center py-3 px-4 rounded-md text-sm font-medium transition-all duration-300 bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-800 hover:border-blue-400 dark:hover:border-blue-600 cursor-pointer hover:shadow-md hover:scale-105"
                           ${
                             isDateSlotAvailable(slot)
                               ? selectedSlot === slot
                                 ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md transform scale-105"
                                 : "bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-800 hover:border-blue-400 dark:hover:border-blue-600 cursor-pointer hover:shadow-md hover:scale-105"
-                              : "bg-red-50 dark:bg-red-900/20 text-red-400 cursor-not-allowed opacity-60 border border-red-200 dark:border-red-800/40"
+                              : "bg-red-50 dark:bg-red-900/20 text-red-400 cursor-not-allowed opacity-60 border border-red-200 dark:border-red-800/40 "
                           }
                         `}
-                        onClick={()=>setselectedSlot(slot)}
-                  >
-                    <div className="flex items-center justify-center">
-                      {isDateSlotAvailable(slot) ? (
-                        <svg
-                          className={`h-4 w-4 mr-2 ${
-                            selectedSlot === slot
-                              ? "text-white"
-                              : "text-blue-500"
-                          }`}
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <circle
-                            cx="12"
-                            cy="12"
-                            r="9"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                          />
-                          <path
-                            d="M12 7V12L15 15"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                          />
-                        </svg>
-                      ) : (
-                        <svg
-                          className="h-4 w-4 mr-2 text-red-400"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <circle
-                            cx="12"
-                            cy="12"
-                            r="9"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                          />
-                          <path
-                            d="M9 9L15 15"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                          />
-                          <path
-                            d="M15 9L9 15"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                          />
-                        </svg>
-                      )}
-                      {slot}
+                      onClick={() => {
+                        if (isDateSlotAvailable(slot)) {
+                          setselectedSlot(slot);
+                        }
+                      }}
+                    >
+                      <div className="flex items-center justify-center">
+                        {isDateSlotAvailable(slot) ? (
+                          <svg
+                            className={`h-4 w-4 mr-2 ${
+                              selectedSlot === slot
+                                ? "text-white"
+                                : "text-blue-500"
+                            }`}
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <circle
+                              cx="12"
+                              cy="12"
+                              r="9"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                            />
+                            <path
+                              d="M12 7V12L15 15"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                            />
+                          </svg>
+                        ) : (
+                          <svg
+                            className="h-4 w-4 mr-2 text-red-400"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <circle
+                              cx="12"
+                              cy="12"
+                              r="9"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                            />
+                            <path
+                              d="M9 9L15 15"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                            />
+                            <path
+                              d="M15 9L9 15"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                            />
+                          </svg>
+                        )}
+                        {slot}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>

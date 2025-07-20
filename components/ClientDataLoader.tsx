@@ -12,12 +12,22 @@ const ClientDataLoader = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const {data}=await axios.get(`/api/mentor/profile?userId=${user?.id}`)
-      const profile=data.data.profile
-      profile.transactions=data.data.transactions;      
-      dispatch(setUserProfile(profile))   
+      try {
+        if (user) {
+          console.log("getting called");
+          
+          const { data } = await axios.get(
+            `/api/mentor/profile?userId=${user?.id}`
+          );
+          const profile = data.data.profile;
+          profile.transactions = data.data.transactions;
+          dispatch(setUserProfile(profile));
+        }
+      } catch (error) {
+        console.log(error);
+      }
     };
-    fetchData(); 
+    fetchData();
   }, [user?.id, dispatch]);
 
   return null;

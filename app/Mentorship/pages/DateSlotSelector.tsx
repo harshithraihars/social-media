@@ -13,13 +13,29 @@ const DateSlotSelector = ({
   toggleDateSlot: (slot: string) => void;
   availabilityByDate: Record<string, string[]>;
 }) => {
-
   const isDateSlotSelected = (time: string) => {
     if (!selectedDate) return false;
     const dateKey = selectedDate.toISOString().split("T")[0];
     return availabilityByDate[dateKey]?.includes(time) || false;
   };
-  
+
+  const isPastTimeSlot = (time: string) => {
+    if (!selectedDate) return false;
+
+    const today = new Date();
+    const isToday = selectedDate.toDateString() === today.toDateString();
+
+    if (!isToday) return false; // ✅ only apply if it's today
+
+    const [h, m, period] = time.match(/\d+|AM|PM/g)!;
+    const hours = (parseInt(h) % 12) + (period === "PM" ? 12 : 0);
+
+    const slot = new Date(selectedDate);
+    slot.setHours(hours, parseInt(m), 0, 0);
+
+    return slot < today;
+  };
+
   return (
     <div>
       <div className="bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 rounded-lg  shadow-sm hover:shadow-md transition-all duration-300 w-fit md:-ml-7 ">
@@ -53,10 +69,12 @@ const DateSlotSelector = ({
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-2 mt-2">
-              {timeSlots.map((slot, index) => (
-                <div
-                  key={index}
-                  className={`
+              {timeSlots.map((slot, index) => {
+                if (isPastTimeSlot(slot)) return null;
+                return (
+                  <div
+                    key={index}
+                    className={`
                                 text-center py-3 px-4 rounded-lg text-sm font-medium transition-all duration-300  dark:bg-gray-800 border border-blue-200 dark:border-blue-800 hover:border-blue-400 dark:hover:border-blue-600 cursor-pointer hover:shadow-md hover:scale-105
                                 ${
                                   isDateSlotSelected(slot)
@@ -64,13 +82,16 @@ const DateSlotSelector = ({
                                     : "bg-white"
                                 }
                               `}
-                  onClick={() => {
-                    toggleDateSlot(slot);
-                  }}
-                >
-                  <div className="flex items-center justify-center">{slot}</div>
-                </div>
-              ))}
+                    onClick={() => {
+                      toggleDateSlot(slot);
+                    }}
+                  >
+                    <div className="flex items-center justify-center">
+                      {slot}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>

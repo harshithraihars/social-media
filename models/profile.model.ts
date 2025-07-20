@@ -3,6 +3,7 @@ import mongoose, { Document, Model } from "mongoose";
 export interface IProfile extends Document {
   firstName:string,
   lastName:string,
+  MentorshipEnabled:boolean,
   profilePhoto:string,
   userId: string;
   CompanyName: string;
@@ -24,6 +25,11 @@ const profileSchema = new mongoose.Schema<IProfile>({
     type:String,
     required:true,
   },
+  MentorshipEnabled: {
+      type: Boolean,
+      default: true,
+    },
+
   profilePhoto:{
     type:String,
     required:true
