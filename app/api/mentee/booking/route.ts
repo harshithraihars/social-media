@@ -1,6 +1,7 @@
 import { BookingI } from "@/app/Mentorship/pages/MentorShipHeader";
 import connectDB from "@/lib/db";
 import { Booking } from "@/models/Booking.model";
+import { MentorAvailability } from "@/models/MentorAvailability.model";
 import { Payment } from "@/models/Payment.model";
 import { Profile } from "@/models/profile.model";
 import { User } from "@/models/user.model";
@@ -11,15 +12,29 @@ export const POST = async (req: NextRequest) => {
   try {
     await connectDB();
 
-    
     // mentorid is profileID not User id
-    const { mentorId, menteeId,menteeEmail, date, time, Duration, sessionAmount } =
-      await req.json();
+    const {
+      mentorId,
+      menteeId,
+      menteeEmail,
+      date,
+      time,
+      Duration,
+      sessionAmount,
+    } = await req.json();
 
-      console.log(menteeEmail);
-      
+    console.log(menteeEmail);
+
     if (
-      ![mentorId, menteeId,menteeEmail, date, time, Duration, sessionAmount].every(Boolean)
+      ![
+        mentorId,
+        menteeId,
+        menteeEmail,
+        date,
+        time,
+        Duration,
+        sessionAmount,
+      ].every(Boolean)
     ) {
       return NextResponse.json(
         { error: "All fields are required." },
@@ -27,7 +42,8 @@ export const POST = async (req: NextRequest) => {
       );
     }
 
-    const booking=await Booking.create({
+    // create the booking
+    const booking = await Booking.create({
       mentorId,
       menteeId,
       menteeEmail,
@@ -37,28 +53,56 @@ export const POST = async (req: NextRequest) => {
       sessionAmount,
     });
 
-    const payment=await Payment.create({
+    // store the payment Details
+    const payment = await Payment.create({
       mentorId,
       menteeId,
-      Amount:sessionAmount
-    })
+      Amount: sessionAmount,
+    });
 
-    console.log(payment,"was succesfull");
-    
-    const updatedProfile=await Profile.findByIdAndUpdate(
-      mentorId,
+    // update mentor earning
+    const updatedProfile = await Profile.findByIdAndUpdate(mentorId, {
+      $inc: {
+        Earning: sessionAmount,
+      },
+    });
+
+    // update the mentor avilability so that others know its not avilable
+
+    const { availability } = await MentorAvailability.findOne({
+      mentorId: mentorId,
+    }).select("availability");
+
+    const dateKey = new Date(date).toISOString().split("T")[0];
+
+    // convert Mongoose Map to plain object because they cause  issue in spreading 
+    const availabilityObj =
+      availability instanceof Map
+        ? Object.fromEntries(availability)
+        : availability;
+
+    const updatedAvailability = {
+      ...availabilityObj,
+      [dateKey]: availabilityObj[dateKey]?.filter((t: string) => t !== time),
+    };
+
+    await MentorAvailability.findOneAndUpdate(
+      { mentorId },
+      { availability: updatedAvailability }
+    );
+
+    await MentorAvailability.findOneAndUpdate(
+      { mentorId: mentorId },
       {
-        $inc: {
-          Earning: sessionAmount,
-        },
+        availability: updatedAvailability,
       }
     );
-    
+
     return NextResponse.json(
       { message: "Booking successful." },
       { status: 201 }
     );
-  } catch (error) {    
+  } catch (error) {
     return NextResponse.json(
       {
         error: "Something went wrong.",
@@ -83,12 +127,12 @@ export const GET = async () => {
       .select("_id date time Duration sessionAmount")
       .populate({
         path: "mentorId",
-        select: "userId firstName lastName profilePhoto CompanyName Role Rating",
+        select:
+          "userId firstName lastName profilePhoto CompanyName Role Rating",
         model: "Profile",
       })
       .lean();
 
-      
     bookingsRaw.sort((a, b) => {
       const now = new Date();
 

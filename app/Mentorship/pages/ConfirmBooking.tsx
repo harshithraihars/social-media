@@ -43,7 +43,6 @@ export default function ConfirmBooking({
             `/api/mentor/${selectedMentor?._id}/availability`
           );
           const { availability } = response.data.availability;
-          console.log(availability);
 
           setMentorAvailability(availability);
         };
@@ -54,7 +53,6 @@ export default function ConfirmBooking({
 
   const handleBooking = async () => {
     try {
-      console.log("reaching here");
 
       const user = await getCurrentUser();
 
@@ -67,7 +65,6 @@ export default function ConfirmBooking({
         Duration: duration,
         sessionAmount: totalPrice,
       });
-      console.log("reaching here too ");
 
       setIsProcessing(false);
       setIsBooked(true);
