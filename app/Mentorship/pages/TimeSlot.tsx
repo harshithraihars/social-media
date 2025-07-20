@@ -1,10 +1,15 @@
 "use client"
 import { addDays, isSameDay } from "date-fns"
 
-type TimeSlot = {
-  time: string
-  available: boolean
-}
+export const timeSlots = [
+  "9:00 AM",
+  "11:00 AM",
+  "1:00 PM",
+  "3:00 PM",
+  "5:00 PM",
+  "7:00 PM",
+];
+
 
 type TimeSlotProps = {
   selectedDate: Date | undefined
@@ -13,45 +18,7 @@ type TimeSlotProps = {
 }
 
 export default function TimeSlots({ selectedDate, selectedSlot, onSelectTimeSlot }: TimeSlotProps) {
-  // Generate time slots based on the selected date
-  const getTimeSlots = (date: Date | undefined): TimeSlot[] => {
-    if (!date) return []
 
-    // Generate different availability patterns based on the day
-    const dayOfWeek = date?.getDay()
-    const isToday = date && isSameDay(date, new Date())
-    const isTomorrow = date && isSameDay(date, addDays(new Date(), 1))
-
-    const slots: TimeSlot[] = []
-
-    // Start times from 9 AM to 5 PM
-    for (let hour = 9; hour <= 17; hour++) {
-      // Skip past times if it's today
-      if (isToday && hour < new Date().getHours()) continue
-
-      const time = `${hour % 12 || 12}:00 ${hour >= 12 ? "PM" : "AM"}`
-
-      // Create some random unavailability patterns
-      let available = true
-
-      // Make some slots unavailable based on different patterns
-      if (
-        (dayOfWeek === 1 && (hour === 10 || hour === 14)) || // Monday
-        (dayOfWeek === 2 && (hour === 11 || hour === 15)) || // Tuesday
-        (dayOfWeek === 3 && (hour === 9 || hour === 13)) || // Wednesday
-        (dayOfWeek === 4 && (hour === 12 || hour === 16)) || // Thursday
-        (dayOfWeek === 5 && (hour === 10 || hour === 15)) // Friday
-      ) {
-        available = false
-      }
-
-      slots.push({ time, available })
-    }
-
-    return slots
-  }
-
-  const timeSlots = getTimeSlots(selectedDate)
 
   return (
     <div className="space-y-2">
@@ -71,23 +38,24 @@ export default function TimeSlots({ selectedDate, selectedSlot, onSelectTimeSlot
             <div
               key={index}
               className={`
-                text-center py-3 px-4 rounded-md text-sm font-medium transition-all duration-300
+                text-center py-3 px-4 rounded-md text-sm font-medium transition-all duration-300 bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-800 hover:border-blue-400 dark:hover:border-blue-600 cursor-pointer hover:shadow-md hover:scale-105"
                 ${
-                  slot.available
-                    ? selectedSlot === slot.time
-                      ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md transform scale-105"
-                      : "bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-800 hover:border-blue-400 dark:hover:border-blue-600 cursor-pointer hover:shadow-md hover:scale-105"
-                    : "bg-red-50 dark:bg-red-900/20 text-red-400 cursor-not-allowed opacity-60 border border-red-200 dark:border-red-800/40"
+                  slot
+                  // slot.available
+                  //   ? selectedSlot === slot.time
+                      // ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md transform scale-105"
+                      // : "bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-800 hover:border-blue-400 dark:hover:border-blue-600 cursor-pointer hover:shadow-md hover:scale-105"
+                    // : "bg-red-50 dark:bg-red-900/20 text-red-400 cursor-not-allowed opacity-60 border border-red-200 dark:border-red-800/40"
                 }
               `}
-              onClick={() => {
-                if (slot.available) {
-                  onSelectTimeSlot(slot.time)
-                }
-              }}
+              // onClick={() => {
+              //   if (slot.available) {
+              //     onSelectTimeSlot(slot.time)
+              //   }
+              // }}
             >
               <div className="flex items-center justify-center">
-                {slot.available ? (
+                {/* {slot.available ? (
                   <svg
                     className={`h-4 w-4 mr-2 ${selectedSlot === slot.time ? "text-white" : "text-blue-500"}`}
                     viewBox="0 0 24 24"
@@ -108,8 +76,8 @@ export default function TimeSlots({ selectedDate, selectedSlot, onSelectTimeSlot
                     <path d="M9 9L15 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                     <path d="M15 9L9 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                   </svg>
-                )}
-                {slot.time}
+                )} */}
+                {slot}
               </div>
             </div>
           ))}

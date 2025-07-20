@@ -88,7 +88,6 @@ export const GET = async () => {
       })
       .lean();
 
-      console.log(bookingsRaw);
       
     bookingsRaw.sort((a, b) => {
       const now = new Date();

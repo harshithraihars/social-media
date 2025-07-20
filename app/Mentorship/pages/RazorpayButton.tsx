@@ -59,9 +59,7 @@ const RazorpayButton = ({
         name: "Mentee Connect",
         description: "Test transaction",
         order_id: order.data.id,
-        handler: function (response: { razorpay_payment_id: string }) {
-          console.log("payment us suuccefull");
-          
+        handler: function (response: { razorpay_payment_id: string }) {          
           onPaymentSuccess();
           const promise = Promise.resolve(handleBooking());
           toast.promise(promise, {

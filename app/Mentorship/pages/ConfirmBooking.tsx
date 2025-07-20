@@ -21,9 +21,7 @@ export default function ConfirmBooking({
 }) {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [duration, setDuration] = useState("30");
-  const [timeSlot, setTimeSlot] = useState<string | null>(null);
-  const [timezone, setTimezone] = useState("UTC");
-  const [discountCode, setDiscountCode] = useState("");
+  const [selectedSlot, setselectedSlot] = useState<string | null>(null);
   const [discountApplied, setDiscountApplied] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isBooked, setIsBooked] = useState(false);
@@ -36,8 +34,28 @@ export default function ConfirmBooking({
   const discount = discountApplied ? basePrice * 0.1 : 0;
   const totalPrice = basePrice - discount;
   const menteeEmail = useUser().user?.primaryEmailAddress?.emailAddress;
+
+  useEffect(() => {
+    if (selectedMentor) {
+      try {
+        const mentorAvailability = async () => {
+          const response = await axios.get(
+            `/api/mentor/${selectedMentor?._id}/availability`
+          );
+          const { availability } = response.data.availability;
+          console.log(availability);
+
+          setMentorAvailability(availability);
+        };
+        mentorAvailability();
+      } catch (error) {}
+    }
+  }, [selectedMentor]);
+
   const handleBooking = async () => {
     try {
+      console.log("reaching here");
+
       const user = await getCurrentUser();
 
       const res = await axios.post("/api/mentee/booking", {
@@ -45,10 +63,12 @@ export default function ConfirmBooking({
         menteeId: user._id,
         menteeEmail: menteeEmail,
         date,
-        time: timeSlot,
+        time: selectedSlot,
         Duration: duration,
         sessionAmount: totalPrice,
       });
+      console.log("reaching here too ");
+
       setIsProcessing(false);
       setIsBooked(true);
     } catch (error) {
@@ -60,28 +80,13 @@ export default function ConfirmBooking({
     return (
       <BookingConfirmation
         date={date}
-        timeSlot={timeSlot}
+        timeSlot={selectedSlot}
         duration={duration}
         totalPrice={totalPrice}
       />
     );
   }
 
-  useEffect(() => {
-    if (selectedMentor) {
-      const mentorAvailability = async () => {
-
-        const response = await axios.get(
-          `/api/mentor/${selectedMentor?._id}/availability`
-        );
-        const {availability} = response.data.availability;        
-        setMentorAvailability(availability);
-      };
-      mentorAvailability();
-    }
-  }, [selectedMentor]);
-
-  
   return (
     <div className="container mx-auto py-8 px-0 md:px-8 bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 min-h-screen w-full">
       <div className="grid md:grid-cols-3 gap-4 md:gap-8 w-full">
@@ -108,7 +113,7 @@ export default function ConfirmBooking({
 
               <BookingProgress
                 date={date}
-                timeSlot={timeSlot}
+                timeSlot={selectedSlot}
                 duration={duration}
                 isPaymentComplete={isPaymentSuccessful || isBooked} // Updated logic
               />
@@ -124,10 +129,9 @@ export default function ConfirmBooking({
                       <DateTimeSelector
                         date={date}
                         setDate={setDate}
-                        timezone={timezone}
-                        setTimezone={setTimezone}
-                        timeSlot={timeSlot}
-                        setTimeSlot={setTimeSlot}
+                        selectedSlot={selectedSlot}
+                        setselectedSlot={setselectedSlot}
+                        mentorAvailability={mentorAvailability}
                       />
                     </div>
                   </div>
@@ -162,7 +166,7 @@ export default function ConfirmBooking({
             isProcessing={isProcessing}
             setIsProcessing={setIsProcessing}
             handleBooking={handleBooking}
-            timeSlot={timeSlot}
+            timeSlot={selectedSlot}
             onPaymentSuccess={handlePaymentSuccess} // Add this
           />
         </div>

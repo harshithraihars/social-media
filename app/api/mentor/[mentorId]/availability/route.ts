@@ -31,17 +31,15 @@ export const PUT=async(req:NextRequest,{params}:{params:{mentorId:string}})=>{
 export const GET=async(req:NextRequest,{params}:{params:{mentorId:string}})=>{
     try{
         const {mentorId}=params;
+        
         if(!mentorId){
             return NextResponse.json({message:"MentorId Not provided"},{status:400})
         }
 
         const availability=await MentorAvailability.findOne({mentorId:mentorId})
-
-        if(!availability){
-            return NextResponse.json({ message: "no data found" }, { status: 400 });
-        }
-        return NextResponse.json({availability:availability},{status:200})
-    }catch(error){
+        
+        return NextResponse.json({availability:availability??{}},{status:200})
+    }catch(error){        
         return NextResponse.json({error:error},{status:500})
     }
 

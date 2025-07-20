@@ -45,20 +45,12 @@ import { Progress } from "@/components/ui/progress";
 import { useAppSelector } from "@/lib/hooks";
 import axios from "axios";
 import { Calendar } from "@/components/ui/calendar";
-import TimeSlots from "./TimeSlot";
+import TimeSlots, { timeSlots } from "./TimeSlot";
+import DateSlotSelector from "./DateSlotSelector";
 // import { Toaster } from "@/components/ui/sonner"
 interface MentorshipSettingsProps {
   setMentorSettingOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
-
-export const timeSlots = [
-  "9:00 AM",
-  "11:00 AM",
-  "1:00 PM",
-  "3:00 PM",
-  "5:00 PM",
-  "7:00 PM",
-];
 
 export default function MentorshipSettings({
   setMentorSettingOpen,
@@ -66,28 +58,17 @@ export default function MentorshipSettings({
   const userprofile = useAppSelector((state) => state.counter.userProfile);
   const [isAcceptingMentees, setIsAcceptingMentees] = useState(true);
   const [isPaidMentorship, setIsPaidMentorship] = useState(true);
-  const [timeSlot, setTimeSlot] = useState<string | null>(null);
+  const [availabilityByDate, setAvailabilityByDate] = useState<Record<string, string[]>>({});
   const [hourlyRate, setHourlyRate] = useState("75");
-  const [paymentMethod, setPaymentMethod] = useState("stripe");
+  // const [paymentMethod, setPaymentMethod] = useState("stripe");
   const [autoAcceptMentees, setAutoAcceptMentees] = useState(false);
   const [showReviews, setShowReviews] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [availability, setAvailability] = useState<Record<string, string[]>>({
-    Mon: [],
-    Tue: [],
-    Wed: [],
-    Thu: [],
-    Fri: [],
-  });
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
+  const [selectedDate, setSelectedDate] = useState<Date | null>(
     new Date()
   );
-  const [selectedTimezone, setSelectedTimezone] = useState("IST");
 
-  // Days of the week for availability
-  const daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri"];
 
-  // Time slots for availability
 
   // Earnings data
   const earningsData = {
@@ -108,25 +89,24 @@ export default function MentorshipSettings({
   const monthlyEarnings = [650, 820, 950, 1250];
 
   // Toggle time slot availability
-  const toggleTimeSlot = (day: string, time: string) => {
-    setAvailability((prev) => {
-      const currentDaySlots = prev[day] || [];
-      const isSelected = currentDaySlots.includes(time);
+  const toggleDateSlot = (time: string) => {
+    if(!selectedDate) return;
 
-      const updatedSlots = isSelected
-        ? currentDaySlots.filter((t) => t !== time)
-        : [...currentDaySlots, time];
+    // convert to "2025-07-20" format
+    const dateKey = selectedDate.toISOString().split("T")[0];
+    setAvailabilityByDate((prev)=>{
+      const current=prev[dateKey]||[]
+      console.log(current);
+      
+      const updated=current.includes(time)?
+      current.filter((t)=>t!=time):
+      [...current,time]
 
       return {
         ...prev,
-        [day]: updatedSlots,
-      };
-    });
-  };
-
-  // Check if a time slot is selected
-  const isTimeSlotSelected = (day: string, time: string) => {
-    return availability[day]?.includes(time) || false;
+        [dateKey]:updated
+      }
+    })
   };
 
   // Handle save settings
@@ -137,10 +117,11 @@ export default function MentorshipSettings({
       const response = await axios.put(
         `/api/mentor/${userprofile?._id}/availability`,
         {
-          availability: availability,
+          availability: availabilityByDate,
         }
       );
       console.log(response.data);
+      setMentorSettingOpen(false)
     } catch (error) {
       console.log(error);
     } finally {
@@ -314,28 +295,7 @@ export default function MentorshipSettings({
                 </TooltipProvider>
               </div>
 
-              <div className="bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 rounded-lg  shadow-sm hover:shadow-md transition-all duration-300 w-fit md:-ml-7 ">
-                <Calendar
-                  mode="single"
-                  selected={selectedDate}
-                  onSelect={setSelectedDate}
-                  className="rounded-md border-0 bg-transparent"
-                  disabled={(date) => {
-                    return (
-                      date < new Date(new Date().setHours(0, 0, 0, 0)) ||
-                      date.getDay() === 0 ||
-                      date.getDay() === 6
-                    );
-                  }}
-                />
-              </div>
-              <div className="md:w-64 md:-ml-8">
-                <TimeSlots
-                  selectedDate={selectedDate}
-                  selectedSlot={timeSlot}
-                  onSelectTimeSlot={setTimeSlot}
-                />
-              </div>
+              <DateSlotSelector selectedDate={selectedDate} setSelectedDate={setSelectedDate} toggleDateSlot={toggleDateSlot} availabilityByDate={availabilityByDate}/>
             </div>
           </div>
 

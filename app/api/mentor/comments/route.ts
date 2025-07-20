@@ -12,7 +12,6 @@ export const POST = async (req: NextRequest) => {
 
     const { mentorId, menteeId, comment, rating } = await req.json();
 
-    console.log(mentorId, menteeId, rating, comment);
 
     if (!mentorId || !menteeId || !comment || !rating) {
       return NextResponse.json(
