@@ -35,11 +35,8 @@ export const PUT = async (
 
     const updatedProfile=await Profile.findByIdAndUpdate(mentorId,{
         MentorshipEnabled:isAcceptingMentees,
-        Rate:isPaidMentorship?0:hourlyRate,
+        Rate:isPaidMentorship?hourlyRate:0,
     })
-
-    console.log(updatedProfile);
-    
     
     return NextResponse.json(
       { message: "Availability updated successfully" },

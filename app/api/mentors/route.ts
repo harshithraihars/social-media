@@ -18,6 +18,7 @@ export const GET = async (req: NextRequest) => {
 
     const query: Record<string, any> = {
       userId: { $ne: userId },
+      MentorshipEnabled:true
     };
     if (CompanyName) query.CompanyName = { $regex: CompanyName, $options: "i" };
 

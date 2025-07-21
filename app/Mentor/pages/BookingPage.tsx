@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 import Header from "@/app/Mentorship/pages/Header";
 import TabSelector from "@/app/Mentor/pages/TabSelector";
 import EventCard from "@/app/Mentor/pages/EventCard";
-import MentorshipSettings from "@/app/Mentorship/pages/MentorShipSetting";
+import MentorshipSettings from "@/app/Mentor/pages/Settings/MentorShipSetting";
 import Sidebar from "@/app/Mentor/pages/SideBar";
 import axios from "axios";
 import { BookingI } from "@/app/Mentorship/pages/MentorShipHeader";

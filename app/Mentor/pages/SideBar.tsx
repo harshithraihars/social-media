@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import SidebarItem from "../../Mentorship/pages/SideBarItem";
 import gsap from "gsap";
-import MentorshipSettings from "../../Mentorship/pages/MentorShipSetting";
+import MentorshipSettings from "./Settings/MentorShipSetting";
 import { TabType } from "@/app/Mentorship/pages/Booking";
 interface sidebarProps {
   filterBookings:(tab:TabType)=>void

@@ -15,7 +15,7 @@ const ClientDataLoader = () => {
       try {
         if (user) {
           console.log("getting called");
-          
+
           const { data } = await axios.get(
             `/api/mentor/profile?userId=${user?.id}`
           );
