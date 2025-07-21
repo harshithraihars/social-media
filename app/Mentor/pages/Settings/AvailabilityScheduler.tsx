@@ -29,6 +29,7 @@ const AvailabilityScheduler = ({
   availabilityByDate: Record<string, string[]>;
 }) => {
   const isDateSlotSelected = (time: string) => {
+
     if (!selectedDate) return false;
     const dateKey = selectedDate.toISOString().split("T")[0];
     return availabilityByDate?.[dateKey]?.includes(time) || false;

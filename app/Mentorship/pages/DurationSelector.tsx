@@ -1,11 +1,15 @@
-import { Clock, CheckCircle } from "lucide-react";
+import { Clock, CheckCircle, IndianRupee } from "lucide-react";
+import { IProfile } from "@/models/profile.model";
 
 interface DurationSelectorProps {
   duration: string;
   setDuration: (duration: string) => void;
+  selectedMentor:IProfile | null
 }
 
-export default function DurationSelector({ duration, setDuration }: DurationSelectorProps) {
+
+export default function DurationSelector({ duration, setDuration,selectedMentor }: DurationSelectorProps) {
+  
   return (
     <div className="bg-blue-50/50 dark:bg-blue-900/10 rounded-lg p-4 shadow-sm">
       <div className="grid grid-cols-2 gap-4">
@@ -26,7 +30,7 @@ export default function DurationSelector({ duration, setDuration }: DurationSele
             </span>
           </div>
           <div className="mt-3 flex items-baseline gap-1">
-            <p className="text-lg font-bold">$50</p>
+            <p className="text-lg font-bold">₹{(selectedMentor?.Rate || 0)/2}</p>
             <p className="text-xs text-muted-foreground">
               /session
             </p>
@@ -57,7 +61,7 @@ export default function DurationSelector({ duration, setDuration }: DurationSele
             </span>
           </div>
           <div className="mt-3 flex items-baseline gap-1">
-            <p className="text-lg font-bold">$90</p>
+            <p className="text-lg font-bold">₹{selectedMentor?.Rate || 0}</p>
             <p className="text-xs text-muted-foreground">
               /session
             </p>

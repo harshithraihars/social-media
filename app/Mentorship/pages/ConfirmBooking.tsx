@@ -53,7 +53,6 @@ export default function ConfirmBooking({
 
   const handleBooking = async () => {
     try {
-
       const user = await getCurrentUser();
 
       const res = await axios.post("/api/mentee/booking", {
@@ -142,6 +141,7 @@ export default function ConfirmBooking({
                         Select Session Duration
                       </h3>
                       <DurationSelector
+                        selectedMentor={selectedMentor}
                         duration={duration}
                         setDuration={setDuration}
                       />
