@@ -23,8 +23,6 @@ export const POST = async (req: NextRequest) => {
       sessionAmount,
     } = await req.json();
 
-    console.log(menteeEmail);
-
     if (
       ![
         mentorId,
@@ -73,7 +71,11 @@ export const POST = async (req: NextRequest) => {
       mentorId: mentorId,
     }).select("availability");
 
-    const dateKey = new Date(date).toISOString().split("T")[0];
+    console.log(availability);
+    
+    const dateKey = new Date(date).toLocaleDateString("en-CA");
+    console.log(dateKey);
+    
 
     // convert Mongoose Map to plain object because they cause  issue in spreading 
     const availabilityObj =
@@ -86,6 +88,8 @@ export const POST = async (req: NextRequest) => {
       [dateKey]: availabilityObj[dateKey]?.filter((t: string) => t !== time),
     };
 
+    console.log(updatedAvailability);
+    
     await MentorAvailability.findOneAndUpdate(
       { mentorId },
       { availability: updatedAvailability }
@@ -103,6 +107,8 @@ export const POST = async (req: NextRequest) => {
       { status: 201 }
     );
   } catch (error) {
+    console.log(error.message);
+    
     return NextResponse.json(
       {
         error: "Something went wrong.",

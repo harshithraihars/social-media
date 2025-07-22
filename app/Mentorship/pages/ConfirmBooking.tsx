@@ -128,6 +128,7 @@ export default function ConfirmBooking({
                         selectedSlot={selectedSlot}
                         setselectedSlot={setselectedSlot}
                         mentorAvailability={mentorAvailability}
+                        selectedMentor={selectedMentor}
                       />
                     </div>
                   </div>

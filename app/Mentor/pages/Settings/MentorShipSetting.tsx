@@ -161,6 +161,7 @@ export default function MentorshipSettings({
                 setSelectedDate={setSelectedDate}
                 toggleDateSlot={toggleDateSlot}
                 availabilityByDate={availabilityByDate}
+                userprofile={userprofile}
               />
             )}
           </div>

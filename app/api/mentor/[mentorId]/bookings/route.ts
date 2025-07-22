@@ -1,27 +1,32 @@
-import { NextRequest } from "next/server";
+import { Booking } from "@/models/Booking.model";
+import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (
   req: NextRequest,
   { params }: { params: { mentorId: string } }
 ) => {
-  const { mentorId } = params;
-  const date = new URL(req.url).searchParams.get("date");
+  try {
+    const { mentorId } = params;
+    const date = new URL(req.url).searchParams.get("date");
 
-  if (!mentorId || !date)
-    return Response.json(
-      { error: "Missing date or mentorId" },
-      { status: 400 }
-    );
+    if (!mentorId || !date)
+      return Response.json(
+        { error: "Missing date or mentorId" },
+        { status: 400 }
+      );
 
-  const start = new Date(date);
-  const end = new Date(date);
-  end.setHours(23, 59, 59, 999);
+    const start = new Date(`${date}T00:00:00.000Z`);
+    const end = new Date(`${date}T23:59:59.999Z`);
 
-  const bookings = await Booking.find({
-    mentorId,
-    date: { $gte: start, $lte: end },
-  }).select("time");
+    const bookings = await Booking.find({
+      mentorId,
+      date: { $gte: start, $lte: end },
+    }).select("time");
 
-  const bookedTimes = bookings.map((b) => b.time);
-  return Response.json({ bookedTimes });
+
+    const bookedTimes = bookings.map((b) => b.time);
+    return Response.json({ bookedTimes });
+  } catch (error) {
+    return NextResponse.json({ error: error }, { status: 500 });
+  }
 };

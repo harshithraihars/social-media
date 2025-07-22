@@ -33,11 +33,11 @@ export const PUT = async (
       { upsert: true, new: true }
     );
 
-    const updatedProfile=await Profile.findByIdAndUpdate(mentorId,{
-        MentorshipEnabled:isAcceptingMentees,
-        Rate:isPaidMentorship?hourlyRate:0,
-    })
-    
+    const updatedProfile = await Profile.findByIdAndUpdate(mentorId, {
+      MentorshipEnabled: isAcceptingMentees,
+      Rate: isPaidMentorship ? hourlyRate : 0,
+    });
+
     return NextResponse.json(
       { message: "Availability updated successfully" },
       { status: 200 }
@@ -53,7 +53,7 @@ export const GET = async (
 ) => {
   try {
     const { mentorId } = params;
-
+    const date = req.nextUrl.searchParams.get("date");
     if (!mentorId) {
       return NextResponse.json(
         { message: "MentorId Not provided" },
@@ -61,12 +61,22 @@ export const GET = async (
       );
     }
 
-    const availability = await MentorAvailability.findOne({
+    const availabilityDoc = await MentorAvailability.findOne({
       mentorId: mentorId,
     });
-
+    
+    if (date) {
+      const dateKey = new Date(date).toISOString().split("T")[0];            
+      const slotsForDate = availabilityDoc.availability?.get(dateKey) ?? [];
+      console.log(slotsForDate);
+      
+      return NextResponse.json(
+        { availability: slotsForDate},
+        { status: 200 }
+      );
+    }
     return NextResponse.json(
-      { availability: availability ?? {} },
+      { availability: availabilityDoc ?? {} },
       { status: 200 }
     );
   } catch (error) {

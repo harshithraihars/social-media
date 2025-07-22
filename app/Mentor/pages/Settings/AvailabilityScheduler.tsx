@@ -16,20 +16,25 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { IProfile } from "@/models/profile.model";
+import axios from "axios";
 
 const AvailabilityScheduler = ({
   selectedDate,
   setSelectedDate,
   toggleDateSlot,
   availabilityByDate,
+  userprofile,
 }: {
   selectedDate: Date | null;
   setSelectedDate: React.Dispatch<React.SetStateAction<Date | null>>;
   toggleDateSlot: (slot: string) => void;
   availabilityByDate: Record<string, string[]>;
+  userprofile: IProfile | null;
 }) => {
+  const [bookedSlots, setBookedSlots] = useState<string[]>();
+  const [isLoadingBookedSlots, setIsLoadingBookedSlots] = useState<boolean>();
   const isDateSlotSelected = (time: string) => {
-
     if (!selectedDate) return false;
     const dateKey = selectedDate.toISOString().split("T")[0];
     return availabilityByDate?.[dateKey]?.includes(time) || false;
@@ -51,6 +56,30 @@ const AvailabilityScheduler = ({
 
     return slot < today;
   };
+
+  useEffect(() => {
+    const fetchBookedSlots = async () => {
+      if (!selectedDate || !userprofile?._id) return;
+
+      const dateKey = selectedDate.toISOString().split("T")[0];
+
+      setIsLoadingBookedSlots(true);
+      try {
+        const res = await axios.get(
+          `/api/mentor/${userprofile._id}/bookings?date=${dateKey}`
+        );
+
+        setBookedSlots(res.data.bookedTimes);
+      } catch (err) {
+        console.error("Failed to fetch booked slots", err);
+      } finally {
+        setIsLoadingBookedSlots(false);
+      }
+    };
+
+    fetchBookedSlots();
+  }, [selectedDate, userprofile?._id]);
+
   return (
     <div className="space-y-3 bg-muted/20 p-3 rounded-lg">
       <div className="flex items-center justify-between">
@@ -107,29 +136,45 @@ const AvailabilityScheduler = ({
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-2 mt-2">
-                {timeSlots.map((slot, index) => {
-                  if (isPastTimeSlot(slot)) return null;
-                  return (
-                    <div
-                      key={index}
-                      className={`
-                                             text-center py-3 px-4 rounded-lg text-sm font-medium transition-all duration-300  dark:bg-gray-800 border border-blue-200 dark:border-blue-800 hover:border-blue-400 dark:hover:border-blue-600 cursor-pointer hover:shadow-md hover:scale-105
-                                             ${
-                                               isDateSlotSelected(slot)
-                                                 ? "bg-gray-900 text-white border-4 border-white"
-                                                 : "bg-white"
-                                             }
-                                           `}
-                      onClick={() => {
-                        toggleDateSlot(slot);
-                      }}
-                    >
-                      <div className="flex items-center justify-center">
-                        {slot}
+                {isLoadingBookedSlots ? (
+                  <>
+                    {Array(6)
+                      .fill(0)
+                      .map((_, i) => (
+                        <div
+                          key={i}
+                          className="w-full text-center py-3 px-4 rounded-lg text-sm font-medium border transition-all duration-300 bg-muted/50 dark:bg-muted/30 border-blue-200 dark:border-blue-800 animate-pulse"
+                        >
+                          <span className="invisible">5:00 PM</span>
+                        </div>
+                      ))}
+                  </>
+                ) : (
+                  timeSlots.map((slot, index) => {
+                    if (isPastTimeSlot(slot)) return null;
+
+                    return (
+                      <div
+                        key={index}
+                        className={`
+                  w-full text-center py-3 px-4 rounded-lg text-sm font-medium border transition-all duration-300
+                  ${
+                    bookedSlots?.includes(slot)
+                      ? "bg-green-50 text-green-700 border-green-300 dark:bg-green-900/10 dark:text-green-400 dark:border-green-800 pointer-events-none cursor-default"
+                      : isDateSlotSelected(slot)
+                      ? "bg-gray-900 text-white border-4 border-white shadow-md scale-105"
+                      : "bg-white dark:bg-gray-800 border-blue-200 dark:border-blue-800 hover:border-blue-400 dark:hover:border-blue-600 cursor-pointer hover:shadow-md hover:scale-105"
+                  }
+                `}
+                        onClick={() => toggleDateSlot(slot)}
+                      >
+                        <div className="flex items-center justify-center">
+                          {slot}
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })
+                )}
               </div>
             )}
           </div>
