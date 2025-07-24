@@ -37,7 +37,6 @@ const userSchema = new mongoose.Schema<IUserDocument>(
     },
     lastName: {
       type: String,
-      required: true,
     },
     userId: {
       type: String,

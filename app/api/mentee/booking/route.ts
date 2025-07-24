@@ -107,7 +107,6 @@ export const POST = async (req: NextRequest) => {
       { status: 201 }
     );
   } catch (error) {
-    console.log(error.message);
     
     return NextResponse.json(
       {

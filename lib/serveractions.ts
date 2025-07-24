@@ -1,4 +1,3 @@
-
 "use server";
 
 // export const revalidate=true
@@ -106,6 +105,7 @@ export const getAllPost = async (username = " ") => {
     console.log(error);
   }
 };
+
 export const deletePostAction = async (postId: string) => {
   await connectDB();
   const user = await currentUser();
@@ -127,6 +127,7 @@ export const deletePostAction = async (postId: string) => {
     }
   }
 };
+
 export const createCommentAction = async (
   postId: string,
   formData: FormData
@@ -221,6 +222,36 @@ export async function handleUSerConnections(user: any) {
     }
     return userPresent;
   } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function createUserIfNotExists() {
+  try {
+    console.log("getting called");
+    
+    await connectDB();
+    const user = await currentUser();
+    if (!user) {
+      throw new Error("UnAuthorized Access");
+    }
+    const existingUser = await User.findOne({ userId: user?.id });
+    if (!existingUser) {
+      const registeredUser = await User.create({
+        firstName: user.firstName,
+        lastName: user.lastName,
+        userId: user.id,
+        profilePhoto: user.imageUrl,
+      });
+      console.log(registeredUser);
+      
+      return JSON.parse(JSON.stringify(registeredUser));
+    }
+
+    return JSON.parse(JSON.stringify(existingUser));
+  } catch (error) {
+    console.log(error.messsage);
+    
     console.log(error);
   }
 }
@@ -336,22 +367,24 @@ export async function getAllRequests() {
       throw new Error("User does not exist");
     }
 
-    const requestsWithDetails = user.requests?.map((request) => {
-      const receiverDetails = user.requestsDetails?.find(
-        (detail) => detail.userId === request.receiverId
-      );
+    const requestsWithDetails = user.requests
+      ?.map((request) => {
+        const receiverDetails = user.requestsDetails?.find(
+          (detail) => detail.userId === request.receiverId
+        );
 
-      if (!receiverDetails) return null; // Handle missing details safely
+        if (!receiverDetails) return null; // Handle missing details safely
 
-      return {
-        firstName: receiverDetails.firstName,
-        lastName: receiverDetails.lastName,
-        profilePhoto: receiverDetails.profilePhoto,
-        userId: receiverDetails.userId,
-        bio: receiverDetails.bio,
-        sentAt: request.sentAt.toISOString(),
-      };
-    }).filter(Boolean); // Remove null values
+        return {
+          firstName: receiverDetails.firstName,
+          lastName: receiverDetails.lastName,
+          profilePhoto: receiverDetails.profilePhoto,
+          userId: receiverDetails.userId,
+          bio: receiverDetails.bio,
+          sentAt: request.sentAt.toISOString(),
+        };
+      })
+      .filter(Boolean); // Remove null values
 
     return requestsWithDetails;
   } catch (error) {

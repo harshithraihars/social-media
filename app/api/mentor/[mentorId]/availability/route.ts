@@ -63,11 +63,12 @@ export const GET = async (
 
     const availabilityDoc = await MentorAvailability.findOne({
       mentorId: mentorId,
-    });
+    })||{}
     
     if (date) {
-      const dateKey = new Date(date).toISOString().split("T")[0];            
-      const slotsForDate = availabilityDoc.availability?.get(dateKey) ?? [];
+      const dateKey = new Date(date).toISOString().split("T")[0];
+
+      const slotsForDate = availabilityDoc?.availability?.get(dateKey) ?? [];
       console.log(slotsForDate);
       
       return NextResponse.json(
