@@ -35,7 +35,7 @@ const Searchdiv = ({
       (
         user.firstName.toLowerCase() +
         " " +
-        user.lastName.toLowerCase()
+        user.lastName?.toLowerCase()
       ).startsWith(input.toLowerCase())
     );
     setSuggestions(newSuggestions);
