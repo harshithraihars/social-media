@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import NavItems, { NAVITEMS, navItems } from "./NavItems";
 import Link from "next/link";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { getAllPost } from "@/lib/serveractions";
 import {
   setisInput,
   setisLoading,
@@ -11,6 +10,7 @@ import {
   setSearching,
 } from "@/lib/feature/todos/todoSlice";
 import MobileNotificationPopup from "./MobileNotificationPopup";
+import { getAllPost } from "@/lib/serverAction/postAction";
 
 const MobileNavbar = () => {
   const [notifications, setNotifications] = useState(0);

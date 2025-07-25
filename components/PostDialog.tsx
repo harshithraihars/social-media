@@ -12,11 +12,11 @@ import { Images } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { readFileAsDataUrl } from "@/lib/utils";
 import Image from "next/image";
-import { createPostAction } from "@/lib/serveractions";
 import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { setPosts } from "@/lib/feature/todos/todoSlice";
 import { useUser } from "@clerk/nextjs";
+import { createPostAction } from "@/lib/serverAction/postAction";
 
 export function PostDialog({
   setOpen,

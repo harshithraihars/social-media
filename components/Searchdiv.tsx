@@ -2,7 +2,7 @@
 import { setisInput, setisLoading } from "@/lib/feature/todos/todoSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { handleSearch } from "@/lib/SearchHandler";
-import { getAllUsers } from "@/lib/serveractions";
+import { getAllUsers } from "@/lib/serverAction/userAction";
 import { UserType } from "@/models/UserInfo";
 import { Clock } from "lucide-react";
 import React, { RefObject, useEffect, useState } from "react";

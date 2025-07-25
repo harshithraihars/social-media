@@ -1,5 +1,5 @@
 "use client";
-import { getAllRequests } from "@/lib/serveractions";
+import { getAllRequests } from "@/lib/serverAction/userAction";
 import React, { useEffect, useState } from "react";
 import Request from "./Request";
 import { ArrowRight } from "lucide-react";

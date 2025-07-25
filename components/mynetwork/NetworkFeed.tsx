@@ -1,5 +1,5 @@
 "use client"
-import { getAllRequests } from '@/lib/serveractions'
+import { getAllRequests } from '@/lib/serverAction/userAction'
 import React, { useEffect } from 'react'
 import NetworkHeader from './NetworkHeader'
 import Requests from "./Requests"

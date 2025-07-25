@@ -19,8 +19,8 @@ import {
   setRequest,
   setSearching,
 } from "@/lib/feature/todos/todoSlice";
-import { getAllPost, getAllRequests } from "@/lib/serveractions";
 import NotificationPopup from "./Notification";
+import { getAllPost } from "@/lib/serverAction/postAction";
 export type NAVITEMS = {
   src: string;
   icon: JSX.Element;

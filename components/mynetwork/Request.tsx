@@ -1,16 +1,12 @@
-import { IUser } from "@/models/user.model";
 import React from "react";
 import ProfilePhoto from "../shared/ProfilePhoto";
 import { Check, X } from "lucide-react";
-import { formatDistanceToNowStrict } from "date-fns";
-import { RequestHandler } from "@/lib/serveractions";
+import { RequestHandler } from "@/lib/serverAction/userAction";
 import { ConnectionRequest } from "@/lib/feature/todos/todoSlice";
-import { useAppDispatch } from "@/lib/hooks";
+import { useTimeAgo } from "@/hooks/useTimeAgo";
 
 const Request = ({ req,requestsController}: { req:ConnectionRequest,requestsController:(userId: string) => void}) => {
-  const timeago = formatDistanceToNowStrict(req.sentAt, {
-    addSuffix: true,
-  });
+  const timeago = useTimeAgo(req.sentAt)
   const handleRequest=async (check:boolean,userId:string)=>{
     requestsController(userId)
     await RequestHandler(check,userId)

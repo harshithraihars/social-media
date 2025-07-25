@@ -24,9 +24,9 @@
 // export default Feed
 import React from 'react'
 import PostInput from './PostInput'
-import { getAllPost } from '@/lib/serveractions'
 import PostHandler from './PostHandler'
 import SearchResult from './SearchResult'
+import { getAllPost } from '@/lib/serverAction/postAction'
 interface User{
   imageUrl:string
 }

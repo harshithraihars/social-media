@@ -5,12 +5,13 @@ import { Send } from "lucide-react";
 import { IUserDocument } from "@/models/user.model";
 import { useAppSelector } from "@/lib/hooks";
 import { setUser, UserResult } from "@/lib/feature/todos/todoSlice";
-import { getCurrentUser, SendConnectionRequest } from "@/lib/serveractions";
+import { getCurrentUser, SendConnectionRequest } from "@/lib/serverAction/userAction";
 import ProfilePhoto from "./shared/ProfilePhoto";
 
 const SearchUserResult = () => {
   const { user } = useUser();
-  const [currentUser, setcurrentUser] = useState<IUserDocument>();
+  const currentUser=useAppSelector((state)=>state.counter.user)
+  // const [currentUser, setcurrentUser] = useState<IUserDocument>(useAppSelector(st);
   const [sentRequest, setSentRequset] = useState<string[] | null>([]);
   const searchedUsers = useAppSelector((state) => state.counter.searchResult);
   const handleUSerConnections = async (user: UserResult) => {
@@ -24,9 +25,12 @@ const SearchUserResult = () => {
   
   useEffect(() => {
     async function getUser() {
-      const User = await getCurrentUser();
-      setcurrentUser(User)
-      const sentRequest = User.sentReqest?.map((user: { receiverId: any; }) => user.receiverId) || [];      
+      // const User = await getCurrentUser();
+      // setcurrentUser(User)
+      // const sentRequest = User.sentReqest?.map((user: { receiverId: any; }) => user.receiverId) || [];  
+      
+      const sentRequest = currentUser?.sentReqest?.map((user: { receiverId: any; }) => user.receiverId) || [];      
+      
       setSentRequset(sentRequest);
     }
     getUser();

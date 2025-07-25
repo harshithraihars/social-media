@@ -118,12 +118,14 @@ import { Badge } from "@/components/ui/badge";
 import PostContent from "./PostContent";
 import { formatDistanceToNowStrict } from "date-fns";
 import { IPostDocument } from "@/models/post.model";
-import { deletePostAction, handleFollowing } from "@/lib/serveractions";
+import { handleFollowing } from "@/lib/serverAction/userAction";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import ProfilePhoto from "./shared/ProfilePhoto";
 import SocialOptions from "./SocialOptions";
 import { toast } from "sonner";
 import { setPosts } from "@/lib/feature/todos/todoSlice";
+import { deletePostAction } from "@/lib/serverAction/postAction";
+import { useTimeAgo } from "@/hooks/useTimeAgo";
 const Post = ({
   post,
   userInfo,
@@ -137,6 +139,9 @@ const Post = ({
   setIsFollowing: React.Dispatch<React.SetStateAction<string[]>>;
   index:number
 })  => {
+
+  const timeago = useTimeAgo(new Date(post.createdAt))
+
   useEffect(() => {
     if (userInfo?.following?.includes(post.user.userId)) {
       setIsFollowing((prev) =>
@@ -148,9 +153,6 @@ const Post = ({
   const { user } = useUser();
   const fullName = post?.user?.firstName + " " + post?.user?.lastName;
   const loggedInUser = user?.id === post?.user?.userId;
-  const timeago = formatDistanceToNowStrict(new Date(post.createdAt), {
-    addSuffix: true,
-  });
 
 
   

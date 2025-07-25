@@ -8,10 +8,10 @@ import BookingSummary from "./BookingSummary";
 import BookingConfirmation from "./BookingConfirmation";
 import MentorInfo from "./MentorInfo";
 import { ArrowRight, X, XCircle } from "lucide-react";
-import { getCurrentUser } from "@/lib/serveractions";
 import axios from "axios";
 import { IProfile } from "@/models/profile.model";
 import { useUser } from "@clerk/nextjs";
+import { useAppSelector } from "@/lib/hooks";
 export default function ConfirmBooking({
   selectedMentor,
   setBookingPageOpen,
@@ -19,6 +19,7 @@ export default function ConfirmBooking({
   selectedMentor: IProfile | null;
   setBookingPageOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
+  const user=useAppSelector((state)=>state.counter.user)
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [duration, setDuration] = useState("30");
   const [selectedSlot, setselectedSlot] = useState<string | null>(null);
@@ -53,11 +54,11 @@ export default function ConfirmBooking({
 
   const handleBooking = async () => {
     try {
-      const user = await getCurrentUser();
+      // const user = await getCurrentUser();
 
       const res = await axios.post("/api/mentee/booking", {
         mentorId: selectedMentor?._id,
-        menteeId: user._id,
+        menteeId: user?._id,
         menteeEmail: menteeEmail,
         date,
         time: selectedSlot,

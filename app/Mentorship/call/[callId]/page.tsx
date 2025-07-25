@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import { PhoneOff, Mic, MicOff, Video, VideoOff, Camera } from "lucide-react";
-import { getCurrentUser } from "@/lib/serveractions";
+import { getCurrentUser } from "@/lib/serverAction/userAction";
 import axios from "axios";
 import {
   addDoc,

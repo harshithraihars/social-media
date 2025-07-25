@@ -2,7 +2,7 @@
 import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '@/lib/hooks'
-import { getCurrentUser } from '@/lib/serveractions'
+import { getCurrentUser } from '@/lib/serverAction/userAction'
 import { useUser } from '@clerk/nextjs'
 import { IUser } from '@/models/user.model'
 import ProfilePhoto from './shared/ProfilePhoto'

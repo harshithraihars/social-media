@@ -4,11 +4,11 @@ import ProfilePhoto from "./shared/ProfilePhoto";
 import { useUser } from "@clerk/nextjs";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { createCommentAction } from "@/lib/serveractions";
 import { toast } from "sonner";
 import { IComment } from "@/models/comment.model";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { setPosts } from "@/lib/feature/todos/todoSlice";
+import { createCommentAction } from "@/lib/serverAction/postAction";
 
 const CommentInput = ({ postId }: { postId: string }) => {
   const { user } = useUser();

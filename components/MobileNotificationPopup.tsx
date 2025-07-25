@@ -2,13 +2,14 @@ import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { ConnectionRequest, setRequest } from "@/lib/feature/todos/todoSlice";
-import { RequestHandler } from "@/lib/serveractions";
+import { RequestHandler } from "@/lib/serverAction/userAction";
 import { formatDistanceToNowStrict } from "date-fns";
-// Dummy data for connection requests
+import { useTimeAgo } from "@/hooks/useTimeAgo";
 interface MobileNotificationPopupProps {
   isOpen: boolean;
   onClose: () => void;
 }
+
 const MobileNotificationPopup: React.FC<MobileNotificationPopupProps> = ({
   isOpen,
   onClose,
@@ -66,7 +67,9 @@ const MobileNotificationPopup: React.FC<MobileNotificationPopupProps> = ({
             </div>
           </div>
           <ul className="divide-y divide-gray-200">
-            {connectionRequests.map((request) => (
+            {connectionRequests.map((request) => {
+              const timeAgo=useTimeAgo(request.sentAt)
+              return (
               <motion.li
                 key={request.userId}
                 layoutId={`request-${request.userId}`}
@@ -89,9 +92,7 @@ const MobileNotificationPopup: React.FC<MobileNotificationPopupProps> = ({
                         {request.bio}
                       </p>
                       <p className="text-xs text-gray-600">
-                        {formatDistanceToNowStrict(request.sentAt, {
-                          addSuffix: true,
-                        })}
+                        {timeAgo}
                       </p>
                     </div>
                   </div>
@@ -127,7 +128,8 @@ const MobileNotificationPopup: React.FC<MobileNotificationPopupProps> = ({
                   </AnimatePresence>
                 </div>
               </motion.li>
-            ))}
+            )
+            })}
           </ul>
         </motion.div>
       )}

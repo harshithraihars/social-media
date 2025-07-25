@@ -1,7 +1,8 @@
 // lib/searchHandler.ts
-import { getAllUsers, getAllPost } from '@/lib/serveractions';
+import { getAllUsers } from '@/lib/serverAction/userAction';
 import { AppDispatch } from '@/lib/store'; // Import your AppDispatch type if available
 import { setPosts, setSearching, setSearchUsers } from '@/lib/feature/todos/todoSlice';
+import { getAllPost } from './serverAction/postAction';
 
 export const handleSearch = async (
   input: string,

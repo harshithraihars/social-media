@@ -1,5 +1,5 @@
 import React from 'react'
-import { handleUSerConnections } from "@/lib/serveractions";
+import { handleUSerConnections } from "@/lib/serverAction/userAction";
 import { currentUser } from "@clerk/nextjs/server";
 import Sidebar from '@/components/Sidebar';
 import Feed from '@/components/Feed';

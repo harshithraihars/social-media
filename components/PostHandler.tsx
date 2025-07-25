@@ -5,7 +5,7 @@ import Posts from './Posts'
 import { useAppDispatch, useAppSelector } from '@/lib/hooks'
 import { IPostDocument } from '@/models/post.model'
 import { setPosts, setRequest, setUser } from '@/lib/feature/todos/todoSlice'
-import { getAllRequests, getCurrentUser } from '@/lib/serveractions'
+import { getAllRequests, getCurrentUser } from '@/lib/serverAction/userAction'
 
 const PostHandler = ({ posts,userInfo }: { posts: IPostDocument[] ,userInfo:any}) => {
 

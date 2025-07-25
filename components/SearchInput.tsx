@@ -20,9 +20,10 @@ import React, { useEffect, useRef, useState } from "react";
 import Searchdiv from "./Searchdiv";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { setisInput, setisLoading, setPosts, setSearching, setSearchUsers } from "@/lib/feature/todos/todoSlice";
-import { getAllPost, getAllUsers } from "@/lib/serveractions";
+import {getAllUsers } from "@/lib/serverAction/userAction";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { getAllPost } from "@/lib/serverAction/postAction";
 
 const SearchInput = () => {
   const ref = useRef<HTMLButtonElement>(null);

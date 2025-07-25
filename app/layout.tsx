@@ -49,7 +49,8 @@ import MobileNavbar from "@/components/MobileNavBar";
 import SearchOptions from "@/components/SearchOption";
 import Navbar from "@/components/Navbar";
 import { auth } from "@clerk/nextjs/server";
-import { createUserIfNotExists } from "@/lib/serveractions";
+import { createUserIfNotExists, getCurrentUser } from "@/lib/serverAction/userAction";
+import CurrentUserProvider from "@/components/CurrentUserProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -65,14 +66,18 @@ export default async function RootLayout({
 }>) {
   const { userId } = auth();
 
+  let user=null;
+  
   if (userId) {
     await createUserIfNotExists();
+    user=await getCurrentUser();
   }
   return (
     <ClerkProvider signInUrl="/sign-in">
       <html lang="en">
         <body className={`min-h-screen flex flex-col ${inter.className}`}>
           <StoreProvider>
+            <CurrentUserProvider user={user}/>
             <Navbar />
             <SearchOptions />
             <div className="md:bg-[#F4F2EE] flex-1 w-full">

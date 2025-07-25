@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import Loader from "../loading";
 import BookingsPage from "./pages/BookingPage";
 import MentorShipActivationCard from "./pages/MentorShipActivationCard";
-import { getCurrentUser } from "@/lib/serveractions";
+import { getCurrentUser } from "@/lib/serverAction/userAction";
 import ClientDataLoader from "@/components/ClientDataLoader";
 
 const MentorshipPage = async () => {
