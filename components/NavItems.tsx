@@ -62,7 +62,7 @@ const NavItem = () => {
   const [isActive, setIsActive] = useState("Home");
   const dispatch = useAppDispatch();
   const ConnectionRequests = useAppSelector(
-    (state) => state.counter.ConnectionRequest.length
+    (state) => state.counter.ConnectionRequest?.length
   );
   const handleClick = async (item: NAVITEMS) => {
     setIsActive(item.text);

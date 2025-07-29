@@ -16,7 +16,7 @@ const MobileNavbar = () => {
   const [notifications, setNotifications] = useState(0);
   const ConnectionRequests=useAppSelector((state)=>state.counter.ConnectionRequest)
   useEffect(() => {
-    setNotifications(ConnectionRequests.length);
+    setNotifications(ConnectionRequests?.length|| 0);
   }, [ConnectionRequests]);
   const dispatch = useAppDispatch();
   const [isPopupOpen, setIsPopupOpen] = useState(false);

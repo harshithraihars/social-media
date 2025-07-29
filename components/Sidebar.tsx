@@ -8,34 +8,34 @@ import { IUser } from '@/models/user.model'
 import ProfilePhoto from './shared/ProfilePhoto'
 import { setUser } from '@/lib/feature/todos/todoSlice'
 
-const Sidebar = ({ user }: { user: any }) => {
+const Sidebar = () => {
     const dispatch = useAppDispatch()
     const [postCount, setPostCount] = useState<number>(0)
-    const { user: currentUser } = useUser()
+   const {user}=useUser();
     const posts = useAppSelector((state) => state.counter.posts)
 
     useEffect(() => {
         if (user && posts) {
-            const userPosts = posts.filter((post) => post.user.userId === currentUser?.id)
+            const userPosts = posts.filter((post) => post.user.userId === user?.id)
             setPostCount(userPosts.length)
         }
-    }, [user, posts, currentUser?.id])
+    }, [user, posts])
 
-    const fetchUserInfo = async () => {
-        try {
-            const userInfo = await getCurrentUser()
+    // const fetchUserInfo = async () => {
+    //     try {
+    //         // const userInfo = await getCurrentUser()
             
-            dispatch(setUser(userInfo))
-        } catch (error) {
-            console.error('Error fetching user data:', error)
-        }
-    }
+    //         // dispatch(setUser(userInfo))
+    //     } catch (error) {
+    //         console.error('Error fetching user data:', error)
+    //     }
+    // }
 
-    useEffect(() => {
-        if (currentUser) {
-            fetchUserInfo()
-        }
-    }, [currentUser])
+    // useEffect(() => {
+    //     if (currentUser) {
+    //         fetchUserInfo()
+    //     }
+    // }, [currentUser])
     return (
         <div className='hidden md:block w-[20%] h-fit border bordergray-300 bg-white rounded-lg'>
             <div className='flex relative flex-col items-center'>

@@ -9,9 +9,7 @@ export default function CurrentUserProvider({ user }: { user:IUser}) {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (user) {
-        console.log(user);
-        
+    if (user) {        
       dispatch(setUser(user));
     }
   }, [user]);

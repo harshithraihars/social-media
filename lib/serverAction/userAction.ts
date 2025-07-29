@@ -68,9 +68,12 @@ export const getAllUsers = async (username = " ") => {
   }
 };
 
-export async function handleUSerConnections(user: any) {
+export async function handleUSerConnections() {
   try {
     await connectDB();
+    const user=await currentUser()
+    if(!user) return
+
     const userPresent = await User.findOne({ userId: user.id }).lean();
 
     if (!userPresent) {
@@ -200,9 +203,11 @@ export async function SendConnectionRequest(userId: string) {
 export async function getCurrentUser() {
   try {
     await connectDB();
-    const Cuser = await currentUser();
+    const clerkUser = await currentUser();
+    
+    if(!clerkUser?.id) return;
 
-    const user = await User.findOne({ userId: Cuser?.id }); // Returns a plain object
+    const user = await User.findOne({ userId: clerkUser?.id }); // Returns a plain object
     if (!user) {
       throw new Error("User does not exist");
     }
@@ -210,7 +215,7 @@ export async function getCurrentUser() {
     return JSON.parse(JSON.stringify(user)); // Plain object
   } catch (error) {
     console.log(error);
-    throw error; // Re-throw error for the caller to handle
+    return null;
   }
 }
 

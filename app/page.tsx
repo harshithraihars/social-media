@@ -4,17 +4,14 @@ import News from "@/components/News";
 import Sidebar from "@/components/Sidebar";
 import { handleUSerConnections } from "@/lib/serverAction/userAction";
 
-import { currentUser } from "@clerk/nextjs/server";
 
 export default async function Home() {
-  const userDoc=await currentUser();
-  const user=JSON.parse(JSON.stringify(userDoc))
-  const userInfo=await handleUSerConnections(user)  
+  const userInfo=await handleUSerConnections()  
   return (
     <div className="pt-20">
       <div className="max-w-6xl mx-auto flex justify-center gap-8">
-        <Sidebar user={user}/>
-        <Feed user={user!} userInfo={userInfo}/>
+        <Sidebar/>
+        <Feed userInfo={userInfo}/>
         <News/>
         <ClientDataLoader/>
       </div>

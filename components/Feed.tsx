@@ -27,12 +27,14 @@ import PostInput from './PostInput'
 import PostHandler from './PostHandler'
 import SearchResult from './SearchResult'
 import { getAllPost } from '@/lib/serverAction/postAction'
+import { useAppSelector } from '@/lib/hooks'
 interface User{
   imageUrl:string
 }
-const Feed = async ({user,userInfo}:{user:User,userInfo:any}) => {
+const Feed = async ({userInfo}:{userInfo:any}) => {
   // you cant send plain object from server to client
-  const userData=JSON.parse(JSON.stringify(user))
+  // const userData=JSON.parse(JSON.stringify(user))
+
   const posts=await getAllPost()
   const parsedPosts=JSON.parse(JSON.stringify(posts))
   let userInfoClient;
@@ -42,7 +44,7 @@ const Feed = async ({user,userInfo}:{user:User,userInfo:any}) => {
   return (
     <div className='flex-1'>
       <SearchResult/>
-      <PostInput user={userData}/>
+      <PostInput/>
       <PostHandler posts={parsedPosts} userInfo={userInfoClient}/>
       {/* <Posts posts={posts} userInfo={userInfo}/> */}
     </div>

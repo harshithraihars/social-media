@@ -7,7 +7,8 @@ import ProfilePhoto from './shared/ProfilePhoto'
 interface User{
   imageUrl:string
 }
-const PostInput = ({user}:{user:User}) => {
+const PostInput = () => {
+  const user=useAppSelector((state)=>state.counter.user)
     const [open,setOpen]=useState<boolean>(false)
     const inputHandler=()=>{
         setOpen(true)
@@ -18,7 +19,7 @@ const PostInput = ({user}:{user:User}) => {
             {!isSearching?(
                 <div className='bg-white p-4 m-2 md:m-0 border border-gray-300 rounded-lg'>
                 <div className='flex items-center gap-3'>
-                    <ProfilePhoto src={user?.imageUrl} />
+                    <ProfilePhoto src={user?.profilePhoto??"/placeholder.svg"} />
                     <Input
                         type="text"
                         placeholder='Start a post'
@@ -26,7 +27,7 @@ const PostInput = ({user}:{user:User}) => {
                         onClick={inputHandler}
                     />
                 </div>
-                <PostDialog setOpen={setOpen} open={open} src={user?.imageUrl}/>
+                <PostDialog setOpen={setOpen} open={open} src={user?.profilePhoto??"/placeholder.svg"}/>
             </div>
             ):""}
         </div>
