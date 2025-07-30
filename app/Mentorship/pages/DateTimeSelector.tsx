@@ -59,8 +59,6 @@ export default function DateTimeSelector({
           `/api/mentor/${selectedMentor?._id}/availability?date=${dateKey}`
         );
         const { availability } = response.data;
-        console.log(availability);
-        
         setAvailabilityByDate(availability)
       };
       mentorAvailability();

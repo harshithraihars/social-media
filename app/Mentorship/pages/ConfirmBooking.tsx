@@ -56,6 +56,7 @@ export default function ConfirmBooking({
     try {
       // const user = await getCurrentUser();
 
+      
       const res = await axios.post("/api/mentee/booking", {
         mentorId: selectedMentor?._id,
         menteeId: user?._id,

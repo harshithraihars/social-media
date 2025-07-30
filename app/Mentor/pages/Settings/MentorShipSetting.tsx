@@ -49,21 +49,23 @@ export default function MentorshipSettings({
   setMentorSettingOpen,
 }: MentorshipSettingsProps) {
   const userprofile = useAppSelector((state) => state.counter.userProfile);
+
   const [isAcceptingMentees, setIsAcceptingMentees] = useState(true);
   const [isPaidMentorship, setIsPaidMentorship] = useState(true);
   const [availabilityByDate, setAvailabilityByDate] = useState<
     Record<string, string[]>
   >({});
+
   const [hourlyRate, setHourlyRate] = useState<number>();
   const [isSaving, setIsSaving] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | null>();
 
   
   const toggleDateSlot = (time: string) => {
     if (!selectedDate) return;
 
     // convert to "2025-07-20" format
-    const dateKey = selectedDate.toISOString().split("T")[0];
+    const dateKey = selectedDate.toLocaleDateString("en-CA");
     setAvailabilityByDate((prev) => {
       const current = prev[dateKey] || [];
       console.log(current);
@@ -110,7 +112,7 @@ export default function MentorshipSettings({
           const res = await axios.get(
             `/api/mentor/${userprofile?._id}/availability`
           );
-          setAvailabilityByDate(res.data.availability.availability);
+          setAvailabilityByDate(res.data.availability.availability?? {});
           setHourlyRate(userprofile?.Rate);
         }
       } catch (error) {
@@ -119,6 +121,11 @@ export default function MentorshipSettings({
     };
     fetchAvailability();
   }, [userprofile?._id]);
+
+  useEffect(()=>{
+    console.log(availabilityByDate);
+    
+  },[availabilityByDate])
 
   return (
     <div className="w-full max-w-md mx-auto">

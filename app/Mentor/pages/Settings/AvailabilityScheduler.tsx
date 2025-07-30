@@ -26,8 +26,8 @@ const AvailabilityScheduler = ({
   availabilityByDate,
   userprofile,
 }: {
-  selectedDate: Date | null;
-  setSelectedDate: React.Dispatch<React.SetStateAction<Date | null>>;
+  selectedDate: Date | null|undefined;
+  setSelectedDate: React.Dispatch<React.SetStateAction<Date | null |undefined>>;
   toggleDateSlot: (slot: string) => void;
   availabilityByDate: Record<string, string[]>;
   userprofile: IProfile | null;
@@ -36,7 +36,9 @@ const AvailabilityScheduler = ({
   const [isLoadingBookedSlots, setIsLoadingBookedSlots] = useState<boolean>();
   const isDateSlotSelected = (time: string) => {
     if (!selectedDate) return false;
-    const dateKey = selectedDate.toISOString().split("T")[0];
+
+    // convert the date to local date
+    const dateKey = selectedDate.toLocaleDateString("en-CA");
     return availabilityByDate?.[dateKey]?.includes(time) || false;
   };
 
@@ -61,14 +63,16 @@ const AvailabilityScheduler = ({
     const fetchBookedSlots = async () => {
       if (!selectedDate || !userprofile?._id) return;
 
-      const dateKey = selectedDate.toISOString().split("T")[0];
+      const dateKey = selectedDate.toLocaleDateString("en-CA");
 
       setIsLoadingBookedSlots(true);
       try {
         const res = await axios.get(
           `/api/mentor/${userprofile._id}/bookings?date=${dateKey}`
         );
-
+        
+        console.log(res.data.bookedTimes);
+        
         setBookedSlots(res.data.bookedTimes);
       } catch (err) {
         console.error("Failed to fetch booked slots", err);

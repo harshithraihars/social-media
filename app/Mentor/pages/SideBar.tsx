@@ -13,11 +13,15 @@ import SidebarItem from "../../Mentorship/pages/SideBarItem";
 import gsap from "gsap";
 import MentorshipSettings from "./Settings/MentorShipSetting";
 import { TabType } from "@/app/Mentorship/pages/Booking";
+import { useUser } from "@clerk/nextjs";
 interface sidebarProps {
   filterBookings:(tab:TabType)=>void
   setActiveTab:React.Dispatch<React.SetStateAction<TabType>>
 }
 export default function Sidebar({filterBookings,setActiveTab}:sidebarProps) {
+
+  const {user}=useUser()
+
   const settingPageRef = useRef<HTMLDivElement | null>(null);
   const [mentorSettingOpen, setMentorSettingOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -118,8 +122,8 @@ export default function Sidebar({filterBookings,setActiveTab}:sidebarProps) {
 
                 {/* Name & Role with Hover Effect */}
                 <div className="transition-all duration-300 ease-in-out">
-                  <span className="font-semibold text-lg text-gray-800 dark:text-white transition-all duration-300 ease-out group-hover:text-indigo-700 group-hover:translate-x-1">
-                    Alex
+                  <span className="font-semibold text-sm text-gray-800 dark:text-white transition-all duration-300 ease-out group-hover:text-indigo-700 group-hover:translate-x-1">
+                    {user?.firstName}
                   </span>
                 </div>
               </div>

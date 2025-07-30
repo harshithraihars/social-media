@@ -66,11 +66,13 @@ export const GET = async (
     })||{}
     
     if (date) {
-      const dateKey = new Date(date).toISOString().split("T")[0];
-
-      const slotsForDate = availabilityDoc?.availability?.get(dateKey) ?? [];
-      console.log(slotsForDate);
       
+      console.log(availabilityDoc);
+      
+      const dateKey = new Date(date).toISOString().split("T")[0];
+      console.log(dateKey);
+      
+      const slotsForDate = availabilityDoc?.availability?.get(dateKey) ?? [];      
       return NextResponse.json(
         { availability: slotsForDate},
         { status: 200 }
