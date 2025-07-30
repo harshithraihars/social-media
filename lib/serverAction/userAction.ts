@@ -21,11 +21,6 @@ cloudinary.config({
 
 //get all post using server action
 
-
-
-
-
-
 export const getAllUsers = async (username = " ") => {
   try {
     await connectDB();
@@ -71,8 +66,8 @@ export const getAllUsers = async (username = " ") => {
 export async function handleUSerConnections() {
   try {
     await connectDB();
-    const user=await currentUser()
-    if(!user) return
+    const user = await currentUser();
+    if (!user) return;
 
     const userPresent = await User.findOne({ userId: user.id }).lean();
 
@@ -98,7 +93,7 @@ export async function handleUSerConnections() {
 export async function createUserIfNotExists() {
   try {
     console.log("getting called");
-    
+
     await connectDB();
     const user = await currentUser();
     if (!user) {
@@ -113,14 +108,14 @@ export async function createUserIfNotExists() {
         profilePhoto: user.imageUrl,
       });
       console.log(registeredUser);
-      
+
       return JSON.parse(JSON.stringify(registeredUser));
     }
 
     return JSON.parse(JSON.stringify(existingUser));
   } catch (error) {
     console.log(error.messsage);
-    
+
     console.log(error);
   }
 }
@@ -204,8 +199,8 @@ export async function getCurrentUser() {
   try {
     await connectDB();
     const clerkUser = await currentUser();
-    
-    if(!clerkUser?.id) return;
+
+    if (!clerkUser?.id) return;
 
     const user = await User.findOne({ userId: clerkUser?.id }); // Returns a plain object
     if (!user) {
@@ -260,7 +255,7 @@ export async function getAllRequests() {
     return requestsWithDetails;
   } catch (error) {
     console.log(error);
-    throw error;
+    return []
   }
 }
 

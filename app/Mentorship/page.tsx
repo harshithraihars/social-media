@@ -1,5 +1,5 @@
 import dynamic from "next/dynamic";
-import Loader from "../loading";
+import Loader from "../Mentor/loading";
 
 // Lazy load components
 const Mentee = dynamic(() => import("./pages/Mentee"), { ssr: false, loading: () =><div><Loader/></div> });

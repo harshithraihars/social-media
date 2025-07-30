@@ -9,6 +9,8 @@ import SkillsForm from "./SkillsForm";
 import AboutForm from "./AboutForm";
 import RateForm from "./RateForm";
 import ProfileFormSkeleton from "./ProfileFormSkeleton";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { setUserProfile } from "@/lib/feature/todos/todoSlice";
 export interface ProfileData {
   CompanyName: string;
   Role: string;
@@ -40,6 +42,9 @@ interface ProfileEditProps {
 
 export default function ProfileEdit({ onClose }: ProfileEditProps) {
   const { user } = useUser();
+
+  const dispatch = useAppDispatch();
+  const userProfile = useAppSelector((state) => state.counter.userProfile);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState<ProfileData>({
     CompanyName: "",
@@ -68,41 +73,20 @@ export default function ProfileEdit({ onClose }: ProfileEditProps) {
 
   const [isFormValid, setIsFormValid] = useState(false);
 
-  // Fetch existing profile data
   useEffect(() => {
-    const fetchProfileData = async () => {
-      if (!user?.id) return;
+    if (userProfile) {
+      setFormData({
+        CompanyName: userProfile.CompanyName || "",
+        Role: userProfile.Role || "",
+        skillInput: "", // always reset this
+        Skills: userProfile.Skills || [],
+        About: userProfile.About || "",
+        Rate: userProfile.Rate?.toString() || "",
+      });
+    }
+    setLoading(false);
+  }, [userProfile]);
 
-      try {
-        setLoading(true);
-        const res = await fetch(`/api/profile?userId=${user.id}`);
-
-        if (res.ok) {
-          const data = await res.json();
-
-          if (data && data.profile) {
-            // Populate form with existing data
-            setFormData({
-              CompanyName: data.profile.CompanyName || "",
-              Role: data.profile.Role || "",
-              skillInput: "",
-              Skills: data.profile.Skills || [],
-              About: data.profile.About || "",
-              Rate: data.profile.Rate?.toString() || "",
-            });
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching profile:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProfileData();
-  }, [user?.id]);
-
-  // Validate form on data change
   useEffect(() => {
     const newErrors = {
       CompanyName: formData.CompanyName.trim() === "",
@@ -142,6 +126,7 @@ export default function ProfileEdit({ onClose }: ProfileEditProps) {
     }
 
     try {
+      console.log(userProfile);
       const res = await fetch("/api/profile", {
         method: "PUT",
         headers: {
@@ -153,10 +138,15 @@ export default function ProfileEdit({ onClose }: ProfileEditProps) {
           firstName: user?.firstName,
           lastName: user?.lastName,
           profilePhoto: user?.imageUrl,
+          MentorshipEnabled: userProfile?.MentorshipEnabled || false,
         }),
       });
 
       const data = await res.json();
+
+      // update the profile Redux state
+      dispatch(setUserProfile({ ...userProfile, ...formData }));
+
       if (window.location.pathname == "/Mentor") {
         window.location.reload();
       }
@@ -222,7 +212,6 @@ export default function ProfileEdit({ onClose }: ProfileEditProps) {
               handleBlur={handleBlur}
               errors={errors}
               touched={touched}
-              p
             />
           </CardContent>
 

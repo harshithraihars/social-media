@@ -23,7 +23,6 @@ const profileSchema = new mongoose.Schema<IProfile>({
   },
   lastName:{
     type:String,
-    required:true,
   },
   MentorshipEnabled: {
       type: Boolean,

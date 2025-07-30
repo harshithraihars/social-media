@@ -27,16 +27,17 @@ import Post from './Post'
 import { useAppSelector } from '@/lib/hooks';
 
 
-const Posts = ({userInfo}:{userInfo:any}) => {
+const Posts = ({userConnections}:{userConnections:any}) => {
   const [isFollowing, setIsFollowing] = useState<string[]>([]); 
 
   const posts=useAppSelector((state)=>state.counter.posts)
+  
   return (
     <div>
       {
        posts?.map((post,index) => {
         return (
-          <Post key={index} post={post} userInfo={userInfo} isFollowing={isFollowing} setIsFollowing={setIsFollowing} index={index}/>
+          <Post key={index} post={post} userConnections={userConnections} isFollowing={isFollowing} setIsFollowing={setIsFollowing} index={index}/>
         )
       })
       }

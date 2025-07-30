@@ -128,13 +128,13 @@ import { deletePostAction } from "@/lib/serverAction/postAction";
 import { useTimeAgo } from "@/hooks/useTimeAgo";
 const Post = ({
   post,
-  userInfo,
+  userConnections,
   isFollowing,
   setIsFollowing,
   index
 }: {
   post: IPostDocument;
-  userInfo: any;
+  userConnections: any;
   isFollowing: string[];
   setIsFollowing: React.Dispatch<React.SetStateAction<string[]>>;
   index:number
@@ -143,12 +143,12 @@ const Post = ({
   const timeago = useTimeAgo(new Date(post.createdAt))
 
   useEffect(() => {
-    if (userInfo?.following?.includes(post.user.userId)) {
+    if (userConnections?.following?.includes(post.user.userId)) {
       setIsFollowing((prev) =>
         prev.includes(post.user.userId) ? prev : [...prev, post.user.userId]
       );
     }
-  }, [userInfo]);
+  }, [userConnections]);
 
   const { user } = useUser();
   const fullName = post?.user?.firstName + " " + post?.user?.lastName;

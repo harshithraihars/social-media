@@ -5,16 +5,20 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import ProfileEdit from "./EditProfile"; // Import the ProfileEdit component
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { setUserProfile } from "@/lib/feature/todos/todoSlice";
 
 const MentorshipCard = () => {
   const [isEnabled, setIsEnabled] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [showProfileModal, setShowProfileModal] = useState(false); // State to control modal visibility
-
+  const userProfile=useAppSelector((state)=>state.counter.userProfile)
+  const dispatch=useAppDispatch();
   if (!isVisible) return null;
 
   // Function to handle enabling mentorship
   const handleEnableMentorship = () => {
+    dispatch(setUserProfile({...userProfile,MentorshipEnabled:true}))
     setShowProfileModal(true); // Show the profile edit modal
   };
 
@@ -25,7 +29,7 @@ const MentorshipCard = () => {
 
   return (
     <>
-      <div className="w-full max-w-full md:max-w-4xl lg:max-w-6xl mx-auto p-2 sm:p-6">
+      <div className="w-screen md:max-w-4xl lg:max-w-7xl mx-auto p-2 sm:p-6">
         <Card className="relative overflow-hidden bg-gradient-to-br from-blue-100 to-blue-400 dark:from-gray-900 dark:to-gray-800 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-[1.01] sm:hover:scale-[1.02] border border-blue-100 dark:border-blue-900">
           <div className="absolute inset-0 bg-white/40 dark:bg-black/40 backdrop-blur-sm" />
 

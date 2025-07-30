@@ -16,39 +16,46 @@
 //     <div className='flex-1'>
 //         <PostInput user={userData}/>
 //         <PostHandler posts = {parsedPosts!} userInfo={userInfoClient}/>
-        
+
 //     </div>
 //   )
 // }
 
 // export default Feed
-import React from 'react'
-import PostInput from './PostInput'
-import PostHandler from './PostHandler'
-import SearchResult from './SearchResult'
-import { getAllPost } from '@/lib/serverAction/postAction'
-import { useAppSelector } from '@/lib/hooks'
-interface User{
-  imageUrl:string
+import React from "react";
+import PostInput from "./PostInput";
+import PostHandler from "./PostHandler";
+import SearchResult from "./SearchResult";
+import { getAllPost } from "@/lib/serverAction/postAction";
+import { useAppSelector } from "@/lib/hooks";
+import {
+  getAllRequests,
+  handleUSerConnections,
+} from "@/lib/serverAction/userAction";
+interface User {
+  imageUrl: string;
 }
-const Feed = async ({userInfo}:{userInfo:any}) => {
+const Feed = async () => {
   // you cant send plain object from server to client
   // const userData=JSON.parse(JSON.stringify(user))
 
-  const posts=await getAllPost()
-  const parsedPosts=JSON.parse(JSON.stringify(posts))
-  let userInfoClient;
-    if(userInfo){
-      userInfoClient=JSON.parse(JSON.stringify(userInfo))
-    }
+  const userInfo = await handleUSerConnections();
+  const posts = await getAllPost();
+  const requests = await getAllRequests();
+
+  // const parsedPosts=JSON.parse(JSON.stringify(posts))
   return (
-    <div className='flex-1'>
-      <SearchResult/>
-      <PostInput/>
-      <PostHandler posts={parsedPosts} userInfo={userInfoClient}/>
+    <div className="flex-1">
+      <SearchResult />
+      <PostInput />
+      <PostHandler
+        posts={JSON.parse(JSON.stringify(posts))}
+        userConnections={JSON.parse(JSON.stringify(userInfo))}
+        requests={JSON.parse(JSON.stringify(requests))}
+      />
       {/* <Posts posts={posts} userInfo={userInfo}/> */}
     </div>
-  )
-}
+  );
+};
 
-export default Feed
+export default Feed;

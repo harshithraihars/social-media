@@ -6,12 +6,11 @@ import { handleUSerConnections } from "@/lib/serverAction/userAction";
 
 
 export default async function Home() {
-  const userInfo=await handleUSerConnections()  
   return (
     <div className="pt-20">
       <div className="max-w-6xl mx-auto flex justify-center gap-8">
         <Sidebar/>
-        <Feed userInfo={userInfo}/>
+        <Feed/>
         <News/>
         <ClientDataLoader/>
       </div>

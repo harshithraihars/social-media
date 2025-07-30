@@ -7,7 +7,7 @@ import { IPostDocument } from '@/models/post.model'
 import { setPosts, setRequest, setUser } from '@/lib/feature/todos/todoSlice'
 import { getAllRequests, getCurrentUser } from '@/lib/serverAction/userAction'
 
-const PostHandler = ({ posts,userInfo }: { posts: IPostDocument[] ,userInfo:any}) => {
+const PostHandler = ({ posts,userConnections,requests }: { posts: IPostDocument[] ,userConnections:any,requests:any}) => {
 
     const dispatch=useAppDispatch()
     const currentPost=useAppSelector((state)=>state.counter.posts)
@@ -16,10 +16,7 @@ const PostHandler = ({ posts,userInfo }: { posts: IPostDocument[] ,userInfo:any}
     }
 
     useEffect(()=>{
-      async function handleData() {
-            const user=await getCurrentUser()            
-            const requests = await getAllRequests();   
-            dispatch(setUser(user))                         
+      async function handleData() {        
             dispatch(setRequest(requests));
           }
           handleData();
@@ -28,7 +25,7 @@ const PostHandler = ({ posts,userInfo }: { posts: IPostDocument[] ,userInfo:any}
 
   return (
     <div>
-        <Posts userInfo={userInfo}/>
+        <Posts userConnections={userConnections}/>
     </div>
   )
 }

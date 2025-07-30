@@ -1,9 +1,21 @@
 import { Suspense } from "react";
-import Loader from "../loading";
-import BookingsPage from "./pages/BookingPage";
-import MentorShipActivationCard from "./pages/MentorShipActivationCard";
 import { getCurrentUser } from "@/lib/serverAction/userAction";
 import ClientDataLoader from "@/components/ClientDataLoader";
+import Loader from "./loading";
+import dynamic from "next/dynamic";
+
+const BookingsPage = dynamic(() => import("./pages/BookingPage"), {
+  ssr: false,
+  loading: () => <Loader />,
+});
+
+const MentorShipActivationCard = dynamic(
+  () => import("./pages/MentorShipActivationCard"),
+  {
+    ssr: false,
+    loading: () => <Loader />,
+  }
+);
 
 const MentorshipPage = async () => {
   // Get user data server-side
@@ -11,16 +23,14 @@ const MentorshipPage = async () => {
 
   return (
     <div className="min-h-screen shadow-2xl mt-14 transition-all duration-500 bg-gradient-to-br from-[#eef5ff] via-[#dbeafe] to-[#bfdbfe]">
-      <Suspense fallback={<Loader />}>
-        {user?.MentorshipEnabled ? (
-          <>
+      {user?.MentorshipEnabled ? (
+        <>
           <BookingsPage />
-          <ClientDataLoader/>
-          </>
-        ) : (
-          <MentorShipActivationCard />
-        )}
-      </Suspense>
+          <ClientDataLoader />
+        </>
+      ) : (
+        <MentorShipActivationCard />
+      )}
     </div>
   );
 };

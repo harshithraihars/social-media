@@ -7,7 +7,7 @@ export const PUT = async (req: NextRequest) => {
   try {
     await connectDB();
     const body = await req.json();
-    const { formData, userId,firstName,lastName,profilePhoto } = body;
+    const { formData, userId,firstName,lastName,profilePhoto,MentorshipEnabled } = body;
     const { CompanyName, Role, Skills, About, Rate } = formData;
     if (!CompanyName || !Role || !Skills || !About || !Rate) {
       return NextResponse.json(
@@ -18,15 +18,16 @@ export const PUT = async (req: NextRequest) => {
 
     const updatedProfile = await Profile.findOneAndUpdate(
       { userId: userId },
-      { CompanyName, Role, Skills, About, Rate, user: userId,firstName,lastName,profilePhoto},
+      { CompanyName, Role, Skills, About, Rate, user: userId,firstName,lastName,profilePhoto,MentorshipEnabled},
       { upsert: true, new: true, runValidators: true }
     );    
     
-    await User.findOneAndUpdate(
+    
+      await User.findOneAndUpdate(
       { userId },
       {
         $set: {
-          MentorshipEnabled: true,
+          MentorshipEnabled: MentorshipEnabled,
           profileId: updatedProfile._id,
         },
       },
@@ -37,7 +38,7 @@ export const PUT = async (req: NextRequest) => {
       message: "Profile updated successfully.",
       profile: updatedProfile,
     });
-  } catch (error) {
+  } catch (error) {    
     console.error("Profile update error:", error);
     return NextResponse.json(
       { error: "An error occurred while updating the profile." },
