@@ -44,6 +44,7 @@ const BookingsPage = () => {
     }
   }, [settingsOpen]);
 
+
   useEffect(() => {
     (async () => {
       try {
@@ -59,6 +60,7 @@ const BookingsPage = () => {
     })();
   }, []);
 
+  
   useGSAP(() => {
     if (settingsOpen) {
       gsap.to(settingRef.current, {

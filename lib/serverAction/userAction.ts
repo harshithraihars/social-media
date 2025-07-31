@@ -219,7 +219,7 @@ export async function getAllRequests() {
     const currentuser = await currentUser();
     await connectDB();
 
-    if (!currentuser) throw new Error("User not authenticated");
+    if (!currentuser) return
 
     // Find the user and populate only the required fields
     const user = await User.findOne({ userId: currentuser.id })
@@ -254,7 +254,7 @@ export async function getAllRequests() {
 
     return requestsWithDetails;
   } catch (error) {
-    console.log(error);
+    throw new Error("Error Encountered")
     return []
   }
 }
