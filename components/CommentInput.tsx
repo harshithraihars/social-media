@@ -7,30 +7,33 @@ import { Button } from "./ui/button";
 import { toast } from "sonner";
 import { IComment } from "@/models/comment.model";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { setPosts } from "@/lib/feature/todos/todoSlice";
+import {
+  postsSelectors,
+  updatePost,
+} from "@/lib/feature/todos/todoSlice";
 import { createCommentAction } from "@/lib/serverAction/postAction";
 
 const CommentInput = ({ postId }: { postId: string }) => {
   const { user } = useUser();
   const inputRef = useRef<HTMLInputElement>(null);
-  const dispatch=useAppDispatch()
-  const posts=useAppSelector((state)=>state.counter.posts)
+  const dispatch = useAppDispatch();
+  const post = useAppSelector((state) =>
+    postsSelectors.selectById(state, postId)
+  );
   const commentActionHandler = async (formData: FormData) => {
     try {
       if (!user) throw new Error("User not authenticated");
-      const data=await createCommentAction(postId, formData);
-      inputRef.current?inputRef.current.value="":""
-      
-      dispatch(setPosts(posts.map((p) => {        
-        if (p._id === postId) {          
-          return {
-            ...p, // Spread the existing post object
-            comments: [data, ...(p.comments || [])], // Prepend the new comment to the existing ones
-          };
-        }
-        return p; // Return the unchanged post if the IDs don't match
-      })));
-      
+      const data = await createCommentAction(postId, formData);
+      inputRef.current ? (inputRef.current.value = "") : "";
+
+      dispatch(
+        updatePost({
+          id: postId,
+          changes: {
+            comments: [data, ...(post.comments || [])],
+          },
+        })
+      );
     } catch (error) {
       throw new Error("An error occured");
     }

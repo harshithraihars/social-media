@@ -21,47 +21,94 @@ cloudinary.config({
 
 //get all post using server action
 
-export const getAllUsers = async (username = " ") => {
+export const getAllUsers = async (username = "") => {
   try {
-    await connectDB();
-    const user = await currentUser();
-    let users: UserType[];
-    if (username === " ") {
-      users = await User.find({ userId: { $ne: user?.id } }).select(
-        "firstName lastName userId profilePhoto _id"
-      );
-    } else {
-      const regex = new RegExp(`^${username}`, "i"); // `i` makes it case-insensitive
+  await connectDB();
+  const current = await currentUser();
 
-      // Query the database
-      users = await User.find({
-        $expr: {
-          $regexMatch: {
-            input: { $concat: ["$firstName", " ", "$lastName"] }, // Combine firstName and lastName
-            regex: regex,
-          },
-        },
-        userId: { $ne: user?.id },
-      }).select("firstName lastName userId profilePhoto _id bio");
-    }
-    if (!users || users.length === 0) {
-      throw new Error("No user found");
-    }
-    const mappedUsers = users.map((user) => ({
+  // Normalize input: remove all whitespace and lowercase it
+  const normalizedQuery = username.trim().replace(/\s+/g, "").toLowerCase();
+
+  // If input is empty, return all users (except current)
+  if (!normalizedQuery) {
+    const users: UserType[] = await User.find({
+      userId: { $ne: current?.id },
+    }).select("firstName lastName userId profilePhoto _id bio");
+
+    return users.map((user) => ({
       firstName: user.firstName,
       lastName: user.lastName,
       profilePhoto: user.profilePhoto,
       userId: user.userId,
-      _id: user._id.toString(), // Ensure _id is included and converted to string
+      _id: user._id.toString(),
       bio: user.bio,
     }));
+  }
 
-    return mappedUsers;
-  } catch (error) {
-    console.log(error);
+  // Search by combined lowercase firstName + lastName (no spaces)
+  const users = await User.find({
+    userId: { $ne: current?.id },
+    $expr: {
+      $regexMatch: {
+        input: {
+          $toLower: {
+            $concat: ["$firstName", "$lastName"],
+          },
+        },
+        regex: normalizedQuery,
+      },
+    },
+  }).select("firstName lastName userId profilePhoto _id bio");
+
+  return users.map((user) => ({
+    firstName: user.firstName,
+    lastName: user.lastName,
+    profilePhoto: user.profilePhoto,
+    userId: user.userId,
+    _id: user.id.toString(), 
+    bio: user.bio,
+  }));
+
+} catch (error) {
+  console.error("Search error:", error);
+  return [];
+}
+
+};
+
+export const searchUserSuggestions = async (query: string) => {
+  try {
+    await connectDB();
+    const current = await currentUser();
+    const trimmed = query.trim().replace(/\s+/g, "").toLowerCase();
+
+    if (!trimmed) return [];
+
+    const users = await User.find({
+      userId: { $ne: current?.id },
+      $expr: {
+        $regexMatch: {
+          input: {
+            $toLower: {
+              $concat: ["$firstName", "$lastName"],
+            },
+          },
+          regex: trimmed,
+        },
+      },
+    }).select("firstName lastName profilePhoto"); // ✅ only what's needed
+
+    return users.map((u) => ({
+      firstName: u.firstName,
+      lastName: u.lastName,
+      profilePhoto: u.profilePhoto,
+    }));
+  } catch (err) {
+    console.error("searchUserSuggestions error:", err);
     return [];
   }
 };
+
 
 export async function handleUSerConnections() {
   try {
@@ -114,8 +161,6 @@ export async function createUserIfNotExists() {
 
     return JSON.parse(JSON.stringify(existingUser));
   } catch (error) {
-    console.log(error.messsage);
-
     console.log(error);
   }
 }
@@ -219,7 +264,7 @@ export async function getAllRequests() {
     const currentuser = await currentUser();
     await connectDB();
 
-    if (!currentuser) return
+    if (!currentuser) return;
 
     // Find the user and populate only the required fields
     const user = await User.findOne({ userId: currentuser.id })
@@ -254,8 +299,8 @@ export async function getAllRequests() {
 
     return requestsWithDetails;
   } catch (error) {
-    throw new Error("Error Encountered")
-    return []
+    // throw new Error("Error Encountered")
+    return [];
   }
 }
 

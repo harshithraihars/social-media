@@ -24,11 +24,7 @@ const SearchUserResult = () => {
   };
   
   useEffect(() => {
-    async function getUser() {
-      // const User = await getCurrentUser();
-      // setcurrentUser(User)
-      // const sentRequest = User.sentReqest?.map((user: { receiverId: any; }) => user.receiverId) || [];  
-      
+    async function getUser() {      
       const sentRequest = currentUser?.sentReqest?.map((user: { receiverId: any; }) => user.receiverId) || [];      
       
       setSentRequset(sentRequest);

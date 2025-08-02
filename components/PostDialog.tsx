@@ -13,8 +13,8 @@ import { useEffect, useRef, useState } from "react";
 import { readFileAsDataUrl } from "@/lib/utils";
 import Image from "next/image";
 import { toast } from "sonner";
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { setPosts } from "@/lib/feature/todos/todoSlice";
+import { useAppDispatch} from "@/lib/hooks";
+import { addPost} from "@/lib/feature/todos/todoSlice";
 import { useUser } from "@clerk/nextjs";
 import { createPostAction } from "@/lib/serverAction/postAction";
 
@@ -29,7 +29,6 @@ export function PostDialog({
 }) {
 
   const { user } = useUser();
-  const posts = useAppSelector((state) => state.counter.posts);
   
   const inputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<string>("");
@@ -50,7 +49,7 @@ export function PostDialog({
     const inputText = formData.get("inputText") as string;
     try {
       const res = await createPostAction(inputText, selectedFile);
-      dispatch(setPosts([res, ...posts]));
+      dispatch(addPost(res));
     } catch (error) {
       console.log("error occurred", error);
     }

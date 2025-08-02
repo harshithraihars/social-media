@@ -123,9 +123,10 @@ import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import ProfilePhoto from "./shared/ProfilePhoto";
 import SocialOptions from "./SocialOptions";
 import { toast } from "sonner";
-import { setPosts } from "@/lib/feature/todos/todoSlice";
+import { removePost} from "@/lib/feature/todos/todoSlice";
 import { deletePostAction } from "@/lib/serverAction/postAction";
 import { useTimeAgo } from "@/hooks/useTimeAgo";
+import { usePathname } from "next/navigation";
 const Post = ({
   post,
   userConnections,
@@ -139,6 +140,7 @@ const Post = ({
   setIsFollowing: React.Dispatch<React.SetStateAction<string[]>>;
   index:number
 })  => {
+  const dispatch=useAppDispatch()
 
   const timeago = useTimeAgo(new Date(post.createdAt))
 
@@ -168,14 +170,14 @@ const Post = ({
   };
 
   // chhecking user is searching or not
-  const issearching=useAppSelector((state)=>state.counter.isSearching)
+  const issearching=usePathname().startsWith("/search")
 
 // delete a
-  const posts=useAppSelector((state)=>state.counter.posts)
-  const dispatch=useAppDispatch()
+  // const posts=useAppSelector((state)=>state.counter.posts)
+
   const handleDelete=async (id:string)=>{
     await deletePostAction(id);
-    dispatch((setPosts((posts.filter((post)=>post._id!==id)))))
+    dispatch(removePost(id))
   }
 
   
@@ -184,11 +186,11 @@ const Post = ({
       {issearching && index===0?(
         <div className="px-4 py-3">
           <p className="font-normal text-2xl">Posts</p>
-          <div className="flex items-center justify-start gap-3 pt-4">
+          {/* <div className="flex items-center justify-start gap-3 pt-4">
             <p className="px-2 py-1 border-2 rounded-2xl hover:border-gray-500 cursor-pointer">From my network</p>
             <p className="px-2 py-1 border-2 rounded-2xl hover:border-gray-500 cursor-pointer">Past 24 hours</p>
             <p className="px-2 py-1 border-2 rounded-2xl hover:border-gray-500 cursor-pointer">Past Week</p>
-          </div>
+          </div> */}
         </div>
       ):""}
       <div className=" flex gap-2 p-4">
@@ -206,7 +208,7 @@ const Post = ({
               }
             </h1>
             <p className="text-xs text-gray-500">
-              @{user ? user?.username : "username"}
+              @{post.user.firstName.toLowerCase()+post.user.lastName.toLowerCase()}
             </p>
 
             <p className="text-xs text-gray-500">{timeago}</p>

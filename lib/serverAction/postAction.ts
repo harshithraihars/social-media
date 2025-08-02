@@ -8,8 +8,6 @@ import { currentUser } from "@clerk/nextjs/server";
 import { v2 as cloudinary } from "cloudinary";
 import { revalidatePath } from "next/cache";
 import { Comment } from "@/models/comment.model";
-import { UserType } from "@/models/UserInfo";
-import { useUser } from "@clerk/nextjs";
 import connectDB from "../db";
 export const createPostAction = async (
   inputText: string,
@@ -62,37 +60,47 @@ export const createPostAction = async (
 export const getAllPost = async (username = " ") => {
   try {
     await connectDB();
-    // populated is used because the post contains _id of the commments from which you can populate the entire comment information
-    // instead of storing it completely
+    const current = await currentUser();
+
     let posts;
-    if (username === " ") {
+
+    if (username.trim() === "") {
       posts = await Post.find()
         .sort({ createdAt: -1 })
-        .populate({ path: "comments", options: { sort: { createdAt: -1 } } });
+        .populate({
+          path: "comments",
+          options: { sort: { createdAt: -1 } },
+        });
     } else {
-      const cuser = await currentUser();
-      const regex = new RegExp(`^${username}`, "i");
-      posts = await Post.find()
-        .where({
-          $and: [
-            {
-              $expr: {
-                $regexMatch: {
-                  input: {
-                    $concat: ["$user.firstName", " ", "$user.lastName"],
+      const trimmedQuery = username.trim().replace(/\s+/g, "").toLowerCase();
+
+      posts = await Post.find({
+        $expr: {
+          $regexMatch: {
+            input: {
+              $replaceAll: {
+                input: {
+                  $toLower: {
+                    $concat: ["$user.firstName", "$user.lastName"],
                   },
-                  regex,
                 },
+                find: " ",
+                replacement: "",
               },
             },
-            { "user.userId": { $ne: cuser?.id } },
-          ],
-        })
+            regex: trimmedQuery,
+          },
+        },
+        "user.userId": { $ne: current?.id },
+      })
         .sort({ createdAt: -1 })
-        .populate({ path: "comments", options: { sort: { createdAt: -1 } } });
+        .populate({
+          path: "comments",
+          options: { sort: { createdAt: -1 } },
+        });
     }
-    if (!posts) return [];
-    return JSON.parse(JSON.stringify(posts));
+
+    return posts?.length ? JSON.parse(JSON.stringify(posts)) : [];
   } catch (error) {
     console.log(error);
   }

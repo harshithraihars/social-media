@@ -6,17 +6,19 @@ import Feed from '@/components/Feed';
 import News from '@/components/News';
 import Loader from '@/components/Loader';
 
+type Props = {
+  params: {
+    searchQuery: string;
+  };
+};
 
-const page = async () => {
-  const userDoc=await currentUser();
-  const user=JSON.parse(JSON.stringify(userDoc))
-  const userInfo=await handleUSerConnections(user)  
+const page = async ({ params }: Props) => {
+  const { searchQuery } = params;    
   return (
-    <div className="pt-36">
-      <div className="max-w-6xl  flex justify-center gap-8 w-full">
-        <Loader/>
-        <Sidebar user={user}/>
-        <Feed user={user} userInfo={userInfo}/>
+    <div className="">
+      <div className="pt-20 max-w-6xl mx-auto flex justify-center gap-8">
+        <Sidebar/>
+        <Feed searchQuery={searchQuery}/>
         <News/>
       </div>
     </div>

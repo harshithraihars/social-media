@@ -6,7 +6,7 @@ import React, { Suspense } from 'react'
 
 const page = () => {
   return (
-    <div className='mt-20 flex gap-2 max-w-6xl justify-items-center'>
+    <div className='pt-20 max-w-6xl mx-auto flex justify-center gap-32'>
       <Suspense fallback={<Loader/>}>
       <SideBar2/>
       <NetworkFeed/>

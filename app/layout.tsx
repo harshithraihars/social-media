@@ -46,7 +46,6 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/sonner";
 import StoreProvider from "./StoreProvider";
 import MobileNavbar from "@/components/MobileNavBar";
-import SearchOptions from "@/components/SearchOption";
 import Navbar from "@/components/Navbar";
 import { auth } from "@clerk/nextjs/server";
 import { createUserIfNotExists, getCurrentUser } from "@/lib/serverAction/userAction";
@@ -79,7 +78,6 @@ export default async function RootLayout({
           <StoreProvider>
             <CurrentUserProvider user={user}/>
             <Navbar />
-            <SearchOptions />
             <div className="md:bg-[#F4F2EE] flex-1 w-full">
               <main>
                 {children}

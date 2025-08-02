@@ -13,11 +13,8 @@ import {
 import Link from "next/link";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import {
-  setisInput,
   setisLoading,
-  setPosts,
   setRequest,
-  setSearching,
 } from "@/lib/feature/todos/todoSlice";
 import NotificationPopup from "./Notification";
 import { getAllPost } from "@/lib/serverAction/postAction";
@@ -66,14 +63,11 @@ const NavItem = () => {
   );
   const handleClick = async (item: NAVITEMS) => {
     setIsActive(item.text);
-    dispatch(setisInput(""));
-    dispatch(setSearching(false));
-    // dispatch(setisLoading(true));
-    if (item.text === "Home") {
-      dispatch(setSearching(false));
+    // dispatch(setisInput(""));
+    // dispatch(setSearching(false));
 
-      const posts = await getAllPost();
-      dispatch(setPosts(posts));
+    if (item.text === "Home") {
+      // dispatch(setSearching(false));
     }
     if (item.text == "Notification") {
       setNotifications(0)

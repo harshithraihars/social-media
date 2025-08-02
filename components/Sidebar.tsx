@@ -1,19 +1,16 @@
 "use client"
 import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
-import { useAppDispatch, useAppSelector } from '@/lib/hooks'
-import { getCurrentUser } from '@/lib/serverAction/userAction'
+import { useAppSelector } from '@/lib/hooks'
 import { useUser } from '@clerk/nextjs'
-import { IUser } from '@/models/user.model'
 import ProfilePhoto from './shared/ProfilePhoto'
-import { setUser } from '@/lib/feature/todos/todoSlice'
+import { postsSelectors} from '@/lib/feature/todos/todoSlice'
 
 const Sidebar = () => {
-    const dispatch = useAppDispatch()
     const [postCount, setPostCount] = useState<number>(0)
    const {user}=useUser();
-    const posts = useAppSelector((state) => state.counter.posts)
-
+    const posts = useAppSelector(postsSelectors.selectAll)
+    
     useEffect(() => {
         if (user && posts) {
             const userPosts = posts.filter((post) => post.user.userId === user?.id)
@@ -21,21 +18,6 @@ const Sidebar = () => {
         }
     }, [user, posts])
 
-    // const fetchUserInfo = async () => {
-    //     try {
-    //         // const userInfo = await getCurrentUser()
-            
-    //         // dispatch(setUser(userInfo))
-    //     } catch (error) {
-    //         console.error('Error fetching user data:', error)
-    //     }
-    // }
-
-    // useEffect(() => {
-    //     if (currentUser) {
-    //         fetchUserInfo()
-    //     }
-    // }, [currentUser])
     return (
         <div className='hidden md:block w-[20%] h-fit border bordergray-300 bg-white rounded-lg'>
             <div className='flex relative flex-col items-center'>
@@ -58,7 +40,7 @@ const Sidebar = () => {
                 <div className='border-b border-b-gray-300'>
                     <div className='p-2 mt-5 text-center'>
                         <h1 className='font-bold hover:underline cursor-pointer'>{user ? `${user?.firstName} ${user?.lastName}` : "Patel Mern Stack"}</h1>
-                        <p className='text-xs'>@{user ? `${user?.username}` : 'username'}</p>
+                        <p className='text-xs'>@{user?.firstName?.toLocaleLowerCase()}{user?.lastName?.toLowerCase()}</p>
                     </div>
                 </div>
             </div>

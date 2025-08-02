@@ -4,6 +4,7 @@ import { PostDialog } from './PostDialog'
 import { Input } from '@/components/ui/input'
 import { useAppSelector } from '@/lib/hooks'
 import ProfilePhoto from './shared/ProfilePhoto'
+import { usePathname } from 'next/navigation'
 interface User{
   imageUrl:string
 }
@@ -13,7 +14,7 @@ const PostInput = () => {
     const inputHandler=()=>{
         setOpen(true)
     }
-    const isSearching=useAppSelector((state)=>state.counter.isSearching)
+    const isSearching=usePathname().startsWith("/search")
   return (
     <div>
             {!isSearching?(

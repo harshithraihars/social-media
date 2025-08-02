@@ -30,20 +30,18 @@ import { getAllPost } from "@/lib/serverAction/postAction";
 import { useAppSelector } from "@/lib/hooks";
 import {
   getAllRequests,
+  getAllUsers,
   handleUSerConnections,
 } from "@/lib/serverAction/userAction";
-interface User {
-  imageUrl: string;
-}
-const Feed = async () => {
+const Feed = async ({ searchQuery }: { searchQuery?: string }) => {
   // you cant send plain object from server to client
   // const userData=JSON.parse(JSON.stringify(user))
-
+    
   const userInfo = await handleUSerConnections();
-  const posts = await getAllPost();
+  const posts = await getAllPost(searchQuery);
   const requests = await getAllRequests();
-
-  // const parsedPosts=JSON.parse(JSON.stringify(posts))
+  const searchedUsers = await getAllUsers(searchQuery);
+      
   return (
     <div className="flex-1">
       <SearchResult />
@@ -52,6 +50,7 @@ const Feed = async () => {
         posts={JSON.parse(JSON.stringify(posts))}
         userConnections={JSON.parse(JSON.stringify(userInfo))}
         requests={JSON.parse(JSON.stringify(requests))}
+        searchedUsers={searchedUsers}
       />
       {/* <Posts posts={posts} userInfo={userInfo}/> */}
     </div>

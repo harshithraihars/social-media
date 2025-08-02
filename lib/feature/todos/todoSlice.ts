@@ -1,89 +1,119 @@
-import { IPayment } from '@/models/Payment.model'
-import { IPostDocument } from '@/models/post.model'
-import { IProfile } from '@/models/profile.model'
-import { IUserDocument } from '@/models/user.model'
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import mongoose, { Connection } from 'mongoose'
+import { IPayment } from "@/models/Payment.model";
+import { IPostDocument } from "@/models/post.model";
+import { IProfile } from "@/models/profile.model";
+import { IUser, IUserDocument } from "@/models/user.model";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createEntityAdapter } from "@reduxjs/toolkit";
+import mongoose, { Connection } from "mongoose";
+
+import type { Update } from "@reduxjs/toolkit";
 
 export interface IProfileWithPayments extends IProfile {
-  transactions: IPayment[]
+  transactions: IPayment[];
 }
+
+// post adapter for more efficient look ups
+const postsAdapter = createEntityAdapter<IPostDocument>({
+  selectId: (post) => post._id, // use MongoDB's _id
+  sortComparer: (a, b) =>
+    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(), // newest first
+});
+
 // Define the shape of the state
-interface CounterState {
-  isSearching:boolean
-  posts:IPostDocument[],
-  searchResult:UserResult[]
-  user:IUserDocument|null
-  isLoading:boolean
-  input:string,
-  ConnectionRequest:ConnectionRequest[];
-  isMentor:boolean
-  userProfile:IProfileWithPayments|null
-  
+export interface CounterState
+  extends ReturnType<typeof postsAdapter.getInitialState> {
+  searchResult: UserResult[];
+  user: IUserDocument | null;
+  isPostsLoaded:boolean;
+  isLoading: boolean;
+  ConnectionRequest: ConnectionRequest[];
+  isMentor: boolean;
+  userProfile: IProfileWithPayments | null;
 }
 export interface UserResult {
   firstName: string;
   lastName: string;
   profilePhoto: string;
   userId: string;
-  _id: mongoose.Types.ObjectId;
-  bio?:string
+  _id: mongoose.Types.ObjectId|string;
+  bio?: string;
 }
 export interface ConnectionRequest extends UserResult {
   sentAt: Date;
 }
 // Initial state of the counter
 const initialState: CounterState = {
-  isSearching:false,
-  posts:[],
-  searchResult:[],
-  user:null,
-  isLoading:false,
-  input:"",
-  ConnectionRequest:[],
-  isMentor:true,
-  userProfile:null
-}
+  ...postsAdapter.getInitialState(),
+  searchResult: [],
+  user: null,
+  isPostsLoaded:false,
+  isLoading: false,
+  ConnectionRequest: [],
+  isMentor: true,
+  userProfile: null,
+};
 
 // Creating the slice
 const counterSlice = createSlice({
-  name: 'counter',
+  name: "counter",
   initialState,
   reducers: {
-    
-    setSearching: (state, action: PayloadAction<boolean>) => {
-      state.isSearching = action.payload
+    setAllPosts: (state, action: PayloadAction<IPostDocument[]>) => {
+      postsAdapter.setAll(state, action.payload);
+      state.isPostsLoaded=true;
     },
-    setPosts: (state, action: PayloadAction<any>) => {
-      state.posts=action.payload
+    addPost: (state, action: PayloadAction<IPostDocument>) => {
+      postsAdapter.addOne(state, action.payload);
     },
-    setSearchUsers:(state, action: PayloadAction<any>) => {
-      state.searchResult=action.payload
+    updatePost: (
+      state,
+      action: PayloadAction<Update<IPostDocument, string>>
+    ) => {
+      postsAdapter.updateOne(state, action.payload);
     },
-    setUser:(state, action: PayloadAction<any>) => {
-      state.user=action.payload
+
+    removePost: (state, action: PayloadAction<string>) => {
+      postsAdapter.removeOne(state, action.payload);
     },
-    setisLoading:(state, action: PayloadAction<any>) => {
-      state.isLoading=action.payload
+
+    setSearchUsers: (state, action: PayloadAction<any>) => {
+      state.searchResult = action.payload;
     },
-    setisInput:(state, action: PayloadAction<any>) => {
-      state.input=action.payload
-    }
-    ,
+    setUser: (state, action: PayloadAction<any>) => {
+      state.user = action.payload;
+    },
+    setisLoading: (state, action: PayloadAction<any>) => {
+      state.isLoading = action.payload;
+    },
     setRequest: (state, action: PayloadAction<any>) => {
-      state.ConnectionRequest = action.payload
+      state.ConnectionRequest = action.payload;
     },
     setMentee: (state, action: PayloadAction<any>) => {
-      state.isMentor= action.payload
+      state.isMentor = action.payload;
     },
     setUserProfile: (state, action: PayloadAction<any>) => {
-      state.userProfile= action.payload
-    }
-  }
-})
+      state.userProfile = action.payload;
+    },
+  },
+});
+
+export const postsSelectors = postsAdapter.getSelectors(
+  (state: { counter: CounterState }) => state.counter
+);
 
 // Export the actions
-export const {setSearching,setPosts,setSearchUsers,setUser,setisLoading,setisInput,setRequest,setMentee,setUserProfile } = counterSlice.actions
+export const {
+  setAllPosts,
+  addPost,
+  updatePost,
+  removePost,
+  setSearchUsers,
+  setUser,
+  setisLoading,
+  setRequest,
+  setMentee,
+  setUserProfile,
+} = counterSlice.actions;
 
 // Export the reducer
-export default counterSlice.reducer // This is where we export the counterReducer
+export default counterSlice.reducer; // This is where we export the counterReducer

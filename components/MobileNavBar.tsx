@@ -4,10 +4,7 @@ import NavItems, { NAVITEMS, navItems } from "./NavItems";
 import Link from "next/link";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import {
-  setisInput,
   setisLoading,
-  setPosts,
-  setSearching,
 } from "@/lib/feature/todos/todoSlice";
 import MobileNotificationPopup from "./MobileNotificationPopup";
 import { getAllPost } from "@/lib/serverAction/postAction";
@@ -22,13 +19,13 @@ const MobileNavbar = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   const handleClick = async (item: NAVITEMS) => {
-    dispatch(setisInput(""));
-    dispatch(setSearching(false));
+    // dispatch(setisInput(""));
+    // dispatch(setSearching(false));
 
     if (item.text === "Home") {
-      dispatch(setSearching(false));
-      const posts = await getAllPost();
-      dispatch(setPosts(posts));
+      // dispatch(setSearching(false));
+      // const posts = await getAllPost();
+      // dispatch(setPosts(posts));
       dispatch(setisLoading(false));
     }
 
