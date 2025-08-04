@@ -113,3 +113,47 @@
   width: 8px !important;
   display: block !important;
 }
+
+
+
+/* Add this to your global CSS file */
+
+/* Fix for mobile viewport issues */
+html, body {
+  height: 100%;
+  overflow-x: hidden;
+}
+
+/* Fix for dynamic viewport height on mobile */
+:root {
+  --vh: 1vh;
+}
+
+/* Prevent white spaces on mobile browsers */
+body {
+  position: relative;
+  background-color: #ef4444; /* Your red color */
+  min-height: 100vh;
+  min-height: calc(var(--vh, 1vh) * 100);
+}
+
+/* Fix for Chrome refresh issue */
+.mentorship-container {
+  position: relative;
+  min-height: 100vh;
+  min-height: calc(var(--vh, 1vh) * 100);
+  padding-top: 3.5rem; /* Height of your mobile navbar */
+  background-color: #ef4444; /* Your red color */
+}
+
+/* Ensure no white space appears */
+.mentorship-container::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #ef4444; /* Your red color */
+  z-index: -1;
+}
