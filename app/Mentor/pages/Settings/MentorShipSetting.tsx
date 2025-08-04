@@ -68,7 +68,6 @@ export default function MentorshipSettings({
     const dateKey = selectedDate.toLocaleDateString("en-CA");
     setAvailabilityByDate((prev) => {
       const current = prev[dateKey] || [];
-      console.log(current);
 
       const updated = current.includes(time)
         ? current.filter((t) => t != time)
@@ -95,7 +94,6 @@ export default function MentorshipSettings({
           isPaidMentorship: isPaidMentorship,
         }
       );
-      console.log(response.data);
       setMentorSettingOpen(false);
     } catch (error) {
       console.log(error);
@@ -121,11 +119,6 @@ export default function MentorshipSettings({
     };
     fetchAvailability();
   }, [userprofile?._id]);
-
-  useEffect(()=>{
-    console.log(availabilityByDate);
-    
-  },[availabilityByDate])
 
   return (
     <div className="w-full max-w-md mx-auto">

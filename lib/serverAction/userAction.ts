@@ -139,7 +139,6 @@ export async function handleUSerConnections() {
 
 export async function createUserIfNotExists() {
   try {
-    console.log("getting called");
 
     await connectDB();
     const user = await currentUser();
@@ -154,7 +153,6 @@ export async function createUserIfNotExists() {
         userId: user.id,
         profilePhoto: user.imageUrl,
       });
-      console.log(registeredUser);
 
       return JSON.parse(JSON.stringify(registeredUser));
     }

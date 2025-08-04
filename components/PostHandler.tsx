@@ -49,7 +49,6 @@ const PostHandler = ({
   useEffect(() => {
     dispatch(setRequest(requests));
     dispatch(setAllPosts(posts));
-    console.log(searchedUsers);
     dispatch(setSearchUsers(searchedUsers))
   }, [dispatch, requests, posts]);
 

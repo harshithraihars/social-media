@@ -126,7 +126,6 @@ export default function ProfileEdit({ onClose }: ProfileEditProps) {
     }
 
     try {
-      console.log(userProfile);
       const res = await fetch("/api/profile", {
         method: "PUT",
         headers: {

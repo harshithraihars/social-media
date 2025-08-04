@@ -71,10 +71,8 @@ export const POST = async (req: NextRequest) => {
       mentorId: mentorId,
     }).select("availability");
 
-    console.log(availability);
     
     const dateKey = new Date(date).toLocaleDateString("en-CA");
-    console.log(dateKey);
     
 
     // convert Mongoose Map to plain object because they cause  issue in spreading 
@@ -88,7 +86,6 @@ export const POST = async (req: NextRequest) => {
       [dateKey]: availabilityObj[dateKey]?.filter((t: string) => t !== time),
     };
 
-    console.log(updatedAvailability);
     
     await MentorAvailability.findOneAndUpdate(
       { mentorId },

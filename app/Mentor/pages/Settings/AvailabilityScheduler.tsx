@@ -71,7 +71,6 @@ const AvailabilityScheduler = ({
           `/api/mentor/${userprofile._id}/bookings?date=${dateKey}`
         );
         
-        console.log(res.data.bookedTimes);
         
         setBookedSlots(res.data.bookedTimes);
       } catch (err) {

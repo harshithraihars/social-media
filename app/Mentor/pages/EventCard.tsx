@@ -62,7 +62,6 @@ const EventCard = ({ booking,index, activeTab }: EventCardProps) => {
 
   const handleCancelBooking = () => {
     // Add your cancel booking logic here
-    console.log("Cancelling booking:", booking);
     setShowPopup(false);
   };
 

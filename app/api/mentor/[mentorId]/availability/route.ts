@@ -67,10 +67,8 @@ export const GET = async (
     
     if (date) {
       
-      console.log(availabilityDoc);
       
       const dateKey = new Date(date).toISOString().split("T")[0];
-      console.log(dateKey);
       
       const slotsForDate = availabilityDoc?.availability?.get(dateKey) ?? [];      
       return NextResponse.json(
