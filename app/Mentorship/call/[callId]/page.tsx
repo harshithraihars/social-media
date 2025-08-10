@@ -33,7 +33,7 @@ const servers = {
 };
 
 const VideoCallPage = ({ params }: PageProps) => {
-  const user = useAppSelector((state)=>state.counter.userProfile)
+  const userId = useAppSelector((state)=>state.counter.userProfile?._id)
   const { callId } = params;
   const [isCallActive, setIsCallActive] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
@@ -58,7 +58,6 @@ const VideoCallPage = ({ params }: PageProps) => {
     menteeId: "",
   });
   const [callEnded, setCallEnded] = useState(false);
-  console.log(formData.Role);
   
   // Initialize RTCPeerConnection
   const initializePeerConnection = () => {
@@ -110,7 +109,6 @@ const VideoCallPage = ({ params }: PageProps) => {
   }, [isCallActive]);
 
   const handleEndCall = async () => {
-    console.log(formData.Role);
 
     // setIsCallActive(false);
     if (formData.Role === "mentee") {
@@ -383,7 +381,7 @@ const VideoCallPage = ({ params }: PageProps) => {
         const res = await axios.get(`/api/booking?callId=${callId}`);
         
         let role: string;
-        if (user?._id === res.data.data.mentorId) {
+        if (userId === res.data.data.mentorId) {
           role = "mentor";
         } else {
           role = "mentee";
@@ -408,7 +406,7 @@ const VideoCallPage = ({ params }: PageProps) => {
         clearTimeout(controlsTimeoutRef.current);
       }
       // Don't reload on component unmount - just clean up resources
-      hangUp();
+      // hangUp();
     };
   }, [callId]);
 
