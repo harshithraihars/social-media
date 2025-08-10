@@ -23,7 +23,6 @@ export default function ConfirmBooking({
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [duration, setDuration] = useState("30");
   const [selectedSlot, setselectedSlot] = useState<string | null>(null);
-  const [discountApplied, setDiscountApplied] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isBooked, setIsBooked] = useState(false);
   const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false);
@@ -31,9 +30,7 @@ export default function ConfirmBooking({
   const handlePaymentSuccess = () => {
     setIsPaymentSuccessful(true);
   };
-  const basePrice = duration === "30" ? 50 : 90;
-  const discount = discountApplied ? basePrice * 0.1 : 0;
-  const totalPrice = basePrice - discount;
+  const totalPrice = duration === "30" ? (selectedMentor?.Rate || 0)/2 :selectedMentor?.Rate || 0;
   const menteeEmail = useUser().user?.primaryEmailAddress?.emailAddress;
 
   useEffect(() => {
@@ -159,10 +156,7 @@ export default function ConfirmBooking({
           <BookingSummary
             date={date}
             duration={duration}
-            basePrice={basePrice}
-            discount={discount}
             totalPrice={totalPrice}
-            discountApplied={discountApplied}
             isProcessing={isProcessing}
             setIsProcessing={setIsProcessing}
             handleBooking={handleBooking}

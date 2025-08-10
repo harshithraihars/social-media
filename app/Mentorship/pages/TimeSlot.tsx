@@ -55,28 +55,6 @@ export default function TimeSlots({ selectedDate, selectedSlot, onSelectTimeSlot
               // }}
             >
               <div className="flex items-center justify-center">
-                {/* {slot.available ? (
-                  <svg
-                    className={`h-4 w-4 mr-2 ${selectedSlot === slot.time ? "text-white" : "text-blue-500"}`}
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-                    <path d="M12 7V12L15 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                  </svg>
-                ) : (
-                  <svg
-                    className="h-4 w-4 mr-2 text-red-400"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-                    <path d="M9 9L15 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                    <path d="M15 9L9 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                  </svg>
-                )} */}
                 {slot}
               </div>
             </div>

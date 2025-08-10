@@ -4,15 +4,11 @@ import { CalendarIcon, Clock, CheckCircle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import RazorpayButton from "./RazorpayButton";
 import { Dispatch, SetStateAction } from "react";
-
 interface BookingSummaryProps {
   date: Date | undefined;
   timeSlot: string | null;
   duration: string;
-  basePrice: number;
-  discount: number;
   totalPrice: number;
-  discountApplied: boolean;
   isProcessing: boolean;
   handleBooking: () => void;
   onPaymentSuccess: () => void; // Add this
@@ -22,10 +18,7 @@ export default function BookingSummary({
   date,
   timeSlot,
   duration,
-  basePrice,
-  discount,
   totalPrice,
-  discountApplied,
   isProcessing,
   handleBooking,
   onPaymentSuccess,
@@ -66,23 +59,6 @@ export default function BookingSummary({
 
           {/* Price breakdown */}
           <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600 dark:text-gray-400">
-                Base Price
-              </span>
-              <span>${basePrice.toFixed(2)}</span>
-            </div>
-
-            {discountApplied && (
-              <div className="flex justify-between items-center text-green-600">
-                <span className="flex items-center">
-                  <CheckCircle className="h-3 w-3 mr-1" />
-                  Discount (10%)
-                </span>
-                <span>-${discount.toFixed(2)}</span>
-              </div>
-            )}
-
             {/* Total price */}
             <div className="flex justify-between items-center font-bold text-lg pt-2">
               <span>Total</span>

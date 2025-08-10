@@ -132,7 +132,6 @@ html, body {
 /* Prevent white spaces on mobile browsers */
 body {
   position: relative;
-  background-color: #ef4444; /* Your red color */
   min-height: 100vh;
   min-height: calc(var(--vh, 1vh) * 100);
 }
@@ -143,7 +142,6 @@ body {
   min-height: 100vh;
   min-height: calc(var(--vh, 1vh) * 100);
   padding-top: 3.5rem; /* Height of your mobile navbar */
-  background-color: #ef4444; /* Your red color */
 }
 
 /* Ensure no white space appears */
@@ -154,6 +152,5 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: #ef4444; /* Your red color */
   z-index: -1;
 }

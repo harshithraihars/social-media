@@ -48,7 +48,7 @@ See you there!`,
       <h2>Hello 👋,</h2>
       <p>Your mentorship session with <strong>the Mentor</strong> has just started.</p>
       <p>Click the button below to join the call:</p>
-      <a href="http://localhost:3000/Mentorship/call/${callId}" 
+      <a href="http://guildly/Mentorship/call/${callId}" 
          style="display: inline-block; padding: 12px 20px; background-color: black; color: white; text-decoration: none; border-radius: 5px;">
         Join Call
       </a>
@@ -64,6 +64,8 @@ See you there!`,
       { status: 200 }
     );
   } catch (err) {
+    console.log(err.message);
+    
     return NextResponse.json({ error: err }, { status: 500 });
   }
 };

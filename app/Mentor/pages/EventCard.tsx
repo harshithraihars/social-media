@@ -17,13 +17,11 @@ interface EventCardProps {
   activeTab: TabType;
 }
 
-const EventCard = ({ booking,index, activeTab }: EventCardProps) => {
-  
-  
-  const router=useRouter()
+const EventCard = ({ booking, index, activeTab }: EventCardProps) => {
+  const router = useRouter();
   const [showPopup, setShowPopup] = useState(false);
-  const [isCalling,setIscalling]=useState(false)
-  const {user}=useUser()
+  const [isCalling, setIscalling] = useState(false);
+  const { user } = useUser();
   function getDateAndDay(dateStr: string): { day: string; date: number } {
     const dateObj = new Date(dateStr);
     if (isNaN(dateObj.getTime())) {
@@ -45,19 +43,24 @@ const EventCard = ({ booking,index, activeTab }: EventCardProps) => {
     return { day, date };
   }
 
-  const handleStartCall = async() => {
-    setIscalling(true)
-    const callCollection=collection(firestore,"calls")
-    const callDoc=doc(callCollection)
-    const callId=callDoc.id
-    console.log(callId);
-    
-    await axios.patch(`api/booking/${booking.bookingId}`,{
-      callId
-    })
-    router.push(`/Mentorship/call/${callId}`)
-    setIscalling(false)
-    setShowPopup(false);
+  const handleStartCall = async () => {
+    try {
+      setIscalling(true);
+      const callCollection = collection(firestore, "calls");
+      const callDoc = doc(callCollection);
+      const callId = callDoc.id;
+
+      console.log(booking.bookingId);
+      
+      await axios.patch(`api/booking/${booking.bookingId}`, {
+        callId,
+      });
+      router.push(`/Mentorship/call/${callId}`);
+      setIscalling(false);
+      setShowPopup(false);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleCancelBooking = () => {
@@ -68,7 +71,7 @@ const EventCard = ({ booking,index, activeTab }: EventCardProps) => {
   const avatars = [booking?.profilePhoto, user?.imageUrl];
   return (
     <>
-      <div 
+      <div
         className="flex flex-row border rounded-md overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-150 bg-white group cursor-pointer"
         onClick={() => setShowPopup(true)}
       >
@@ -110,7 +113,9 @@ const EventCard = ({ booking,index, activeTab }: EventCardProps) => {
             <div className="flex flex-col gap-1 order-2 mb-0">
               <div className="hidden sm:block text-gray-800 font-medium text-base mb-2">
                 {`30min call meeting ${booking.firstName} <> ${user?.firstName}`}
-                <span className="text-xs text-gray-500 ml-2">(30 min call)</span>
+                <span className="text-xs text-gray-500 ml-2">
+                  (30 min call)
+                </span>
               </div>
 
               <div className="flex">
