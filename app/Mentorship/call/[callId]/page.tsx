@@ -23,17 +23,29 @@ interface PageProps {
   params: { callId: string };
 }
 
+// Enhanced STUN/TURN servers configuration
 const servers = {
   iceServers: [
     {
-      urls: ["stun:stun1.l.google.com:19302", "stun:stun2.l.google.com:19302"],
+      urls: [
+        "stun:stun1.l.google.com:19302",
+        "stun:stun2.l.google.com:19302",
+        "stun:stun3.l.google.com:19302",
+        "stun:stun4.l.google.com:19302"
+      ],
     },
+    // Add TURN servers for better connectivity
+    // {
+    //   urls: "turn:your-turn-server.com:3478",
+    //   username: "your-username",
+    //   credential: "your-password"
+    // }
   ],
   iceCandidatePoolSize: 10,
 };
 
 const VideoCallPage = ({ params }: PageProps) => {
-  const {user}=useUser()
+  const { user } = useUser();
   const { callId } = params;
   const [isCallActive, setIsCallActive] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
@@ -42,44 +54,124 @@ const VideoCallPage = ({ params }: PageProps) => {
   const [roomId, setRoomId] = useState(callId);
   const [webcamActive, setWebcamActive] = useState(false);
   const [remoteStreamActive, setRemoteStreamActive] = useState(false);
+  const [connectionState, setConnectionState] = useState("new");
+  const [mediaError, setMediaError] = useState<string | null>(null);
 
   const router = useRouter();
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const localRef = useRef<HTMLVideoElement | null>(null);
   const remoteRef = useRef<HTMLVideoElement | null>(null);
 
-  // Move RTCPeerConnection to ref to avoid global state issues
+  // Refs for WebRTC
   const pcRef = useRef<RTCPeerConnection | null>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
   const remoteStreamRef = useRef<MediaStream | null>(null);
+  const unsubscribeRefs = useRef<(() => void)[]>([]);
+  const isCleaningUpRef = useRef(false);
+
   const [formData, setFormData] = useState({
     Role: "",
     mentorId: "",
     menteeId: "",
   });
   const [callEnded, setCallEnded] = useState(false);
-  console.log(formData.Role);
-  
-  // Initialize RTCPeerConnection
-  const initializePeerConnection = () => {
-    if (pcRef.current) {
-      pcRef.current.close();
-    }
 
-    pcRef.current = new RTCPeerConnection(servers);
-    return pcRef.current;
+  // Initialize RTCPeerConnection with proper error handling
+  const initializePeerConnection = () => {
+    try {
+      if (pcRef.current) {
+        pcRef.current.close();
+      }
+
+      const pc = new RTCPeerConnection(servers);
+      
+      // Enhanced connection state monitoring
+      pc.onconnectionstatechange = () => {
+        console.log("Connection state:", pc.connectionState);
+        setConnectionState(pc.connectionState);
+        
+        if (pc.connectionState === "failed") {
+          console.error("Connection failed, attempting restart");
+          // Don't immediately hang up, try to recover
+          setTimeout(() => {
+            if (pc.connectionState === "failed" && !isCleaningUpRef.current) {
+              handleConnectionFailure();
+            }
+          }, 3000);
+        }
+      };
+
+      // ICE connection state monitoring
+      pc.oniceconnectionstatechange = () => {
+        console.log("ICE connection state:", pc.iceConnectionState);
+        
+        if (pc.iceConnectionState === "failed") {
+          console.error("ICE connection failed");
+          // Try ICE restart
+          pc.restartIce();
+        }
+      };
+
+      // Handle ICE gathering state
+      pc.onicegatheringstatechange = () => {
+        console.log("ICE gathering state:", pc.iceGatheringState);
+      };
+
+      pcRef.current = pc;
+      return pc;
+    } catch (error) {
+      console.error("Failed to initialize peer connection:", error);
+      setMediaError("Failed to initialize connection");
+      return null;
+    }
   };
 
+  const handleConnectionFailure = async () => {
+    if (isCleaningUpRef.current) return;
+    
+    console.log("Handling connection failure - attempting to restart");
+    try {
+      // Clean up current connection
+      await hangUp(false);
+      
+      // Wait a bit before restarting
+      setTimeout(async () => {
+        if (!isCleaningUpRef.current) {
+          console.log("Restarting connection...");
+          await setupSources(formData.Role);
+        }
+      }, 2000);
+    } catch (error) {
+      console.error("Failed to restart connection:", error);
+    }
+  };
+
+  // Separate effect to reset states on mount
   useEffect(() => {
-    let interval = null;
+    // Reset all initialization states on component mount
+    isCleaningUpRef.current = false;
+    isInitializingRef.current = false;
+    setIsInitialized(false);
+    
+    return () => {
+      // Component is unmounting
+      setIsInitialized(false);
+      isInitializingRef.current = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
     if (isCallActive) {
       interval = setInterval(() => {
         setCallDuration((duration) => duration + 1);
       }, 1000);
     } else if (!isCallActive && callDuration !== 0) {
-      clearInterval(interval);
+      if (interval) clearInterval(interval);
     }
-    return () => clearInterval(interval);
+    return () => {
+      if (interval) clearInterval(interval);
+    };
   }, [isCallActive, callDuration]);
 
   const formatTime = (seconds: number) => {
@@ -110,31 +202,68 @@ const VideoCallPage = ({ params }: PageProps) => {
   }, [isCallActive]);
 
   const handleEndCall = async () => {
-    console.log(formData.Role);
+    console.log("Ending call for role:", formData.Role);
+    isCleaningUpRef.current = true;
+    setIsCallActive(false);
 
-    // setIsCallActive(false);
     if (formData.Role === "mentee") {
       setCallEnded(true);
     } else {
       router.push("/Mentor");
     }
-    await hangUp();
-
-    hangUp();
+    
+    // Single hangUp call
+    await hangUp(true);
   };
 
   const setupSources = async (role: string) => {
     try {
       console.log("Setting up sources for role:", role);
+      
+      // Prevent multiple setup calls
+      if (isCleaningUpRef.current) {
+        console.log("Aborting setup - component is cleaning up");
+        return;
+      }
+
+      setMediaError(null);
 
       // Initialize peer connection
       const pc = initializePeerConnection();
+      if (!pc) {
+        console.error("Failed to initialize peer connection");
+        return;
+      }
 
-      // Get user media
-      const localStream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true,
-      });
+      // Verify peer connection is in correct state
+      if (pc.signalingState === 'closed') {
+        console.error("Peer connection is already closed, aborting setup");
+        setMediaError("Connection setup failed - peer connection closed");
+        return;
+      }
+
+      console.log("Peer connection initialized, signaling state:", pc.signalingState);
+
+      // Get user media with proper constraints and error handling
+      let localStream: MediaStream;
+      try {
+        localStream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            width: { ideal: 1280, max: 1920 },
+            height: { ideal: 720, max: 1080 },
+            facingMode: "user"
+          },
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true
+          }
+        });
+      } catch (mediaErr) {
+        console.error("Failed to get user media:", mediaErr);
+        setMediaError("Camera/microphone access denied or unavailable");
+        return;
+      }
 
       console.log("Local stream tracks:", localStream.getTracks());
       localStreamRef.current = localStream;
@@ -146,56 +275,66 @@ const VideoCallPage = ({ params }: PageProps) => {
       // Add local tracks to peer connection
       localStream.getTracks().forEach((track) => {
         console.log("Adding track to PC:", track.kind, track.id);
-        pc.addTrack(track, localStream);
+        // Double-check peer connection state before adding track
+        if (pc.signalingState !== 'closed') {
+          pc.addTrack(track, localStream);
+        } else {
+          console.error("Cannot add track - peer connection is closed");
+          throw new Error("Peer connection closed during track addition");
+        }
       });
 
-      // Handle incoming tracks
+      // Handle incoming tracks with better error handling
       pc.ontrack = (event) => {
         console.log("Received remote track:", event.track.kind, event.track.id);
         console.log("Remote streams:", event.streams);
 
-        // Add tracks to remote stream
-        event.streams[0].getTracks().forEach((track) => {
-          console.log("Adding remote track:", track.kind, track.id);
-          remoteStreamRef.current?.addTrack(track);
-        });
+        if (event.streams && event.streams[0]) {
+          // Clear existing remote stream
+          if (remoteStreamRef.current) {
+            remoteStreamRef.current.getTracks().forEach(track => {
+              remoteStreamRef.current?.removeTrack(track);
+            });
+          }
 
-        // Update remote video element
-        if (remoteRef.current && remoteStreamRef.current) {
-          remoteRef.current.srcObject = remoteStreamRef.current;
-          setRemoteStreamActive(true);
-          console.log("Remote stream assigned to video element");
+          // Add new tracks
+          event.streams[0].getTracks().forEach((track) => {
+            console.log("Adding remote track:", track.kind, track.id);
+            remoteStreamRef.current?.addTrack(track);
+          });
+
+          // Update remote video element
+          if (remoteRef.current && remoteStreamRef.current) {
+            remoteRef.current.srcObject = remoteStreamRef.current;
+            setRemoteStreamActive(true);
+            console.log("Remote stream assigned to video element");
+          }
         }
       };
 
-      // Set local video
+      // Set local video with error handling
       if (localRef.current) {
-        localRef.current.srcObject = localStream;
-        console.log("Local stream assigned to video element");
+        try {
+          localRef.current.srcObject = localStream;
+          // Ensure video plays
+          localRef.current.onloadedmetadata = () => {
+            localRef.current?.play().catch(console.error);
+          };
+          console.log("Local stream assigned to video element");
+        } catch (error) {
+          console.error("Error setting local video:", error);
+        }
       }
 
       // Set remote video (initially empty)
       if (remoteRef.current) {
         remoteRef.current.srcObject = remoteStream;
+        remoteRef.current.onloadedmetadata = () => {
+          remoteRef.current?.play().catch(console.error);
+        };
       }
 
       setWebcamActive(true);
-
-      // Connection state monitoring
-      pc.onconnectionstatechange = () => {
-        console.log("Connection state:", pc.connectionState);
-        if (
-          pc.connectionState === "disconnected" ||
-          pc.connectionState === "failed"
-        ) {
-          hangUp(true); // Only reload when connection actually fails
-        }
-      };
-
-      // ICE connection state monitoring
-      pc.oniceconnectionstatechange = () => {
-        console.log("ICE connection state:", pc.iceConnectionState);
-      };
 
       if (role === "mentor") {
         await setupMentorConnection(pc);
@@ -204,129 +343,169 @@ const VideoCallPage = ({ params }: PageProps) => {
       }
     } catch (error) {
       console.error("Error setting up sources:", error);
+      setMediaError("Failed to setup video call");
     }
   };
 
   const setupMentorConnection = async (pc: RTCPeerConnection) => {
-    const callDoc = doc(firestore, "calls", callId);
-    const offerCandidates = collection(
-      firestore,
-      "calls",
-      callId,
-      "offerCandidates"
-    );
-    const answerCandidates = collection(
-      firestore,
-      "calls",
-      callId,
-      "answerCandidates"
-    );
+    try {
+      const callDoc = doc(firestore, "calls", callId);
+      const offerCandidates = collection(
+        firestore,
+        "calls",
+        callId,
+        "offerCandidates"
+      );
+      const answerCandidates = collection(
+        firestore,
+        "calls",
+        callId,
+        "answerCandidates"
+      );
 
-    setRoomId(callDoc.id);
+      setRoomId(callDoc.id);
 
-    // Handle ICE candidates
-    pc.onicecandidate = async (event) => {
-      if (event.candidate) {
-        console.log("Adding offer candidate:", event.candidate);
-        await addDoc(offerCandidates, event.candidate.toJSON());
-      }
-    };
+      // Handle ICE candidates
+      pc.onicecandidate = async (event) => {
+        if (event.candidate && !isCleaningUpRef.current) {
+          console.log("Adding offer candidate:", event.candidate);
+          try {
+            await addDoc(offerCandidates, event.candidate.toJSON());
+          } catch (error) {
+            console.error("Error adding offer candidate:", error);
+          }
+        }
+      };
 
-    // Create and set offer
-    const offerDescription = await pc.createOffer();
-    await pc.setLocalDescription(offerDescription);
+      // Create and set offer
+      const offerDescription = await pc.createOffer({
+        offerToReceiveAudio: true,
+        offerToReceiveVideo: true
+      });
+      await pc.setLocalDescription(offerDescription);
 
-    const offer = {
-      sdp: offerDescription.sdp,
-      type: offerDescription.type,
-    };
+      const offer = {
+        sdp: offerDescription.sdp,
+        type: offerDescription.type,
+      };
 
-    await setDoc(callDoc, { offer });
-    console.log("Offer created and saved");
+      await setDoc(callDoc, { offer });
+      console.log("Offer created and saved");
 
-    // Listen for answer
-    onSnapshot(callDoc, (snapshot) => {
-      const data = snapshot.data();
-      if (!pc.currentRemoteDescription && data?.answer) {
-        console.log("Received answer, setting remote description");
-        const answerDescription = new RTCSessionDescription(data.answer);
-        pc.setRemoteDescription(answerDescription);
-      }
-    });
-
-    // Listen for answer candidates
-    onSnapshot(answerCandidates, (snapshot) => {
-      snapshot.docChanges().forEach((change) => {
-        if (change.type === "added") {
-          const candidate = new RTCIceCandidate(change.doc.data());
-          console.log("Adding answer candidate:", candidate);
-          pc.addIceCandidate(candidate);
+      // Listen for answer
+      const unsubscribeAnswer = onSnapshot(callDoc, (snapshot) => {
+        const data = snapshot.data();
+        if (!pc.currentRemoteDescription && data?.answer) {
+          console.log("Received answer, setting remote description");
+          const answerDescription = new RTCSessionDescription(data.answer);
+          pc.setRemoteDescription(answerDescription).catch(console.error);
         }
       });
-    });
+
+      // Listen for answer candidates
+      const unsubscribeCandidates = onSnapshot(answerCandidates, (snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+          if (change.type === "added" && !isCleaningUpRef.current) {
+            const candidate = new RTCIceCandidate(change.doc.data());
+            console.log("Adding answer candidate:", candidate);
+            pc.addIceCandidate(candidate).catch(console.error);
+          }
+        });
+      });
+
+      unsubscribeRefs.current.push(unsubscribeAnswer, unsubscribeCandidates);
+    } catch (error) {
+      console.error("Error in mentor connection setup:", error);
+      setMediaError("Failed to setup mentor connection");
+    }
   };
 
   const setupMenteeConnection = async (pc: RTCPeerConnection) => {
-    const callDoc = doc(firestore, "calls", callId);
-    const offerCandidates = collection(
-      firestore,
-      "calls",
-      callId,
-      "offerCandidates"
-    );
-    const answerCandidates = collection(
-      firestore,
-      "calls",
-      callId,
-      "answerCandidates"
-    );
-    // Handle ICE candidates
-    pc.onicecandidate = async (event) => {
-      if (event.candidate) {
-        console.log("Adding answer candidate:", event.candidate);
-        await addDoc(answerCandidates, event.candidate.toJSON());
-      }
-    };
+    try {
+      const callDoc = doc(firestore, "calls", callId);
+      const offerCandidates = collection(
+        firestore,
+        "calls",
+        callId,
+        "offerCandidates"
+      );
+      const answerCandidates = collection(
+        firestore,
+        "calls",
+        callId,
+        "answerCandidates"
+      );
 
-    // Get offer and create answer
-    const snapshot = await getDoc(callDoc);
-    const callData = snapshot.data();
-
-    if (!callData?.offer) {
-      console.error("No offer found in call document");
-      return;
-    }
-
-    const offerDescription = callData.offer;
-    console.log("Received offer, setting remote description");
-    await pc.setRemoteDescription(new RTCSessionDescription(offerDescription));
-
-    const answerDescription = await pc.createAnswer();
-    await pc.setLocalDescription(answerDescription);
-
-    const answer = {
-      type: answerDescription.type,
-      sdp: answerDescription.sdp,
-    };
-
-    await updateDoc(callDoc, { answer });
-    console.log("Answer created and saved");
-
-    // Listen for offer candidates
-    onSnapshot(offerCandidates, (snapshot) => {
-      snapshot.docChanges().forEach((change) => {
-        if (change.type === "added") {
-          const data = change.doc.data();
-          const candidate = new RTCIceCandidate(data);
-          console.log("Adding offer candidate:", candidate);
-          pc.addIceCandidate(candidate);
+      // Handle ICE candidates
+      pc.onicecandidate = async (event) => {
+        if (event.candidate && !isCleaningUpRef.current) {
+          console.log("Adding answer candidate:", event.candidate);
+          try {
+            await addDoc(answerCandidates, event.candidate.toJSON());
+          } catch (error) {
+            console.error("Error adding answer candidate:", error);
+          }
         }
+      };
+
+      // Get offer and create answer
+      const snapshot = await getDoc(callDoc);
+      const callData = snapshot.data();
+
+      if (!callData?.offer) {
+        console.error("No offer found in call document");
+        setMediaError("No offer found from mentor");
+        return;
+      }
+
+      const offerDescription = callData.offer;
+      console.log("Received offer, setting remote description");
+      await pc.setRemoteDescription(new RTCSessionDescription(offerDescription));
+
+      const answerDescription = await pc.createAnswer();
+      await pc.setLocalDescription(answerDescription);
+
+      const answer = {
+        type: answerDescription.type,
+        sdp: answerDescription.sdp,
+      };
+
+      await updateDoc(callDoc, { answer });
+      console.log("Answer created and saved");
+
+      // Listen for offer candidates
+      const unsubscribeCandidates = onSnapshot(offerCandidates, (snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+          if (change.type === "added" && !isCleaningUpRef.current) {
+            const data = change.doc.data();
+            const candidate = new RTCIceCandidate(data);
+            console.log("Adding offer candidate:", candidate);
+            pc.addIceCandidate(candidate).catch(console.error);
+          }
+        });
       });
-    });
+
+      unsubscribeRefs.current.push(unsubscribeCandidates);
+    } catch (error) {
+      console.error("Error in mentee connection setup:", error);
+      setMediaError("Failed to setup mentee connection");
+    }
   };
-  const hangUp = async () => {
-    console.log("Hanging up call");
-    console.log(formData);
+
+  const hangUp = async (shouldCleanupFirestore: boolean = true) => {
+    console.log("Hanging up call, shouldCleanupFirestore:", shouldCleanupFirestore);
+    isCleaningUpRef.current = true;
+
+    // Unsubscribe from Firestore listeners
+    unsubscribeRefs.current.forEach(unsubscribe => {
+      try {
+        unsubscribe();
+      } catch (error) {
+        console.error("Error unsubscribing:", error);
+      }
+    });
+    unsubscribeRefs.current = [];
+
     // Close peer connection
     if (pcRef.current) {
       pcRef.current.close();
@@ -335,12 +514,25 @@ const VideoCallPage = ({ params }: PageProps) => {
 
     // Stop local tracks
     if (localStreamRef.current) {
-      localStreamRef.current.getTracks().forEach((track) => track.stop());
+      localStreamRef.current.getTracks().forEach((track) => {
+        track.stop();
+      });
       localStreamRef.current = null;
     }
 
-    // Clean up Firestore documents
-    if (roomId) {
+    // Clear video elements
+    if (localRef.current) {
+      localRef.current.srcObject = null;
+    }
+    if (remoteRef.current) {
+      remoteRef.current.srcObject = null;
+    }
+
+    setWebcamActive(false);
+    setRemoteStreamActive(false);
+
+    // Clean up Firestore documents only when fully ending call
+    if (shouldCleanupFirestore && roomId) {
       try {
         const roomRef = doc(firestore, "calls", roomId);
 
@@ -374,18 +566,52 @@ const VideoCallPage = ({ params }: PageProps) => {
         console.error("Error during cleanup:", error);
       }
     }
+    
+    // Don't reset cleanup flag here - let the new component instance handle it
   };
+
+  const toggleMute = () => {
+    if (localStreamRef.current) {
+      const audioTracks = localStreamRef.current.getAudioTracks();
+      audioTracks.forEach(track => {
+        track.enabled = isMuted; // Toggle enabled state
+      });
+      setIsMuted(!isMuted);
+    }
+  };
+
+  // Add initialization state to prevent multiple calls
+  const [isInitialized, setIsInitialized] = useState(false);
+  const isInitializingRef = useRef(false);
 
   useEffect(() => {
     const initializeCall = async () => {
       try {
+        // Reset cleanup flag for fresh initialization
+        isCleaningUpRef.current = false;
+        
+        // Prevent multiple initialization with both state and ref
+        if (isInitialized || isInitializingRef.current) {
+          console.log("Skipping initialization - already initialized/initializing");
+          return;
+        }
+
+        if (!user?.id) {
+          console.error("User not available");
+          return;
+        }
+
+        console.log("Starting call initialization...");
+        isInitializingRef.current = true;
+        setIsInitialized(true);
+
         const res = await axios.get(`/api/booking?callId=${callId}`);
         const { data } = await axios.get(
-            `/api/mentor/profile?userId=${user?.id}`
-          );
-          const userId = data.data.profile._id;
-          console.log(userId);
-          
+          `/api/mentor/profile?userId=${user.id}`
+        );
+        const userId = data.data.profile._id;
+        console.log("User ID:", userId);
+
         let role: string;
         if (userId === res.data.data.mentorId) {
           role = "mentor";
@@ -398,23 +624,33 @@ const VideoCallPage = ({ params }: PageProps) => {
           mentorId: res.data.data.mentorId,
           menteeId: res.data.data.menteeId,
         });
+        
         await setupSources(role);
+        console.log("Call initialization completed successfully");
       } catch (error) {
         console.error("Error initializing call:", error);
+        setMediaError("Failed to initialize call");
+        setIsInitialized(false); // Reset on error to allow retry
+        isCleaningUpRef.current = false; // Reset cleanup flag on error
+      } finally {
+        isInitializingRef.current = false;
       }
     };
 
-    initializeCall();
+    // Add a small delay to prevent rapid re-initialization
+    const initTimer = setTimeout(initializeCall, 100);
 
     // Cleanup on unmount
     return () => {
+      clearTimeout(initTimer);
+      console.log("Component unmounting, cleaning up...");
       if (controlsTimeoutRef.current) {
         clearTimeout(controlsTimeoutRef.current);
       }
-      // Don't reload on component unmount - just clean up resources
-      hangUp();
+      isCleaningUpRef.current = true;
+      hangUp(true);
     };
-  }, [callId]);
+  }, [callId, user?.id]); // Remove isInitialized from dependencies
 
   return (
     <div
@@ -430,6 +666,20 @@ const VideoCallPage = ({ params }: PageProps) => {
         zIndex: 9999,
       }}
     >
+      {/* Connection Status Indicator */}
+      {connectionState !== "connected" && (
+        <div className="absolute top-20 left-1/2 transform -translate-x-1/2 bg-yellow-500/90 text-white px-4 py-2 rounded-lg z-50">
+          Connection: {connectionState}
+        </div>
+      )}
+
+      {/* Error Message */}
+      {mediaError && (
+        <div className="absolute top-32 left-1/2 transform -translate-x-1/2 bg-red-500/90 text-white px-4 py-2 rounded-lg z-50 max-w-md text-center">
+          {mediaError}
+        </div>
+      )}
+
       {/* Remote Video - Full Screen Background */}
       <div className="absolute inset-0 w-full h-full">
         <video
@@ -449,7 +699,7 @@ const VideoCallPage = ({ params }: PageProps) => {
                 Remote Participant
               </h2>
               <p className="text-gray-600 text-sm sm:text-base">
-                Waiting for video stream...
+                {connectionState === "connecting" ? "Connecting..." : "Waiting for video stream..."}
               </p>
             </div>
           </div>
@@ -495,7 +745,7 @@ const VideoCallPage = ({ params }: PageProps) => {
         }`}
       >
         <button
-          onClick={() => setIsMuted(!isMuted)}
+          onClick={toggleMute}
           className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center transition-all duration-200 shadow-lg backdrop-blur-md border-2 ${
             isMuted
               ? "bg-red-500/90 hover:bg-red-600/90 border-red-400/50"
