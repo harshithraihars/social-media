@@ -17,7 +17,7 @@ import {
 import { firestore } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import RatingPage from "./Rating";
-import { useAppSelector } from "@/lib/hooks";
+import { useUser } from "@clerk/nextjs";
 
 interface PageProps {
   params: { callId: string };
@@ -33,7 +33,7 @@ const servers = {
 };
 
 const VideoCallPage = ({ params }: PageProps) => {
-  const userId = useAppSelector((state)=>state.counter.userProfile?._id)
+  const {user}=useUser()
   const { callId } = params;
   const [isCallActive, setIsCallActive] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
@@ -58,6 +58,7 @@ const VideoCallPage = ({ params }: PageProps) => {
     menteeId: "",
   });
   const [callEnded, setCallEnded] = useState(false);
+  console.log(formData.Role);
   
   // Initialize RTCPeerConnection
   const initializePeerConnection = () => {
@@ -109,6 +110,7 @@ const VideoCallPage = ({ params }: PageProps) => {
   }, [isCallActive]);
 
   const handleEndCall = async () => {
+    console.log(formData.Role);
 
     // setIsCallActive(false);
     if (formData.Role === "mentee") {
@@ -278,7 +280,6 @@ const VideoCallPage = ({ params }: PageProps) => {
       callId,
       "answerCandidates"
     );
-
     // Handle ICE candidates
     pc.onicecandidate = async (event) => {
       if (event.candidate) {
@@ -379,7 +380,12 @@ const VideoCallPage = ({ params }: PageProps) => {
     const initializeCall = async () => {
       try {
         const res = await axios.get(`/api/booking?callId=${callId}`);
-        
+        const { data } = await axios.get(
+            `/api/mentor/profile?userId=${user?.id}`
+          );
+          const userId = data.data.profile._id;
+          console.log(userId);
+          
         let role: string;
         if (userId === res.data.data.mentorId) {
           role = "mentor";
@@ -406,7 +412,7 @@ const VideoCallPage = ({ params }: PageProps) => {
         clearTimeout(controlsTimeoutRef.current);
       }
       // Don't reload on component unmount - just clean up resources
-      // hangUp();
+      hangUp();
     };
   }, [callId]);
 
