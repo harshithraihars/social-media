@@ -17,6 +17,7 @@ import {
 import { firestore } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import RatingPage from "./Rating";
+import { useAppSelector } from "@/lib/hooks";
 
 interface PageProps {
   params: { callId: string };
@@ -32,6 +33,7 @@ const servers = {
 };
 
 const VideoCallPage = ({ params }: PageProps) => {
+  const user = useAppSelector((state)=>state.counter.userProfile)
   const { callId } = params;
   const [isCallActive, setIsCallActive] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
@@ -56,7 +58,8 @@ const VideoCallPage = ({ params }: PageProps) => {
     menteeId: "",
   });
   const [callEnded, setCallEnded] = useState(false);
-
+  console.log(formData.Role);
+  
   // Initialize RTCPeerConnection
   const initializePeerConnection = () => {
     if (pcRef.current) {
@@ -377,11 +380,10 @@ const VideoCallPage = ({ params }: PageProps) => {
   useEffect(() => {
     const initializeCall = async () => {
       try {
-        const user = await getCurrentUser();
         const res = await axios.get(`/api/booking?callId=${callId}`);
-
+        
         let role: string;
-        if (user._id === res.data.data.mentorId) {
+        if (user?._id === res.data.data.mentorId) {
           role = "mentor";
         } else {
           role = "mentee";
