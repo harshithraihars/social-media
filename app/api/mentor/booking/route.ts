@@ -1,56 +1,56 @@
-import { Booking } from "@/models/Booking.model";
-import { User } from "@/models/user.model";
-import { auth } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
+// import { Booking } from "@/models/Booking.model";
+// import { User } from "@/models/user.model";
+// import { auth } from "@clerk/nextjs/server";
+// import { NextResponse } from "next/server";
 
-export const GET = async () => {
-  try {
-    const { userId } = auth();
-    if (!userId)
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+// export const GET = async () => {
+//   try {
+//     const { userId } = auth();
+//     if (!userId)
+//       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const mentorData = await User.findOne({ userId }).select("profileId");
+//     const mentorData = await User.findOne({ userId }).select("profileId");
     
-    // the mentorId is the profileId
-    const bookingsRaw = await Booking.find({ mentorId: mentorData?.profileId })
-      .select("_id date time Duration sessionAmount")
-      .populate({
-        path: "menteeId",
-        select: "userId firstName lastName profilePhoto",
-        model: "User",
-      })
-      .lean();
+//     // the mentorId is the profileId
+//     const bookingsRaw = await Booking.find({ mentorId: mentorData?.profileId })
+//       .select("_id date time Duration sessionAmount")
+//       .populate({
+//         path: "menteeId",
+//         select: "userId firstName lastName profilePhoto",
+//         model: "User",
+//       })
+//       .lean();
 
       
-    const today = new Date();
+//     const today = new Date();
 
-    bookingsRaw.sort((a, b) => {
-      const dateA = new Date(a.date);
-      const dateB = new Date(b.date);
+//     bookingsRaw.sort((a, b) => {
+//       const dateA = new Date(a.date);
+//       const dateB = new Date(b.date);
 
-      const isFutureA = dateA >= today;
-      const isFutureB = dateB >= today;
+//       const isFutureA = dateA >= today;
+//       const isFutureB = dateB >= today;
 
-      if (isFutureA && !isFutureB) return -1;
-      if (!isFutureA && isFutureB) return 1;
+//       if (isFutureA && !isFutureB) return -1;
+//       if (!isFutureA && isFutureB) return 1;
 
-      return dateA.getTime() - dateB.getTime();
-    });
+//       return dateA.getTime() - dateB.getTime();
+//     });
 
-    const bookings = bookingsRaw.slice(0, 5).map((booking) => ({
-      id: booking.mentorId?.userId,
-      bookingId: booking._id.toString(),
-      date: booking.date,
-      time: booking.time,
-      Duration: booking.Duration,
-      sessionAmount: booking.sessionAmount,
-      firstName: booking.menteeId?.firstName || "",
-      lastName: booking.menteeId?.lastName || "",
-      profilePhoto: booking.menteeId?.profilePhoto || "",
-    }));
+//     const bookings = bookingsRaw.slice(0, 5).map((booking) => ({
+//       id: booking.mentorId?.userId,
+//       bookingId: booking._id.toString(),
+//       date: booking.date,
+//       time: booking.time,
+//       Duration: booking.Duration,
+//       sessionAmount: booking.sessionAmount,
+//       firstName: booking.menteeId?.firstName || "",
+//       lastName: booking.menteeId?.lastName || "",
+//       profilePhoto: booking.menteeId?.profilePhoto || "",
+//     }));
 
-    return NextResponse.json({ data: bookings });
-  } catch (error) {
-    return NextResponse.json({ error: error }, { status: 500 });
-  }
-};
+//     return NextResponse.json({ data: bookings });
+//   } catch (error) {
+//     return NextResponse.json({ error: error }, { status: 500 });
+//   }
+// };

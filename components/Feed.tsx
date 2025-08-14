@@ -42,12 +42,13 @@ const Feed = async ({ searchQuery }: { searchQuery?: string }) => {
   const requests = await getAllRequests();
   const searchedUsers = await getAllUsers(searchQuery);
       
+  
   return (
     <div className="flex-1">
       <SearchResult />
       <PostInput />
       <PostHandler
-        posts={JSON.parse(JSON.stringify(posts))}
+        posts={posts?JSON.parse(JSON.stringify(posts)):null}
         userConnections={JSON.parse(JSON.stringify(userInfo))}
         requests={JSON.parse(JSON.stringify(requests))}
         searchedUsers={searchedUsers}

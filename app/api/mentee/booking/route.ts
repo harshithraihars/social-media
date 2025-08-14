@@ -115,69 +115,69 @@ export const POST = async (req: NextRequest) => {
   }
 };
 
-export const GET = async () => {
-  try {
-    const { userId } = auth();
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-    await Profile.findOne({});
+// export const GET = async () => {
+//   try {
+//     const { userId } = auth();
+//     if (!userId) {
+//       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+//     }
+//     await Profile.findOne({});
 
-    const user = await User.findOne({ userId }).select("_id");
+//     const user = await User.findOne({ userId }).select("_id");
 
-    const bookingsRaw = await Booking.find({ menteeId: user })
-      .select("_id date time Duration sessionAmount")
-      .populate({
-        path: "mentorId",
-        select:
-          "userId firstName lastName profilePhoto CompanyName Role Rating",
-        model: "Profile",
-      })
-      .lean();
+//     const bookingsRaw = await Booking.find({ menteeId: user })
+//       .select("_id date time Duration sessionAmount")
+//       .populate({
+//         path: "mentorId",
+//         select:
+//           "userId firstName lastName profilePhoto CompanyName Role Rating",
+//         model: "Profile",
+//       })
+//       .lean();
 
-    bookingsRaw.sort((a, b) => {
-      const now = new Date();
+//     bookingsRaw.sort((a, b) => {
+//       const now = new Date();
 
-      const getDateTime = (booking: any) => {
-        const dateStr = new Date(booking.date).toISOString().split("T")[0];
-        return new Date(`${dateStr} ${booking.time}`);
-      };
+//       const getDateTime = (booking: any) => {
+//         const dateStr = new Date(booking.date).toISOString().split("T")[0];
+//         return new Date(`${dateStr} ${booking.time}`);
+//       };
 
-      const dateTimeA = getDateTime(a);
-      const dateTimeB = getDateTime(b);
+//       const dateTimeA = getDateTime(a);
+//       const dateTimeB = getDateTime(b);
 
-      const isUpcomingA = dateTimeA >= now;
-      const isUpcomingB = dateTimeB >= now;
+//       const isUpcomingA = dateTimeA >= now;
+//       const isUpcomingB = dateTimeB >= now;
 
-      if (isUpcomingA && !isUpcomingB) return -1;
-      if (!isUpcomingA && isUpcomingB) return 1;
+//       if (isUpcomingA && !isUpcomingB) return -1;
+//       if (!isUpcomingA && isUpcomingB) return 1;
 
-      return dateTimeA.getTime() - dateTimeB.getTime();
-    });
+//       return dateTimeA.getTime() - dateTimeB.getTime();
+//     });
 
-    const bookings = bookingsRaw.slice(0, 5).map((booking) => ({
-      id: booking.mentorId?.userId,
-      bookingId: booking._id,
-      date: booking.date,
-      time: booking.time,
-      Duration: booking.Duration,
-      sessionAmount: booking.sessionAmount,
-      firstName: booking.mentorId?.firstName || "",
-      lastName: booking.mentorId?.lastName || "",
-      profilePhoto: booking.mentorId?.profilePhoto || "",
-      Role: booking.mentorId?.Role,
-      CompanyName: booking.mentorId?.CompanyName,
-      Rating: booking.mentorId?.Rating,
-    }));
+//     const bookings = bookingsRaw.slice(0, 5).map((booking) => ({
+//       id: booking.mentorId?.userId,
+//       bookingId: booking._id,
+//       date: booking.date,
+//       time: booking.time,
+//       Duration: booking.Duration,
+//       sessionAmount: booking.sessionAmount,
+//       firstName: booking.mentorId?.firstName || "",
+//       lastName: booking.mentorId?.lastName || "",
+//       profilePhoto: booking.mentorId?.profilePhoto || "",
+//       Role: booking.mentorId?.Role,
+//       CompanyName: booking.mentorId?.CompanyName,
+//       Rating: booking.mentorId?.Rating,
+//     }));
 
-    return NextResponse.json({ data: bookings });
-  } catch (error) {
-    return NextResponse.json(
-      {
-        error: "Something went wrong.",
-        details: error instanceof Error ? error.message : String(error),
-      },
-      { status: 500 }
-    );
-  }
-};
+//     return NextResponse.json({ data: bookings });
+//   } catch (error) {
+//     return NextResponse.json(
+//       {
+//         error: "Something went wrong.",
+//         details: error instanceof Error ? error.message : String(error),
+//       },
+//       { status: 500 }
+//     );
+//   }
+// };

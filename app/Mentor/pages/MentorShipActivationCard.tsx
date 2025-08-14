@@ -8,7 +8,7 @@ import ProfileEdit from "./EditProfile"; // Import the ProfileEdit component
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { setUserProfile } from "@/lib/feature/todos/todoSlice";
 
-const MentorshipCard = () => {
+const MentorshipActivationCard = () => {
   const [isEnabled, setIsEnabled] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [showProfileModal, setShowProfileModal] = useState(false); // State to control modal visibility
@@ -125,4 +125,4 @@ const MentorshipCard = () => {
   );
 };
 
-export default MentorshipCard;
+export default MentorshipActivationCard;

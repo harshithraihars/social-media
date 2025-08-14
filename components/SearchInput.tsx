@@ -74,7 +74,7 @@ const SearchInput = () => {
         ref={inputRef}
         type="text"
         placeholder="Search"
-        className="bg-[#EDF3F8] w-[260px] rounded-lg border-none outline-none"
+        className="bg-[#EDF3F8] w-[225px] md:w-[260px] rounded-lg border-none outline-none"
         onFocus={handleFocus}
         // when focused outside looses the focus so conflict with the clicking logic
         // onBlur={handleBlur}

@@ -14,13 +14,11 @@ const UserProfile = () => {
   };
 
   const EditProfile = async () => {
-    const res = await fetch(`/api/profile?userId=${user?.id}`);
-    const data = await res.json();    
     setShowProfileModal(true);
   };
   return (
     <>
-      <div className="relative inline-block">
+      <div className="relative inline-block mr-4 md:mr-0">
         <SignedIn>
           <div className="relative w-fit group">
             <UserButton />

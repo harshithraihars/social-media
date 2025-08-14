@@ -5,6 +5,7 @@ import { Calendar, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BookingsList } from "./BookingsList";
 import axios from "axios";
+import { IMentor } from "./Mentee";
 export interface BookingI {
     id:string,
     bookingId:string
@@ -19,8 +20,11 @@ export interface BookingI {
     CompanyName:string
     Rating:number
   }
-const MentorshipHeader = () => {
-  const [bookings, setBookings] = useState<BookingI[]>();
+const MentorshipHeader = ({menteeBookings}:{menteeBookings:BookingI[]}) => {
+
+  console.log(menteeBookings);
+  
+  const [bookings, setBookings] = useState<BookingI[]>(menteeBookings || []);
   const [showBookings, setShowBookings] = useState(false);
   const bookingsRef = useRef<HTMLDivElement>(null);
 
@@ -42,13 +46,6 @@ const MentorshipHeader = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showBookings]);
-
-  useEffect(() => {
-    (async () => {
-      const res = await axios.get(`/api/mentee/booking`);
-      setBookings(res.data.data);
-    })();
-  }, []);
   return (
     <div className="relative">
       <header className="shadow-sm rounded-t-[10px]">

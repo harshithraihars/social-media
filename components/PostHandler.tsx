@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import Posts from "./Posts";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { IPostDocument } from "@/models/post.model";
@@ -8,12 +8,8 @@ import {
   setAllPosts,
   setRequest,
   setSearchUsers,
-  setUser,
-  UserResult,
 } from "@/lib/feature/todos/todoSlice";
-import { getAllRequests, getCurrentUser } from "@/lib/serverAction/userAction";
 import PostLoader from "./PostLoader";
-import { IUser } from "@/models/user.model";
 import { UserType } from "@/models/UserInfo";
 
 const PostHandler = ({
@@ -22,7 +18,7 @@ const PostHandler = ({
   requests,
   searchedUsers
 }: {
-  posts: IPostDocument[];
+  posts: IPostDocument[] | null;
   userConnections: any;
   requests: any;
   searchedUsers?:UserType[]|undefined
@@ -48,7 +44,7 @@ const PostHandler = ({
 
   useEffect(() => {
     dispatch(setRequest(requests));
-    dispatch(setAllPosts(posts));
+    if(posts) dispatch(setAllPosts(posts));
     dispatch(setSearchUsers(searchedUsers))
   }, [dispatch, requests, posts]);
 

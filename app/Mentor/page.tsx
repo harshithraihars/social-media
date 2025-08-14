@@ -1,36 +1,62 @@
-import { Suspense } from "react";
+// import { Suspense } from "react";
+// import { getCurrentUser } from "@/lib/serverAction/userAction";
+// import ClientDataLoader from "@/components/ClientDataLoader";
+// import Loader from "./loading";
+// import dynamic from "next/dynamic";
+
+// const BookingsPage = dynamic(() => import("./pages/BookingPage"), {
+//   ssr: false,
+//   loading: () => <Loader />,
+// });
+
+// const MentorShipActivationCard = dynamic(
+//   () => import("./pages/MentorShipActivationCard"),
+//   {
+//     ssr: false,
+//     loading: () => <Loader />,
+//   }
+// );
+
+// const MentorshipPage = async () => {
+//   // Get user data server-side
+//   const user = await getCurrentUser();
+
+//   return (
+//     <div className="min-h-screen shadow-2xl mt-14 transition-all duration-500 bg-gradient-to-br from-[#eef5ff] via-[#dbeafe] to-[#bfdbfe]">
+//       {user?.MentorshipEnabled ? (
+//         <>
+//           <BookingsPage />
+//           <ClientDataLoader />
+//         </>
+//       ) : (
+//         <MentorShipActivationCard />
+//       )}
+//     </div>
+//   );
+// };
+
+// export default MentorshipPage;
+
 import { getCurrentUser } from "@/lib/serverAction/userAction";
-import ClientDataLoader from "@/components/ClientDataLoader";
 import Loader from "./loading";
 import dynamic from "next/dynamic";
-
-const BookingsPage = dynamic(() => import("./pages/BookingPage"), {
-  ssr: false,
-  loading: () => <Loader />,
-});
-
-const MentorShipActivationCard = dynamic(
-  () => import("./pages/MentorShipActivationCard"),
-  {
-    ssr: false,
-    loading: () => <Loader />,
-  }
-);
+import MentorshipActivationCard from "./pages/MentorShipActivationCard";
+import BookingsPage from "./pages/BookingPage";
+import ClientDataLoader from "@/components/ClientDataLoader";
+import { fetchMentorBookings } from "@/lib/serverAction/bookingAction";
 
 const MentorshipPage = async () => {
   // Get user data server-side
   const user = await getCurrentUser();
-
+  if (!user?.MentorshipEnabled) {
+    return <MentorshipActivationCard />;
+  }
+  const initialBookings=await fetchMentorBookings();
+  
   return (
     <div className="min-h-screen shadow-2xl mt-14 transition-all duration-500 bg-gradient-to-br from-[#eef5ff] via-[#dbeafe] to-[#bfdbfe]">
-      {user?.MentorshipEnabled ? (
-        <>
-          <BookingsPage />
-          <ClientDataLoader />
-        </>
-      ) : (
-        <MentorShipActivationCard />
-      )}
+      <BookingsPage initialBookings={initialBookings}/>
+      <ClientDataLoader/>
     </div>
   );
 };

@@ -10,12 +10,12 @@ import TabSelector from "@/app/Mentor/pages/TabSelector";
 import EventCard from "@/app/Mentor/pages/EventCard";
 import MentorshipSettings from "@/app/Mentor/pages/Settings/MentorShipSetting";
 import Sidebar from "@/app/Mentor/pages/SideBar";
-import axios from "axios";
 import { BookingI } from "@/app/Mentorship/pages/MentorShipHeader";
 
-const BookingsPage = () => {
-  const [bookings, setBookings] = useState<BookingI[]>();
-  const [filteredBookings, setFilteredBookings] = useState<BookingI[]>();
+const BookingsPage = ({ initialBookings }: { initialBookings: BookingI[] }) => {
+
+  const [bookings, setBookings] = useState<BookingI[]>(initialBookings || []);
+  const [filteredBookings, setFilteredBookings] = useState<BookingI[]>(initialBookings || []);
   const [activeTab, setActiveTab] = useState<TabType>("Bookings");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -43,22 +43,6 @@ const BookingsPage = () => {
       settingRef.current.scrollTop = 0;
     }
   }, [settingsOpen]);
-
-
-  useEffect(() => {
-    (async () => {
-      try {
-        setLoading(true);
-        const res = await axios.get(`/api/mentor/booking`);
-        setBookings(res.data.data);
-        setFilteredBookings(res.data.data);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
 
   
   useGSAP(() => {
