@@ -1,24 +1,8 @@
 import dynamic from "next/dynamic";
 import Loader from "../Mentor/loading";
 import { fetchMenteeBookings } from "@/lib/serverAction/bookingAction";
-
-// Lazy load components
-const Mentee = dynamic(() => import("./pages/Mentee"), {
-  ssr: false,
-  loading: () => (
-    <div>
-      <Loader />
-    </div>
-  ),
-});
-const MentorShipHeader = dynamic(() => import("./pages/MentorShipHeader"), {
-  ssr: false,
-  loading: () => (
-    <div>
-      <Loader />
-    </div>
-  ),
-});
+import Mentee from "./pages/Mentee";
+import MentorshipHeader from "./pages/MentorShipHeader";
 
 const MentorshipPage = async() => {
 
@@ -28,7 +12,7 @@ const MentorshipPage = async() => {
       {/* Wrapper to maintain content width */}
       <div className="mx-0 md:mx-10 px-4 sm:px-6 lg:px-8 flex-grow">
         {/* Header Section */}
-        <MentorShipHeader menteeBookings={menteeBookings}/>
+        <MentorshipHeader menteeBookings={menteeBookings}/>
         <Mentee />
       </div>
     </div>

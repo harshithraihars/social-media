@@ -22,7 +22,6 @@ export interface BookingI {
   }
 const MentorshipHeader = ({menteeBookings}:{menteeBookings:BookingI[]}) => {
 
-  console.log(menteeBookings);
   
   const [bookings, setBookings] = useState<BookingI[]>(menteeBookings || []);
   const [showBookings, setShowBookings] = useState(false);

@@ -125,7 +125,7 @@ export async function fetchMenteeBookings() {
     // Limit and format results
     return bookingsRaw.slice(0, 5).map((booking) => ({
       id: booking.mentorId?.userId,
-      bookingId: booking._id,
+      bookingId: booking._id.toString(),
       date: booking.date instanceof Date ? booking.date.toISOString() : booking.date,
       time: booking.time,
       Duration: booking.Duration,
