@@ -1,5 +1,6 @@
 // lib/db/fetchBookings.ts
 import { Booking } from "@/models/Booking.model";
+import { Profile } from "@/models/profile.model";
 import { User } from "@/models/user.model";
 import { auth } from "@clerk/nextjs/server";
 
@@ -83,7 +84,7 @@ export async function fetchMenteeBookings(userId:string | undefined) {
       throw new Error("Unauthorized");
     }
 
-    // await Profile.findOne({});
+    await Profile.findOne({});
 
     const user = await User.findOne({ userId }).select("_id");
 
