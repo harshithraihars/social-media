@@ -24,6 +24,7 @@ export interface BookingI {
   }
 const MentorshipHeader = ({menteeBookings,userProfile}:{menteeBookings:BookingI[],userProfile:IProfileWithPayments}) => {
 
+
   const dispatch=useAppDispatch();
 
   const [bookings, setBookings] = useState<BookingI[]>(menteeBookings || []);
@@ -53,7 +54,7 @@ const MentorshipHeader = ({menteeBookings,userProfile}:{menteeBookings:BookingI[
     if(userProfile){
       dispatch(setUserProfile(userProfile))
     }
-  },)
+  },[userProfile,dispatch])
   return (
     <div className="relative">
       <header className="shadow-sm rounded-t-[10px]">
