@@ -51,7 +51,7 @@ const MentorshipPage = async () => {
   if (!user?.MentorshipEnabled) {
     return <MentorshipActivationCard />;
   }
-  const initialBookings=await fetchMentorBookings();
+  const initialBookings=await fetchMentorBookings(user.userId);
   
   return (
     <div className="min-h-screen shadow-2xl mt-14 transition-all duration-500 bg-gradient-to-br from-[#eef5ff] via-[#dbeafe] to-[#bfdbfe]">

@@ -3,10 +3,12 @@ import Loader from "../Mentor/loading";
 import { fetchMenteeBookings } from "@/lib/serverAction/bookingAction";
 import Mentee from "./pages/Mentee";
 import MentorshipHeader from "./pages/MentorShipHeader";
+import { currentUser } from "@clerk/nextjs/server";
 
 const MentorshipPage = async() => {
 
-  const menteeBookings=await fetchMenteeBookings()
+  const user=await currentUser()
+  const menteeBookings=await fetchMenteeBookings(user?.id)
   return (
     <div className="min-h-screen shadow-2xl mt-14 transition-all duration-500 bg-gradient-to-br from-[#eef5ff] via-[#dbeafe] to-[#bfdbfe]">
       {/* Wrapper to maintain content width */}

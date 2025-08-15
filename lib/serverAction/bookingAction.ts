@@ -3,10 +3,9 @@ import { Booking } from "@/models/Booking.model";
 import { User } from "@/models/user.model";
 import { auth } from "@clerk/nextjs/server";
 
-export async function fetchMentorBookings() {
+export async function fetchMentorBookings(userId:string) {
   try {
 
-    const {userId}=auth();
     if (!userId) {
       console.warn("[fetchBookings] Missing userId");
       return [];
@@ -76,10 +75,11 @@ export async function fetchMentorBookings() {
 
 
 
-export async function fetchMenteeBookings() {
+export async function fetchMenteeBookings(userId:string | undefined) {
   try {
-    const { userId } = auth();
     if (!userId) {
+      console.log("unauthorized");
+      
       throw new Error("Unauthorized");
     }
 
