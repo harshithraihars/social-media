@@ -11,9 +11,12 @@ import EventCard from "@/app/Mentor/pages/EventCard";
 import MentorshipSettings from "@/app/Mentor/pages/Settings/MentorShipSetting";
 import Sidebar from "@/app/Mentor/pages/SideBar";
 import { BookingI } from "@/app/Mentorship/pages/MentorShipHeader";
+import { IProfileWithPayments, setUserProfile } from "@/lib/feature/todos/todoSlice";
+import { useAppDispatch } from "@/lib/hooks";
 
-const BookingsPage = ({ initialBookings }: { initialBookings: BookingI[] }) => {
+const BookingsPage = ({ initialBookings,userProfile }: { initialBookings: BookingI[],userProfile:IProfileWithPayments | null }) => {
 
+  const dispatch=useAppDispatch();
   const [bookings, setBookings] = useState<BookingI[]>(initialBookings || []);
   const [filteredBookings, setFilteredBookings] = useState<BookingI[]>(initialBookings || []);
   const [activeTab, setActiveTab] = useState<TabType>("Bookings");
@@ -22,6 +25,7 @@ const BookingsPage = ({ initialBookings }: { initialBookings: BookingI[] }) => {
   const settingRef = useRef<HTMLDivElement | null>(null); // Correct typing
   const tabs: TabType[] = ["Bookings", "Upcoming", "Past"];
   const [loading, setLoading] = useState(false);
+
 
   const filterBookings = (type: "Bookings" | "Upcoming" | "Past"): void => {
     if (type == "Bookings") {
@@ -56,6 +60,12 @@ const BookingsPage = ({ initialBookings }: { initialBookings: BookingI[] }) => {
       });
     }
   }, [settingsOpen]);
+
+  useEffect(() => {
+    if (userProfile) {
+      dispatch(setUserProfile(userProfile));
+    }
+  }, [dispatch, userProfile]);
 
   return (
     <div className="flex min-h-screen bg-gray-50 relative">

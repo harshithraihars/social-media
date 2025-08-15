@@ -12,7 +12,7 @@ export default async function Home() {
         <Sidebar/>
         <Feed/>
         <News/>
-        <ClientDataLoader/>
+        {/* <ClientDataLoader/> */}
       </div>
     </div>
   );

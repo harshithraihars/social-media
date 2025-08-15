@@ -29,7 +29,7 @@ const MentorshipActivationCard = () => {
 
   return (
     <>
-      <div className="w-screen md:max-w-4xl lg:max-w-7xl mx-auto p-2 sm:p-6">
+      <div className="w-screen md:max-w-4xl lg:max-w-7xl mx-auto p-2 sm:p-6 mt-16">
         <Card className="relative overflow-hidden bg-gradient-to-br from-blue-100 to-blue-400 dark:from-gray-900 dark:to-gray-800 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-[1.01] sm:hover:scale-[1.02] border border-blue-100 dark:border-blue-900">
           <div className="absolute inset-0 bg-white/40 dark:bg-black/40 backdrop-blur-sm" />
 

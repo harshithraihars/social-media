@@ -49,8 +49,8 @@ const Feed = async ({ searchQuery }: { searchQuery?: string }) => {
       <PostInput />
       <PostHandler
         posts={posts?JSON.parse(JSON.stringify(posts)):null}
-        userConnections={JSON.parse(JSON.stringify(userInfo))}
-        requests={JSON.parse(JSON.stringify(requests))}
+        userConnections={userInfo?JSON.parse(JSON.stringify(userInfo)):null}
+        requests={requests?JSON.parse(JSON.stringify(requests)):null}
         searchedUsers={searchedUsers}
       />
       {/* <Posts posts={posts} userInfo={userInfo}/> */}

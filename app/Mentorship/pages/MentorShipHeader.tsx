@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { BookingsList } from "./BookingsList";
 import axios from "axios";
 import { IMentor } from "./Mentee";
+import { IProfileWithPayments, setUserProfile } from "@/lib/feature/todos/todoSlice";
+import { useAppDispatch } from "@/lib/hooks";
 export interface BookingI {
     id:string,
     bookingId:string
@@ -20,9 +22,10 @@ export interface BookingI {
     CompanyName:string
     Rating:number
   }
-const MentorshipHeader = ({menteeBookings}:{menteeBookings:BookingI[]}) => {
+const MentorshipHeader = ({menteeBookings,userProfile}:{menteeBookings:BookingI[],userProfile:IProfileWithPayments}) => {
 
-  
+  const dispatch=useAppDispatch();
+
   const [bookings, setBookings] = useState<BookingI[]>(menteeBookings || []);
   const [showBookings, setShowBookings] = useState(false);
   const bookingsRef = useRef<HTMLDivElement>(null);
@@ -45,6 +48,12 @@ const MentorshipHeader = ({menteeBookings}:{menteeBookings:BookingI[]}) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showBookings]);
+
+  useEffect(()=>{
+    if(userProfile){
+      dispatch(setUserProfile(userProfile))
+    }
+  },)
   return (
     <div className="relative">
       <header className="shadow-sm rounded-t-[10px]">

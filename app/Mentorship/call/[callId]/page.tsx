@@ -325,6 +325,7 @@ const VideoCallPage = ({ params }: PageProps) => {
       });
     });
   };
+  
   const hangUp = async () => {
     console.log("Hanging up call");
     console.log(formData);
