@@ -30,7 +30,7 @@ const Header = ({ toggleSidebar, sidebarOpen, setSettingsOpen }: HeaderProps) =>
           </button>
           
           {/* Sidebar positioned relative to the menu button */}
-          {isSidebarOpen && (
+          {/* {isSidebarOpen && (
             <div className="fixed left-0 top-14 h-screen bg-white shadow-lg border-r border-gray-200 z-50 w-64">
               <div className="p-4">
                 <h3 className="font-medium text-lg mb-3">Navigation</h3>
@@ -43,7 +43,7 @@ const Header = ({ toggleSidebar, sidebarOpen, setSettingsOpen }: HeaderProps) =>
                 </nav>
               </div>
             </div>
-          )}
+          )} */}
         </div>
         
         {/* Search Input - Always visible */}
@@ -60,9 +60,9 @@ const Header = ({ toggleSidebar, sidebarOpen, setSettingsOpen }: HeaderProps) =>
         
         {/* Action Buttons */}
         <div className="flex items-center">
-          <button className="text-gray-500 hover:text-gray-700 p-1 sm:p-2">
+          {/* <button className="text-gray-500 hover:text-gray-700 p-1 sm:p-2">
             <Bell className="h-5 w-5" />
-          </button>
+          </button> */}
           <button className="text-gray-500 hover:text-gray-700 p-1 sm:p-2 block md:hidden" onClick={() => setSettingsOpen(true)}>
             <Settings className="h-5 w-5" />
           </button>

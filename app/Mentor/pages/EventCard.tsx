@@ -29,13 +29,13 @@ const EventCard = ({ booking, index, activeTab }: EventCardProps) => {
     }
 
     const days = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
+      "Sun",
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+      "Sat",
     ];
     const day = days[dateObj.getDay()];
     const date = dateObj.getDate();
@@ -114,7 +114,7 @@ const EventCard = ({ booking, index, activeTab }: EventCardProps) => {
               <div className="hidden sm:block text-gray-800 font-medium text-base mb-2">
                 {`30min call meeting ${booking.firstName} <> ${user?.firstName}`}
                 <span className="text-xs text-gray-500 ml-2">
-                  (30 min call)
+                  ({booking.Duration} min call)
                 </span>
               </div>
 

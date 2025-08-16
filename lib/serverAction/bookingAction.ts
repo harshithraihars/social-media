@@ -84,7 +84,9 @@ export async function fetchMenteeBookings(userId:string | undefined) {
       throw new Error("Unauthorized");
     }
 
-    await Profile.findOne({});
+    console.log("profile schema ");
+    
+    // await Profile.findOne({});
 
     const user = await User.findOne({ userId }).select("_id");
 

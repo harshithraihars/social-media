@@ -55,6 +55,9 @@ export default function DateTimeSelector({
         if (!date || !selectedMentor?._id) return;
         setIsAvailabalityLoading(true);
         const dateKey = date.toLocaleDateString("en-CA");
+
+        console.log(dateKey);
+        
         const response = await axios.get(
           `/api/mentor/${selectedMentor?._id}/availability?date=${dateKey}`
         );

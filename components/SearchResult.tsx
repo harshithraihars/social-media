@@ -13,7 +13,7 @@ const SearchResult = () => {
         {isSearching ? (
           <div className="border-gray-300">
             <div className="flex items-start flex-col bg-white p-4 md:m-0 border rounded-lg">
-              <h2 className="font-normal mb-2 text-2xl text-gray-800">People</h2>
+              <h2 className="font-normal mb-2 text-2xl text-gray-800 ml-4">People</h2>
               <div className="flex justify-start items-center gap-3">
               </div>
               {/* Thin line separator */}

@@ -1,7 +1,11 @@
+
+
 import { MentorAvailability } from "@/models/MentorAvailability.model";
 import { Profile } from "@/models/profile.model";
 import { error, profile } from "console";
 import { NextRequest, NextResponse } from "next/server";
+
+export const dynamic = "force-dynamic";
 
 export const PUT = async (
   req: NextRequest,
@@ -42,7 +46,7 @@ export const PUT = async (
       { message: "Availability updated successfully" },
       { status: 200 }
     );
-  } catch (error) {
+  } catch (error) {    
     return NextResponse.json({ error: error }, { status: 500 });
   }
 };
@@ -80,7 +84,8 @@ export const GET = async (
       { availability: availabilityDoc ?? {} },
       { status: 200 }
     );
-  } catch (error) {
+  } catch (error:any) {
+    console.error("Error found",error.message)
     return NextResponse.json({ error: error }, { status: 500 });
   }
 };

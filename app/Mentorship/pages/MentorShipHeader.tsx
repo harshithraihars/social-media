@@ -8,6 +8,7 @@ import axios from "axios";
 import { IMentor } from "./Mentee";
 import { IProfileWithPayments, setUserProfile } from "@/lib/feature/todos/todoSlice";
 import { useAppDispatch } from "@/lib/hooks";
+import { useUser } from "@clerk/nextjs";
 export interface BookingI {
     id:string,
     bookingId:string
@@ -27,6 +28,7 @@ const MentorshipHeader = ({menteeBookings,userProfile}:{menteeBookings:BookingI[
 
   const dispatch=useAppDispatch();
 
+  const {user}=useUser()
   const [bookings, setBookings] = useState<BookingI[]>(menteeBookings || []);
   const [showBookings, setShowBookings] = useState(false);
   const bookingsRef = useRef<HTMLDivElement>(null);
@@ -64,7 +66,7 @@ const MentorshipHeader = ({menteeBookings,userProfile}:{menteeBookings:BookingI[
             {/* Left Section (Heading + Quote) */}
             <div className="flex-1">
               <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-                Hi, Alex
+                Hi, {user?.firstName}
               </h1>
               <p className="text-gray-600 mt-1 text-sm sm:text-base">
                 "Growth begins at the end of your comfort zone"
