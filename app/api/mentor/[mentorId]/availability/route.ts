@@ -1,5 +1,6 @@
 
 
+import connectDB from "@/lib/db";
 import { MentorAvailability } from "@/models/MentorAvailability.model";
 import { Profile } from "@/models/profile.model";
 import { error, profile } from "console";
@@ -31,6 +32,7 @@ export const PUT = async (
       );
     }
 
+    await connectDB()
     await MentorAvailability.findOneAndUpdate(
       { mentorId: mentorId },
       { availability },
@@ -64,6 +66,8 @@ export const GET = async (
         { status: 400 }
       );
     }
+
+    await connectDB()
 
     const availabilityDoc = await MentorAvailability.findOne({
       mentorId: mentorId,

@@ -3,14 +3,16 @@ import { Booking } from "@/models/Booking.model";
 import { Profile } from "@/models/profile.model";
 import { User } from "@/models/user.model";
 import { auth } from "@clerk/nextjs/server";
+import connectDB from "../db";
 
 export async function fetchMentorBookings(userId:string) {
   try {
 
     if (!userId) {
-      console.warn("[fetchBookings] Missing userId");
       return [];
     }
+
+    await connectDB();
 
     // Get mentor profile ID
     const mentorData = await User.findOne({ userId })
@@ -78,12 +80,11 @@ export async function fetchMentorBookings(userId:string) {
 
 export async function fetchMenteeBookings(userId:string | undefined) {
   try {
-    if (!userId) {
-      console.log("unauthorized");
-      
+    if (!userId) {      
       throw new Error("Unauthorized");
     }
 
+    await connectDB()
     console.log("profile schema ");
     
     // await Profile.findOne({});

@@ -1,3 +1,4 @@
+import connectDB from "@/lib/db";
 import { MentorComments } from "@/models/MentorComment.model";
 import { IProfile, Profile } from "@/models/profile.model";
 import { User } from "@/models/user.model";
@@ -21,6 +22,8 @@ export const GET = async (
         { status: 400 }
       );
     }
+
+    await connectDB()
     const Comments = await MentorComments.find({ mentorId: mentorId })
       .populate({
         path: "menteeId",
