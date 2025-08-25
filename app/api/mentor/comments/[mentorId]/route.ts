@@ -24,6 +24,7 @@ export const GET = async (
     }
 
     await connectDB()
+
     const Comments = await MentorComments.find({ mentorId: mentorId })
       .populate({
         path: "menteeId",
@@ -38,7 +39,9 @@ export const GET = async (
     }));
 
     return NextResponse.json({ success: true,data:formattedComments }, { status: 200 });
-  } catch (error) {
-    return NextResponse.json({ error: error }, { status: 400 });
+  } catch (error:any) {
+    console.log(error.message);
+    
+    return NextResponse.json({ error: error }, { status: 500 });
   }
 };

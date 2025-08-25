@@ -56,7 +56,7 @@ export default function MentorshipSettings({
     Record<string, string[]>
   >({});
 
-  const [hourlyRate, setHourlyRate] = useState<number>();
+  const [hourlyRate, setHourlyRate] = useState<number | undefined>(userprofile?.Rate);
   const [isSaving, setIsSaving] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>();
 

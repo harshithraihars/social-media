@@ -24,7 +24,6 @@ const SocialOptions = ({ post}: { post: IPostDocument}) => {
         const dislike = likes?.filter((userId) => userId !== user.id);
         const like = [...(likes ?? []), user.id];
         const newLike = liked ? dislike : like;
-        console.log(newLike);
         
         setLiked(!liked);
         setLikes(newLike);

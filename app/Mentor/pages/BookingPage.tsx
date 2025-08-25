@@ -61,6 +61,7 @@ const BookingsPage = ({ initialBookings,userProfile }: { initialBookings: Bookin
     }
   }, [settingsOpen]);
 
+  
   useEffect(() => {
     if (userProfile) {
       dispatch(setUserProfile(userProfile));

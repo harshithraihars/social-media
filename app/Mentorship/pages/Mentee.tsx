@@ -67,7 +67,7 @@ const Mentee = () => {
   const handleCardClick = async (mentor: IProfile) => {
     setSelectedMentorId(mentor.userId);
     setMentorCommentsLoading(true);
-    try {
+    try {      
       const res = await axios.get(`/api/mentor/comments/${mentor._id}`);
       setMentorComments(res.data.data || []);
     } catch (error) {
