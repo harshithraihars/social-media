@@ -1,8 +1,8 @@
 
-import Loader from '@/components/Loader'
 import NetworkFeed from '@/components/mynetwork/NetworkFeed'
 import SideBar2 from '@/components/mynetwork/SideBar2'
 import React, { Suspense } from 'react'
+import Loader from '../Mentor/loading'
 
 const page = () => {
   return (

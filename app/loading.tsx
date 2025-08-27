@@ -1,7 +1,5 @@
 import React from "react";
-import MentorLoader from "./Mentor/loading"
 const Loader = () => {
-  // const isLoading = useAppSelector((state) => state.counter.isLoading);
 
 
 return (

@@ -1,5 +1,5 @@
 "use client"
-import "./pages/Loader.css"
+import "./css/Loader.css"
 
 const Loader = () => {
   return (

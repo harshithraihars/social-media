@@ -1,10 +1,9 @@
 import React from 'react'
 import { handleUSerConnections } from "@/lib/serverAction/userAction";
 import { currentUser } from "@clerk/nextjs/server";
-import Sidebar from '@/components/Sidebar';
-import Feed from '@/components/Feed';
-import News from '@/components/News';
-import Loader from '@/components/Loader';
+import Feed from '@/components/layout/Feed';
+import News from '@/components/layout/News';
+import Sidebar from '@/components/layout/Sidebar';
 
 type Props = {
   params: {

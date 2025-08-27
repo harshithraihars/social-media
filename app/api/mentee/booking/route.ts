@@ -1,4 +1,4 @@
-import { BookingI } from "@/app/Mentorship/pages/MentorShipHeader";
+import { BookingI } from "@/app/Mentorship/components/navigation/MentorShipHeader";
 import connectDB from "@/lib/db";
 import { Booking } from "@/models/Booking.model";
 import { MentorAvailability } from "@/models/MentorAvailability.model";

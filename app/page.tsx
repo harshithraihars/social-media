@@ -1,8 +1,6 @@
-import ClientDataLoader from "@/components/ClientDataLoader";
-import Feed from "@/components/Feed";
-import News from "@/components/News";
-import Sidebar from "@/components/Sidebar";
-import { handleUSerConnections } from "@/lib/serverAction/userAction";
+import Feed from "@/components/layout/Feed";
+import News from "@/components/layout/News";
+import Sidebar from "@/components/layout/Sidebar";
 
 
 export default async function Home() {
@@ -12,7 +10,6 @@ export default async function Home() {
         <Sidebar/>
         <Feed/>
         <News/>
-        {/* <ClientDataLoader/> */}
       </div>
     </div>
   );

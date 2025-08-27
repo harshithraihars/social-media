@@ -45,11 +45,12 @@ import { Inter } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/sonner";
 import StoreProvider from "./StoreProvider";
-import MobileNavbar from "@/components/MobileNavBar";
-import Navbar from "@/components/Navbar";
+import MobileNavbar from "@/components/navigation/MobileNavBar";
 import { auth } from "@clerk/nextjs/server";
 import { createUserIfNotExists, getCurrentUser } from "@/lib/serverAction/userAction";
-import CurrentUserProvider from "@/components/CurrentUserProvider";
+import CurrentUserProvider from "@/components/provider/CurrentUserProvider";
+import Navbar from "@/components/navigation/Navbar";
+import { getprofile } from "@/lib/serverAction/profileAction";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -64,20 +65,31 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const { userId } = auth();
-
-  let user=null;
   
+  let user=null;
+  let userProfile=null;
+
   if (userId) {
     await createUserIfNotExists();
     user=await getCurrentUser();
+
+    const data = await getprofile(userId);
+
+    userProfile = JSON.parse(
+      JSON.stringify({
+        ...data?.profile,
+        transactions: data?.transactions,
+      })
+    );
   }
+  
   return (
     <ClerkProvider signInUrl="/sign-in">
       <html lang="en">
         <body className={`min-h-screen flex flex-col ${inter.className}`}>
           <StoreProvider>
-            <CurrentUserProvider user={user}/>
-            <Navbar />
+            <CurrentUserProvider user={user} userProfile={userProfile}/>
+            <Navbar/>
             <div className="md:bg-[#F4F2EE] flex-1 w-full">
               <main>
                 {children}

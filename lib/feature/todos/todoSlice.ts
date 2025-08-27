@@ -25,7 +25,6 @@ export interface CounterState
   searchResult: UserResult[];
   user: IUserDocument | null;
   isPostsLoaded:boolean;
-  isLoading: boolean;
   ConnectionRequest: ConnectionRequest[];
   isMentor: boolean;
   userProfile: IProfileWithPayments | null;
@@ -47,7 +46,6 @@ const initialState: CounterState = {
   searchResult: [],
   user: null,
   isPostsLoaded:false,
-  isLoading: false,
   ConnectionRequest: [],
   isMentor: true,
   userProfile: null,
@@ -82,9 +80,6 @@ const counterSlice = createSlice({
     setUser: (state, action: PayloadAction<any>) => {
       state.user = action.payload;
     },
-    setisLoading: (state, action: PayloadAction<any>) => {
-      state.isLoading = action.payload;
-    },
     setRequest: (state, action: PayloadAction<any>) => {
       state.ConnectionRequest = action.payload;
     },
@@ -109,7 +104,6 @@ export const {
   removePost,
   setSearchUsers,
   setUser,
-  setisLoading,
   setRequest,
   setMentee,
   setUserProfile,

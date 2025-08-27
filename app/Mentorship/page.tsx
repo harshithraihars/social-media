@@ -1,8 +1,6 @@
-import dynamic from "next/dynamic";
-import Loader from "../Mentor/loading";
 import { fetchMenteeBookings } from "@/lib/serverAction/bookingAction";
-import Mentee from "./pages/Mentee";
-import MentorshipHeader from "./pages/MentorShipHeader";
+import Mentee from "./components/pages/Mentee";
+import MentorshipHeader from "./components/navigation/MentorShipHeader";
 import { currentUser } from "@clerk/nextjs/server";
 import { getprofile } from "@/lib/serverAction/profileAction";
 
@@ -27,7 +25,7 @@ const MentorshipPage = async () => {
       {/* Wrapper to maintain content width */}
       <div className="mx-0 md:mx-10 px-4 sm:px-6 lg:px-8 flex-grow">
         {/* Header Section */}
-        <MentorshipHeader menteeBookings={menteeBookings} userProfile={userProfile}/>
+        <MentorshipHeader menteeBookings={menteeBookings}/>
         <Mentee />
       </div>
     </div>

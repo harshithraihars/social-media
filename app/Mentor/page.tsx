@@ -38,13 +38,9 @@
 // export default MentorshipPage;
 
 import { getCurrentUser } from "@/lib/serverAction/userAction";
-import Loader from "./loading";
-import dynamic from "next/dynamic";
-import MentorshipActivationCard from "./pages/MentorShipActivationCard";
-import BookingsPage from "./pages/BookingPage";
-import ClientDataLoader from "@/components/ClientDataLoader";
+import MentorshipActivationCard from "./MentorShipActivationCard";
+import BookingsPage from "./components/bookings/BookingPage";
 import { fetchMentorBookings } from "@/lib/serverAction/bookingAction";
-import { getprofile } from "@/lib/serverAction/profileAction";
 
 const MentorshipPage = async () => {
   // Get user data server-side
@@ -53,28 +49,13 @@ const MentorshipPage = async () => {
     return <MentorshipActivationCard />;
   }
 
-  
-  let userProfile = null;
-
-  if (user) {
-    const data = await getprofile(user.userId);
-    userProfile = JSON.parse(
-      JSON.stringify({
-        ...data?.profile,
-        transactions: data?.transactions,
-      })
-    );
-  }
-
   const initialBookings = await fetchMentorBookings(user.userId);
 
   return (
     <div className="min-h-screen shadow-2xl mt-14 transition-all duration-500 bg-gradient-to-br from-[#eef5ff] via-[#dbeafe] to-[#bfdbfe]">
       <BookingsPage
         initialBookings={initialBookings}
-        userProfile={userProfile}
       />
-      {/* <ClientDataLoader /> */}
     </div>
   );
 };
