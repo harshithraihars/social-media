@@ -21,6 +21,7 @@ export const POST = async (req: NextRequest) => {
       time,
       Duration,
       sessionAmount,
+      
     } = await req.json();
 
     if (
@@ -39,6 +40,14 @@ export const POST = async (req: NextRequest) => {
         { status: 400 }
       );
     }
+    
+    const existingBooking = await Booking.findOne({ mentorId, date, time });
+    if (existingBooking) {
+      return NextResponse.json(
+        { error: "This time slot is already booked." },
+        { status: 400 }
+      );
+    }
 
     // create the booking
     const booking = await Booking.create({
@@ -49,6 +58,7 @@ export const POST = async (req: NextRequest) => {
       time,
       Duration,
       sessionAmount,
+      status: 'pending'
     });
 
     // store the payment Details
@@ -71,11 +81,9 @@ export const POST = async (req: NextRequest) => {
       mentorId: mentorId,
     }).select("availability");
 
-    
     const dateKey = new Date(date).toLocaleDateString("en-CA");
-    
 
-    // convert Mongoose Map to plain object because they cause  issue in spreading 
+    // convert Mongoose Map to plain object because they cause  issue in spreading
     const availabilityObj =
       availability instanceof Map
         ? Object.fromEntries(availability)
@@ -86,7 +94,6 @@ export const POST = async (req: NextRequest) => {
       [dateKey]: availabilityObj[dateKey]?.filter((t: string) => t !== time),
     };
 
-    
     await MentorAvailability.findOneAndUpdate(
       { mentorId },
       { availability: updatedAvailability }
@@ -100,11 +107,10 @@ export const POST = async (req: NextRequest) => {
     );
 
     return NextResponse.json(
-      { message: "Booking successful." },
+      { message: "Booking successful.",_id: booking._id},
       { status: 201 }
     );
   } catch (error) {
-    
     return NextResponse.json(
       {
         error: "Something went wrong.",
@@ -114,70 +120,3 @@ export const POST = async (req: NextRequest) => {
     );
   }
 };
-
-// export const GET = async () => {
-//   try {
-//     const { userId } = auth();
-//     if (!userId) {
-//       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-//     }
-//     await Profile.findOne({});
-
-//     const user = await User.findOne({ userId }).select("_id");
-
-//     const bookingsRaw = await Booking.find({ menteeId: user })
-//       .select("_id date time Duration sessionAmount")
-//       .populate({
-//         path: "mentorId",
-//         select:
-//           "userId firstName lastName profilePhoto CompanyName Role Rating",
-//         model: "Profile",
-//       })
-//       .lean();
-
-//     bookingsRaw.sort((a, b) => {
-//       const now = new Date();
-
-//       const getDateTime = (booking: any) => {
-//         const dateStr = new Date(booking.date).toISOString().split("T")[0];
-//         return new Date(`${dateStr} ${booking.time}`);
-//       };
-
-//       const dateTimeA = getDateTime(a);
-//       const dateTimeB = getDateTime(b);
-
-//       const isUpcomingA = dateTimeA >= now;
-//       const isUpcomingB = dateTimeB >= now;
-
-//       if (isUpcomingA && !isUpcomingB) return -1;
-//       if (!isUpcomingA && isUpcomingB) return 1;
-
-//       return dateTimeA.getTime() - dateTimeB.getTime();
-//     });
-
-//     const bookings = bookingsRaw.slice(0, 5).map((booking) => ({
-//       id: booking.mentorId?.userId,
-//       bookingId: booking._id,
-//       date: booking.date,
-//       time: booking.time,
-//       Duration: booking.Duration,
-//       sessionAmount: booking.sessionAmount,
-//       firstName: booking.mentorId?.firstName || "",
-//       lastName: booking.mentorId?.lastName || "",
-//       profilePhoto: booking.mentorId?.profilePhoto || "",
-//       Role: booking.mentorId?.Role,
-//       CompanyName: booking.mentorId?.CompanyName,
-//       Rating: booking.mentorId?.Rating,
-//     }));
-
-//     return NextResponse.json({ data: bookings });
-//   } catch (error) {
-//     return NextResponse.json(
-//       {
-//         error: "Something went wrong.",
-//         details: error instanceof Error ? error.message : String(error),
-//       },
-//       { status: 500 }
-//     );
-//   }
-// };

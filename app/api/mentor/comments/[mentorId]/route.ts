@@ -1,6 +1,5 @@
 import connectDB from "@/lib/db";
 import { MentorComments } from "@/models/MentorComment.model";
-import { IProfile, Profile } from "@/models/profile.model";
 import { User } from "@/models/user.model";
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
@@ -24,6 +23,8 @@ export const GET = async (
     }
 
     await connectDB()
+    // schema hasnt registered yet
+    await User.findOne()
 
     const Comments = await MentorComments.find({ mentorId: mentorId })
       .populate({
@@ -31,7 +32,7 @@ export const GET = async (
         select: "firstName lastName",
       })
       .lean();
-
+      
     const formattedComments = Comments.map((comment) => ({
       comment: comment.comment,
       firstName: comment.menteeId?.firstName,

@@ -12,6 +12,7 @@ import axios from "axios";
 import { IProfile } from "@/models/profile.model";
 import { useUser } from "@clerk/nextjs";
 import { useAppSelector } from "@/lib/hooks";
+import { toast } from "sonner";
 export default function ConfirmBooking({
   selectedMentor,
   setBookingPageOpen,
@@ -19,7 +20,7 @@ export default function ConfirmBooking({
   selectedMentor: IProfile | null;
   setBookingPageOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-  const user=useAppSelector((state)=>state.counter.user)
+  const user = useAppSelector((state) => state.counter.user);
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [duration, setDuration] = useState("30");
   const [selectedSlot, setselectedSlot] = useState<string | null>(null);
@@ -27,10 +28,14 @@ export default function ConfirmBooking({
   const [isBooked, setIsBooked] = useState(false);
   const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false);
   const [mentorAvailability, setMentorAvailability] = useState(null);
+  const [bookingId,setBookingId]=useState("")
   const handlePaymentSuccess = () => {
     setIsPaymentSuccessful(true);
   };
-  const totalPrice = duration === "30" ? (selectedMentor?.Rate || 0)/2 :selectedMentor?.Rate || 0;
+  const totalPrice =
+    duration === "30"
+      ? (selectedMentor?.Rate || 0) / 2
+      : selectedMentor?.Rate || 0;
   const menteeEmail = useUser().user?.primaryEmailAddress?.emailAddress;
 
   useEffect(() => {
@@ -50,28 +55,107 @@ export default function ConfirmBooking({
   }, [selectedMentor]);
 
   const handleBooking = async () => {
+    if (!selectedSlot || !date) return;
+
+    setIsProcessing(true);
+
+    const promise = axios.post("/api/mentee/booking", {
+      mentorId: selectedMentor?._id,
+      menteeId: user?._id,
+      menteeEmail,
+      date,
+      time: selectedSlot,
+      Duration: duration,
+      sessionAmount: totalPrice,
+      status: "pending",
+    });
+
+    toast.promise(promise, {
+      loading: "Creating your booking...",
+      success: "Booking created! Proceed to payment.",
+      error: (err: any) =>
+        err?.response?.data?.error || "Failed to create booking",
+    });
+
     try {
-      // const user = await getCurrentUser();
-
-      
-      const res = await axios.post("/api/mentee/booking", {
-        mentorId: selectedMentor?._id,
-        menteeId: user?._id,
-        menteeEmail: menteeEmail,
-        date,
-        time: selectedSlot,
-        Duration: duration,
-        sessionAmount: totalPrice,
-      });
-
+      const res = await promise;
+      const bookingId = res.data._id;
+      setBookingId(bookingId)
+      await initiatePayment(totalPrice, bookingId);
+    } catch (err) {
+      console.log(err);
       setIsProcessing(false);
-      setIsBooked(true);
-    } catch (error) {
-      console.log(error);
     }
   };
 
-  if (isBooked) {
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
+  const initiatePayment = async (amount: number, bookingId: string) => {
+    const scriptLoaded = await loadRazorpayScript();
+    if (!scriptLoaded) {
+      alert("Failed to load Razorpay script. Please try again.");
+      setIsProcessing(false);
+      return;
+    }
+
+    const options = {
+      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+      amount: amount * 100,
+      currency: "INR",
+      name: "Mentee Connect",
+      description: "Mentorship session",
+      handler: async (response: { razorpay_payment_id: string }) => {
+        setIsProcessing(true);
+        const promise = axios.patch(`/api/mentee/booking/${bookingId}`, {
+          status: "confirmed",
+          paymentId: response.razorpay_payment_id,
+        });
+
+        toast.promise(promise, {
+          loading: "Confirming your booking...",
+          success: "Booking confirmed successfully!",
+          error: (err: any) => {
+            return err?.response?.data?.error || "Failed to confirm booking";
+          },
+        });
+
+        try {
+          await promise;
+          setIsPaymentSuccessful(true);
+          setIsBooked(true);
+        } catch (err) {
+          console.log(err);
+        } finally {
+          setIsProcessing(false);
+        }
+      },
+      prefill: {
+        name: "Harshith",
+        email: "harshithraiharsu@gmail.com",
+        contact: "9567269803",
+      },
+      theme: { color: "#0A2540" },
+      modal: {
+      ondismiss: () => {
+        toast("Payment is pending. You can retry.", { icon: "⏳" });
+        setIsProcessing(false)
+      },
+    },
+    };
+
+    const rzp = new (window as any).Razorpay(options);
+    rzp.open();
+  };
+
+  if (isBooked && isPaymentSuccessful) {
     return (
       <BookingConfirmation
         date={date}
@@ -162,6 +246,8 @@ export default function ConfirmBooking({
             handleBooking={handleBooking}
             timeSlot={selectedSlot}
             onPaymentSuccess={handlePaymentSuccess} // Add this
+            bookingId={bookingId}
+            initiatePayment={initiatePayment}
           />
         </div>
       </div>

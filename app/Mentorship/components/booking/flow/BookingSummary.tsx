@@ -1,8 +1,6 @@
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { CalendarIcon, Clock, CheckCircle, Loader2 } from "lucide-react";
-import { toast } from "sonner";
-import RazorpayButton from "../../payment/RazorpayButton";
 import { Dispatch, SetStateAction } from "react";
 interface BookingSummaryProps {
   date: Date | undefined;
@@ -12,7 +10,9 @@ interface BookingSummaryProps {
   isProcessing: boolean;
   handleBooking: () => void;
   onPaymentSuccess: () => void; // Add this
-  setIsProcessing:Dispatch<SetStateAction<boolean>>
+  setIsProcessing: Dispatch<SetStateAction<boolean>>;
+  bookingId: string;
+  initiatePayment: (a: number, b: string) => void;
 }
 export default function BookingSummary({
   date,
@@ -21,8 +21,8 @@ export default function BookingSummary({
   totalPrice,
   isProcessing,
   handleBooking,
-  onPaymentSuccess,
-  setIsProcessing
+  bookingId,
+  initiatePayment,
 }: BookingSummaryProps) {
   return (
     <div className="bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200 dark:bg-gray-900 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
@@ -68,16 +68,30 @@ export default function BookingSummary({
             </div>
           </div>
 
-          <RazorpayButton
-            date={date}
-            timeSlot={timeSlot}
-            totalPrice={totalPrice}
-            handleBooking={handleBooking}
-            duration={duration}
-            isProcessing={isProcessing}
-            onPaymentSuccess={onPaymentSuccess} // Add this
-            setIsProcessing={setIsProcessing}
-          />
+          <div>
+            <Button
+              className={`w-full ${bookingId?"bg-green-400 hover:bg-green-600":"bg-blue-500 hover:bg-blue-600"} text-white font-medium py-3 rounded-lg mt-4 transition-all duration-300`}
+              onClick={() =>
+                bookingId
+                  ? initiatePayment(totalPrice, bookingId)
+                  : handleBooking()
+              }
+              disabled={!date || !timeSlot || !duration || isProcessing}
+            >
+              {isProcessing ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                <div>
+                  {bookingId?(
+                    "Continue payment"
+                  ):"Confirm & Pay"}
+                </div>
+              )}
+            </Button>
+          </div>
 
           {/* Terms notice */}
           <div className="text-center mt-4">
