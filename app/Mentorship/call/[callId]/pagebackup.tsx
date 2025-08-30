@@ -1,3 +1,4 @@
+
 // "use client";
 // import React, { useState, useEffect, useRef } from "react";
 // import { PhoneOff, Mic, MicOff, Video, VideoOff, Camera } from "lucide-react";
@@ -33,7 +34,7 @@
 // };
 
 // const VideoCallPage = ({ params }: PageProps) => {
-//   const { user } = useUser();
+//   const {user}=useUser()
 //   const { callId } = params;
 //   const [isCallActive, setIsCallActive] = useState(true);
 //   const [isMuted, setIsMuted] = useState(false);
@@ -58,32 +59,14 @@
 //     menteeId: "",
 //   });
 //   const [callEnded, setCallEnded] = useState(false);
-
+  
 //   // Initialize RTCPeerConnection
 //   const initializePeerConnection = () => {
-//     // If already open, reuse it instead of closing mid-setup
-//     if (pcRef.current && pcRef.current.signalingState !== "closed") {
-//       return pcRef.current;
+//     if (pcRef.current) {
+//       pcRef.current.close();
 //     }
 
 //     pcRef.current = new RTCPeerConnection(servers);
-
-//     // Prepare remote stream immediately
-//     const remoteStream = new MediaStream();
-//     remoteStreamRef.current = remoteStream;
-//     if (remoteRef.current) {
-//       remoteRef.current.srcObject = remoteStream;
-//     }
-
-//     // Attach ontrack before adding any local tracks
-//     pcRef.current.ontrack = (event) => {
-//       event.streams[0]?.getTracks().forEach((track) => {
-//         remoteStreamRef.current?.addTrack(track);
-//       });
-//       setRemoteStreamActive(true);
-//       console.log("Remote track received and added");
-//     };
-
 //     return pcRef.current;
 //   };
 
@@ -127,6 +110,7 @@
 //   }, [isCallActive]);
 
 //   const handleEndCall = async () => {
+//     console.log(formData.Role);
 
 //     // setIsCallActive(false);
 //     if (formData.Role === "mentee") {
@@ -140,62 +124,88 @@
 //   };
 
 //   const setupSources = async (role: string) => {
-//   try {
-//     console.log("Setting up sources for role:", role);
+//     try {
+//       console.log("Setting up sources for role:", role);
 
-//     // Initialize peer connection
-//     const pc = initializePeerConnection();
+//       // Initialize peer connection
+//       const pc = initializePeerConnection();
 
-//     // Get local media
-//     const localStream = await navigator.mediaDevices.getUserMedia({
-//       video: true,
-//       audio: true,
-//     });
-//     localStreamRef.current = localStream;
+//       // Get user media
+//       const localStream = await navigator.mediaDevices.getUserMedia({
+//         video: true,
+//         audio: true,
+//       });
 
-//     // Set local video
-//     if (localRef.current) {
-//       localRef.current.srcObject = localStream;
-//       console.log("Local stream assigned to video element");
-//     }
+//       console.log("Local stream tracks:", localStream.getTracks());
+//       localStreamRef.current = localStream;
 
-//     // Add local tracks only if connection is still open
-//     localStream.getTracks().forEach((track) => {
-//       if (pc.signalingState !== "closed") {
+//       // Create remote stream
+//       const remoteStream = new MediaStream();
+//       remoteStreamRef.current = remoteStream;
+
+//       // Add local tracks to peer connection
+//       localStream.getTracks().forEach((track) => {
+//         console.log("Adding track to PC:", track.kind, track.id);
 //         pc.addTrack(track, localStream);
+//       });
+
+//       // Handle incoming tracks
+//       pc.ontrack = (event) => {
+//         console.log("Received remote track:", event.track.kind, event.track.id);
+//         console.log("Remote streams:", event.streams);
+
+//         // Add tracks to remote stream
+//         event.streams[0].getTracks().forEach((track) => {
+//           console.log("Adding remote track:", track.kind, track.id);
+//           remoteStreamRef.current?.addTrack(track);
+//         });
+
+//         // Update remote video element
+//         if (remoteRef.current && remoteStreamRef.current) {
+//           remoteRef.current.srcObject = remoteStreamRef.current;
+//           setRemoteStreamActive(true);
+//           console.log("Remote stream assigned to video element");
+//         }
+//       };
+
+//       // Set local video
+//       if (localRef.current) {
+//         localRef.current.srcObject = localStream;
+//         console.log("Local stream assigned to video element");
 //       }
-//     });
 
-//     // Set remote video from the ref-created stream
-//     if (remoteRef.current && remoteStreamRef.current) {
-//       remoteRef.current.srcObject = remoteStreamRef.current;
-//     }
-
-//     setWebcamActive(true);
-
-//     // Connection state monitoring
-//     pc.onconnectionstatechange = () => {
-//       console.log("Connection state:", pc.connectionState);
-//       if (pc.connectionState === "disconnected" || pc.connectionState === "failed") {
-//         hangUp(true);
+//       // Set remote video (initially empty)
+//       if (remoteRef.current) {
+//         remoteRef.current.srcObject = remoteStream;
 //       }
-//     };
 
-//     // ICE connection state monitoring
-//     pc.oniceconnectionstatechange = () => {
-//       console.log("ICE connection state:", pc.iceConnectionState);
-//     };
+//       setWebcamActive(true);
 
-//     if (role === "mentor") {
-//       await setupMentorConnection(pc);
-//     } else if (role === "mentee") {
-//       await setupMenteeConnection(pc);
+//       // Connection state monitoring
+//       pc.onconnectionstatechange = () => {
+//         console.log("Connection state:", pc.connectionState);
+//         if (
+//           pc.connectionState === "disconnected" ||
+//           pc.connectionState === "failed"
+//         ) {
+//           hangUp(true); // Only reload when connection actually fails
+//         }
+//       };
+
+//       // ICE connection state monitoring
+//       pc.oniceconnectionstatechange = () => {
+//         console.log("ICE connection state:", pc.iceConnectionState);
+//       };
+
+//       if (role === "mentor") {
+//         await setupMentorConnection(pc);
+//       } else if (role === "mentee") {
+//         await setupMenteeConnection(pc);
+//       }
+//     } catch (error) {
+//       console.error("Error setting up sources:", error);
 //     }
-//   } catch (error) {
-//     console.error("Error setting up sources:", error);
-//   }
-// };
-
+//   };
 
 //   const setupMentorConnection = async (pc: RTCPeerConnection) => {
 //     const callDoc = doc(firestore, "calls", callId);
@@ -314,8 +324,10 @@
 //       });
 //     });
 //   };
+  
 //   const hangUp = async () => {
 //     console.log("Hanging up call");
+//     console.log(formData);
 //     // Close peer connection
 //     if (pcRef.current) {
 //       pcRef.current.close();
@@ -368,13 +380,17 @@
 //   useEffect(() => {
 //     const initializeCall = async () => {
 //       try {
-//         const res = await axios.get(`/api/booking?callId=${callId}`);
-//         const { data } = await axios.get(
-//           `/api/mentor/profile?userId=${user?.id}`
-//         );
-//         const userId = data.data.profile._id;
-//         console.log(userId);
 
+//         // console.log("getting called");
+        
+//         const res = await axios.get(`/api/booking?callId=${callId}`);
+//         console.log(res.data);
+        
+//         const { data } = await axios.get(
+//             `/api/mentor/profile?userId=${user?.id}`
+//           );
+//           const userId = data.data.profile._id;
+                
 //         let role: string;
 //         if (userId === res.data.data.mentorId) {
 //           role = "mentor";
@@ -401,7 +417,7 @@
 //         clearTimeout(controlsTimeoutRef.current);
 //       }
 //       // Don't reload on component unmount - just clean up resources
-//       // hangUp();
+//       hangUp();
 //     };
 //   }, [callId]);
 

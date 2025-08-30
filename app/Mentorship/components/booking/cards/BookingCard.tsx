@@ -92,7 +92,7 @@ export const BookingCard = ({ booking }: BookingCardProps) => {
           setCallNotStarted(null);
         }, 5000);
       } else {
-        router.push(`/Mentorship/call/${callId}`);
+        router.push(`/call/${callId}`);
       }
     } catch (error) {
       console.error("Error checking call status:", error);

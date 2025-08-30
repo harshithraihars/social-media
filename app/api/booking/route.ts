@@ -19,7 +19,7 @@ export const GET = async (req: NextRequest) => {
       );
 
     const res = await Booking.findOne({ callId: callId }).select(
-      "menteeId mentorId"
+      "menteeId mentorId Duration"
     );
     if (!res)
       return NextResponse.json({ error: "No Booking found" }, { status: 400 });

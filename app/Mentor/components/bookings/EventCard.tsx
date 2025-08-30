@@ -55,7 +55,7 @@ const EventCard = ({ booking, index, activeTab }: EventCardProps) => {
       await axios.patch(`api/booking/${booking.bookingId}`, {
         callId,
       });
-      router.push(`/Mentorship/call/${callId}`);
+      router.push(`/call/${callId}`);
       setIscalling(false);
       setShowPopup(false);
     } catch (error) {

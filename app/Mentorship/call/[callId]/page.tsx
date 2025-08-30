@@ -59,7 +59,6 @@ const VideoCallPage = ({ params }: PageProps) => {
     menteeId: "",
   });
   const [callEnded, setCallEnded] = useState(false);
-  console.log(formData.Role);
   
   // Initialize RTCPeerConnection
   const initializePeerConnection = () => {
@@ -381,13 +380,17 @@ const VideoCallPage = ({ params }: PageProps) => {
   useEffect(() => {
     const initializeCall = async () => {
       try {
+
+        // console.log("getting called");
+        
         const res = await axios.get(`/api/booking?callId=${callId}`);
+        console.log(res.data);
+        
         const { data } = await axios.get(
             `/api/mentor/profile?userId=${user?.id}`
           );
           const userId = data.data.profile._id;
-          console.log(userId);
-          
+                
         let role: string;
         if (userId === res.data.data.mentorId) {
           role = "mentor";
