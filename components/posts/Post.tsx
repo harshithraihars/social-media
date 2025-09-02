@@ -172,8 +172,6 @@ const Post = ({
   // chhecking user is searching or not
   const issearching=usePathname().startsWith("/search")
 
-// delete a
-  // const posts=useAppSelector((state)=>state.counter.posts)
 
   const handleDelete=async (id:string)=>{
     await deletePostAction(id);
@@ -186,11 +184,6 @@ const Post = ({
       {issearching && index===0?(
         <div className="px-4 py-3">
           <p className="font-normal text-2xl">Posts</p>
-          {/* <div className="flex items-center justify-start gap-3 pt-4">
-            <p className="px-2 py-1 border-2 rounded-2xl hover:border-gray-500 cursor-pointer">From my network</p>
-            <p className="px-2 py-1 border-2 rounded-2xl hover:border-gray-500 cursor-pointer">Past 24 hours</p>
-            <p className="px-2 py-1 border-2 rounded-2xl hover:border-gray-500 cursor-pointer">Past Week</p>
-          </div> */}
         </div>
       ):""}
       <div className=" flex gap-2 p-4">

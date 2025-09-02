@@ -57,32 +57,23 @@ export const createPostAction = async (
   }
 };
 
-export const getAllPost = async (username = " ") => {
+export const getAllPost = async (page = 1, limit = 10, username = "") => {
   try {
     await connectDB();
     const current = await currentUser();
 
-    let posts;
+    const skip = (page - 1) * limit;
+    let query: any = {};
 
-    if (username.trim() === "") {
-      posts = await Post.find()
-        .sort({ createdAt: -1 })
-        .populate({
-          path: "comments",
-          options: { sort: { createdAt: -1 } },
-        });
-    } else {
+    if (username.trim() !== "") {
       const trimmedQuery = username.trim().replace(/\s+/g, "").toLowerCase();
-
-      posts = await Post.find({
+      query = {
         $expr: {
           $regexMatch: {
             input: {
               $replaceAll: {
                 input: {
-                  $toLower: {
-                    $concat: ["$user.firstName", "$user.lastName"],
-                  },
+                  $toLower: { $concat: ["$user.firstName", "$user.lastName"] },
                 },
                 find: " ",
                 replacement: "",
@@ -92,19 +83,30 @@ export const getAllPost = async (username = " ") => {
           },
         },
         "user.userId": { $ne: current?.id },
-      })
-        .sort({ createdAt: -1 })
-        .populate({
-          path: "comments",
-          options: { sort: { createdAt: -1 } },
-        });
+      };
     }
 
-    return posts?.length ? JSON.parse(JSON.stringify(posts)) : [];
+    const posts = await Post.find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .populate({
+        path: "comments",
+        options: { sort: { createdAt: -1 } },
+      });
+
+    const total = await Post.countDocuments(query);
+
+    return {
+      posts: JSON.parse(JSON.stringify(posts)),
+      hasMore: skip + posts.length < total,
+    };
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    return { posts: [], hasMore: false };
   }
 };
+
 
 export const deletePostAction = async (postId: string) => {
   await connectDB();
